@@ -1,0 +1,48 @@
+name: 'Delete a Sandbox'
+description: 'Delete a sandbox with developer license'
+
+inputs:
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: true
+  gh_token:
+    description: 'Token for GitHub API'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
+
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
+
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+
+    - run: |
+          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+      shell: bash
+
+
+    - id: deleteCISandboxes
+      run: |
+        # Fetch username
+
+        devhubInfo=$(sf org display -o devhub --json)
+
+        # Use jq to extract the username
+        DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+        export GH_TOKEN=${{inputs.gh_token}}
+        node $GITHUB_ACTION_PATH/delete-sandboxes.js ${{ github.repository }}  $DEVHUB_USERNAME
+
+      shell: bash

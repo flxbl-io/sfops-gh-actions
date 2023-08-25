@@ -1,0 +1,48 @@
+name: 'Delete a Sandbox'
+description: 'Delete a sandbox with developer license'
+
+inputs:
+  sandboxName:
+    description: 'Name of the sandbox to be deleted'
+    required: true
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: true
+
+outputs:
+  DELETED:
+    description: "Sucesfully delelted the sandbox?"
+    value: ${{ steps.deleteSandbox.outputs.deleted }}
+
+runs:
+  using: "composite"
+  steps:
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
+
+    - run: |
+          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+      shell: bash
+
+    - id: deleteSandbox
+      run: |
+        # Fetch username
+
+        devhubInfo=$(sf org display -o devhub --json)
+
+        # Use jq to extract the username
+        DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+
+        # Run the delete-sandbox.js script and capture the exit code
+        node $GITHUB_ACTION_PATH/delete-sandbox.js  $DEVHUB_USERNAME  ${{inputs.sandboxName}} 2>&1
+        delete_status=$?
+
+        # If the script runs successfully, output true, else output false
+        if [ $delete_status -eq 0 ]
+        then
+          echo "deleted=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "deleted=false" >> "$GITHUB_OUTPUT"
+        fi
+      shell: bash

@@ -1,0 +1,34 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: 'Cancel all pending action runs on a issue'
+description: 'Cancel all pending action runs on a issue'
+inputs:
+  issue-number: 
+    description: 'Issue number'
+    required: true  
+  repo:  
+    description: 'The repo which the issue and action is contained'
+    required: true
+  gh_token:
+    description: 'github token to use for commiting to repo'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+    
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          export GH_TOKEN=${{inputs.gh_token}}
+          bash $GITHUB_ACTION_PATH/cancel.sh ${{inputs.repo}} ${{inputs.issue-number }}
+      shell: bash
+

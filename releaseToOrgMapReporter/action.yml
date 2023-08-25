@@ -1,0 +1,57 @@
+name: 'ReleaseReporter'
+description: 'Report releases in each org'
+inputs:
+  source-branch: 
+    description: 'name of the branch from which to read changelog.json'
+    required: true
+  target-dir: 
+    description: 'name of the directory to commit to'
+    required: true
+  environments: 
+    description: 'list of environments of the changelog, separated by commas'
+    required: true  
+  domain: 
+    description: 'domain for this particular changelog'
+    required: true
+  target-repo:  
+    description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
+    required: true
+  workitem-url:
+     description: 'url of the jira board'
+     required: true
+  source-repo-url:
+      description: 'url of the source repo'
+      required: true
+  gh_token:
+    description: 'github token to use for committing to repo'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+    
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --all
+          mkdir -p release-pipeline-view
+          export GH_TOKEN=${{inputs.gh_token}}
+
+          # Loop through each environment and fetch the corresponding release changelog
+          IFS=',' read -ra ENVIRONMENTS <<< "${{inputs.environments}}"
+          for env in "${ENVIRONMENTS[@]}"; do
+            git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > releasechangelog-$env.json
+          done
+
+          node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.environments}} ${{inputs.domain}}
+          cp release-pipeline-${{inputs.domain}}.html release-pipeline-view
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} release-pipeline-view ${{inputs.target-dir}} "updated pipeline view for domain ${{inputs.domain}}" 
+      shell: bash

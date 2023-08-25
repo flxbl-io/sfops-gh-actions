@@ -1,0 +1,49 @@
+name: 'Create a CI Sandbox - Developer License'
+description: 'Create a CI sandbox with developer license'
+
+inputs:
+  pathToPoolConfigFile:
+     description: 'Path to pool config file'
+     required: true
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: true
+  gh_token:
+    description: 'Token for GitHub API'
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
+
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+
+    - run: |
+          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+      shell: bash
+
+    - id: createSandbox
+      run: |
+          export GH_TOKEN=${{inputs.gh_token}}
+          config=$(cat ${{ inputs.pathToPoolConfigFile }})
+          export GH_TOKEN=${{inputs.gh_token}}
+
+          for entry in $(echo "$config" | jq -c '.[]'); do
+             echo 'Processing domain: ' $(echo $entry | jq -r '.domain')
+             $GITHUB_ACTION_PATH/process-domain.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
+           done
+
+          wait # Wait for all background jobs to finish
+      shell: bash

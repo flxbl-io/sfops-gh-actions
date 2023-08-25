@@ -1,0 +1,298 @@
+body { 
+  display: flex; 
+  font-family: Arial, sans-serif; 
+  background-color: #f3f3f3;
+}
+
+.commitTable {
+  width: 100%; 
+  border-collapse: collapse; 
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.commitTable th {
+  border-bottom: 2px solid #ddd;
+  padding: 8px;
+  text-align: left;
+  background-color: #4CAF50;
+  color: white;
+}
+
+.commitTable td {
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+}
+
+#releaseList {
+  list-style: none;
+  padding: 0;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.release-button {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 10 0 0 0;
+  cursor: pointer;
+  color: #2c3e50;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 2px solid #2c3e50;
+}
+
+.collapsible {
+  cursor: pointer;
+  padding: 20 0 0 ;
+  width: 200px;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: background-color 0.2s;
+}
+
+.collapsible:hover {
+  background-color: #ddd;
+}
+
+.collapsible .plus {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.collapsible-content {
+  cursor: pointer;
+  padding: 10 0 0 ;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+  transition: background-color 0.2s;
+}
+
+.collapsible-content:hover {
+  background-color: #ddd;
+}
+
+.collapsible-content .plus {
+  display: inline-block;
+  margin-right: 5px;
+}
+
+
+.content {
+  padding: 10 px;
+  flex:auto;
+  max-height: 100vh;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+.content-detail {
+  padding: 20 px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+#latestReleases {
+  margin: 10px 0;
+  padding: 20px;
+  width: 300px;
+  flex:auto;
+  background-color: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#latestReleases h2 {
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.releaseCard {
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column; /* Changed from row to column */
+  align-items: start; /* Changed to start to align items to the start */
+}
+
+.releaseCardTitle {
+  font-size: 15px;
+  color: white;
+  background-color: #4CAF50;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px; /* Changed from right to bottom */
+}
+
+.releaseCardLink {
+  flex-grow: 1;
+  padding: 10px;
+}
+
+.releaseCardLink a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+.releaseCardLink a:hover {
+  text-decoration: underline;
+}
+
+.releaseCardDate {
+  color: #777;
+  font-size: 12px;
+  padding: 10px 0; /* Padding added to separate the date from the link */
+}
+
+
+
+.release-content {
+  width: 100%; 
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.navigationlink {
+  flex-grow: 1;
+}
+
+.navigationlink a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
+
+.navigationlink a:hover {
+  text-decoration: underline;
+}
+
+.hidden-content {
+  display: none;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color:  #f1f1f1;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width:80vh;
+  height: 80vh;
+  overflow-y: auto; 
+}
+
+.close-button {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+.rounded-label {
+  display: inline-block;
+  padding: 5;
+  border-radius: 20px;
+  background-color: #007BFF;
+  color: white;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  margin: 2;
+}
+
+
+a.roll-back {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #e81272; /* Change this to the desired color */
+  color: white; /* Change this to the desired color */
+  text-align: center;
+  text-decoration: none;
+  font-size: 10px;
+  transition: all 0.5s;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: underline;
+}
+
+a.roll-back:hover {
+  background-color: #6b6266; /* Change this to the desired color */; /* Darker green when hovered */
+}
+
+a.github-issue-url {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #409e45;
+  color: white; /* Change this to the desired color */
+  text-align: center;
+  text-decoration: none;
+  font-size: 10px;
+  transition: all 0.5s;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: underline;
+}
+
+a.github-issue-url:hover {
+  background-color: #6b6266; /* Change this to the desired color */; /* Darker green when hovered */
+}
+
+a.get-on-my-sbx {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f86d09;
+  color: white; /* Change this to the desired color */
+  text-align: center;
+  text-decoration: none;
+  font-size: 10px;
+  transition: all 0.5s;
+  cursor: pointer;
+  border-radius: 5px;
+  text-decoration: underline;
+}
+
+a.get-on-my-sbx:hover {
+  background-color: #f80505; /* Change this to the desired color */; /* Darker green when hovered */
+}

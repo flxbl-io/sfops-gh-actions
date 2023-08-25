@@ -1,0 +1,54 @@
+name: 'Install a managed or unlocked package in the target org'
+description: 'Installs a package in the target org if not already installed'
+inputs:
+  target-org:
+    description: 'Username or alias of the target org'
+    required: true
+  package:
+    description: 'ID or alias of the package version to install'
+    required: true
+  installation-key:
+    description: 'Installation key for key-protected package'
+    required: false
+  force-install:
+    description: 'Forcefully install the package even if it is already installed'
+    required: false
+    default: 'false'
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        echo "Fetching installed artifacts..."
+        artifacts_output=$(sfp artifacts:query -u ${{ inputs.target-org }} --json)
+        echo "Artifacts installed in the org is being processed."
+
+        install_package=true
+        echo "Checking if the package is already installed..."
+        for row in $(echo "${artifacts_output}" | jq -r '.result[] | @base64'); do
+          _jq() {
+            echo ${row} | base64 --decode | jq -r ${1}
+          }
+
+          subscriberVersion=$(_jq '.subscriberVersion')
+
+          packageVersion=${{ inputs.package }}
+
+         if [[  ${#packageVersion} -eq 15 && "$packageVersion" == "${subscriberVersion:0:15}" && ${{ inputs.force-install }} == "false" ]]; then
+            echo "Package already installed. Skipping installation..."
+            install_package=false
+            break
+          elif [[ "$packageVersion" == "${subscriberVersion}" && ${{ inputs.force-install }} == "false" ]]; then
+            echo "Package already installed. Skipping installation..."
+            install_package=false
+            break
+          fi
+        
+        done
+        
+
+        if $install_package ; then
+          echo "Installing package..."
+          sf package install -o ${{ inputs.target-org }} -p ${{ inputs.package }} --apex-compile=package --no-prompt --wait=300 ${INSTALLATION_KEY:+-k ${{ inputs.installation-key }}}
+          echo "Package installed."
+        fi
+      shell: bash

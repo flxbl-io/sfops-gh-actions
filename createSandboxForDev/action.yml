@@ -1,0 +1,104 @@
+name: 'Create a Sandbox - Developer License'
+description: 'Create a sandbox with developer license'
+
+inputs:
+  email:
+    description: "Email of the user for which the sandbox is to be created"
+    required: true
+  daysToKeep:
+    description: "Amount of days the sandbox should be kept for"
+    required: true
+  sourceSB:
+    description: 'Pick a source sandbox for the source of this sandbox'
+    required: true
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: true
+  usersToBeActivated:
+     description: 'Comma separated list of users to be activated'
+     required: true
+  apexClassId:
+    description: 'Apex Class Id to be used for apex test execution'
+    required: false
+
+outputs:
+  SANDBOX_NAME:
+    description: "Name of the sandbox created"
+    value: ${{ steps.createSandbox.outputs.SANDBOX_NAME }}
+  SANDBOX_USERNAME:
+    description: "Name of the sandbox created"
+    value: ${{ steps.createSandbox.outputs.SANDBOX_USERNAME }}
+
+runs:
+  using: "composite"
+  steps:
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
+
+    - run: |
+          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+      shell: bash
+
+    - id: createSandbox
+      run: |
+        # Fetch username
+
+        devhubInfo=$(sf org display -o devhub --json)
+
+        # Use jq to extract the username
+        DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+
+
+        # add a var for tracking metrics
+        start=$(date +%s)
+        # Get 4 digits from email
+        email=${{ inputs.email }}
+        case "$email" in
+        ?*@?*.*) user_part="${email%%@*}"
+                trimmed_user="${user_part%"${user_part#????}"}"
+                echo "The trimmed user part of the email is: $trimmed_user"
+                ;;
+        *) echo "This is not a valid email address."
+        ;;
+        esac
+        sandbox_appender_name=$(dd bs=512 if=/dev/urandom count=1 2>/dev/null | LC_ALL=C tr -dc '0-9' | head -c 6)
+        sandbox_name="$trimmed_user$sandbox_appender_name"
+        
+        
+        echo Name of the sandbox to be created : $sandbox_name
+        
+        #Create sandbox
+        node $GITHUB_ACTION_PATH/dist/create-sandbox/index.js $sandbox_name devhub ${{ inputs.sourceSB  }} ${{ inputs.apexClassId  }}  
+  
+        echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
+
+        # calculate elapsed time and report
+        # do not fail even if the metrics where not able to be send
+        end=$(date +%s)
+        elapsed=$(( end - start ))
+        sfp metrics:report -m "dev.sandbox.creation.duration" -t timer -v $elapsed || true
+        sfp metrics:report -m "dev.sandbox.creation" -t counter || true
+
+        sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
+
+        # Append sandbox name to list of users
+        IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
+        for index in "${!usersToBeActivated[@]}"
+        do
+          usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
+        done
+        usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
+
+        node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name   
+
+        
+        node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }} $sandbox_name   
+       
+        echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
+
+        SANDBOX_USERNAME=$(cat username.output)
+        echo "SANDBOX_USERNAME=$SANDBOX_USERNAME" >> "$GITHUB_OUTPUT"
+
+
+      shell: bash

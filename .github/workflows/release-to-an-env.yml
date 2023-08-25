@@ -1,0 +1,250 @@
+# Reusable job not to be used directly
+
+name: 'Trigger Release to an org'
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+          description: 'Name of the environment'
+          type: 'string'
+      environment-profile:
+          description: 'The profile of the enviroment to be used in release'
+          type: 'string'
+      org-name:
+          description: 'The name of the org to be released'
+          type: 'string'
+      domain: 
+         description: 'Domain  that need to be released'
+         required: true
+         type: 'string'
+      releaseDefn: 
+         description: 'The release definition to use'
+         required: true
+         type: 'string'
+      branchname:  
+         description: 'Name of the branch where the release defn is stored in the repo'
+         required: true
+         type: 'string'
+      releaselogbranch:  
+         description: 'Name of the branch where the release logs are stored in the repo'
+         type: 'string'
+      all-envs:
+         description: 'All key environments in your environment strategy to generate report'
+         type: 'string'
+      all-domains:
+         description: 'All domains in this project'
+         type: 'string'
+      target-repo:
+         description: 'Target repo to submit package version report as HTML'
+         type: 'string'
+      source-repo-url:
+        description: 'Source repo url to be used in the changelog'
+        type: 'string'
+      workitem-url:
+         description: 'Workitem URL to be used in the changelog'
+         type: 'string'
+      additional-plugins:
+         description: 'Additional plugins to be installed'
+         type: 'string'
+      overrideSkipIfAlreadyInstalled:
+         description: 'Override skipIfAlreadyInstalled flag in the release defintion'
+         type: 'string'
+      excludePackages:
+          description: 'Exclude packages from the release'
+          type: 'string'
+      overridePackageVersions:
+          description: 'Override package version in the release'
+          type: 'string'
+      issue-number:
+         description: 'If this action is triggered from an issue, the issue number'
+         type: 'string'
+      issue-author:
+          description: 'The initiator of the issue'
+          type: 'string'
+      issue-notifier:
+            description: 'Who all need to be need to be notified'
+            type: 'string'
+      metrics-provider:
+            description: 'The metrics provider to be used'
+            type: 'string'
+      pathToReleaseConfigs:
+            description: 'The path to release config'
+            type: 'string'
+    secrets: 
+        DEVHUB_SFDX_AUTH_URL:
+            description: 'Devhub Auth URL'
+        SB_SFDX_AUTH_URL:
+            description: 'Sandbox Auth URL'
+        gh-token:
+            description: 'GH Token to commit to the target repo'
+        datadog-api-key:
+            description: 'Datadog api key to report metrics'
+        datadog-host:
+            description: 'Datadog host to report metrics'
+            
+
+jobs:
+  release-to-org:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+            fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+            node-version: "18" 
+            registry-url: 'https://npm.pkg.github.com'
+
+      - name: Install additional plugins if any
+        run: |
+            if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+                IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+                for plugin in "${plugins[@]}"; do
+                    echo "Installing $plugin"
+                    echo 'y' | sfdx plugins:install $plugin
+                done
+            fi
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+      - name: Lock enviroment 
+        uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        if: ${{ inputs.environment != '' }}
+        with:
+          branch: ${{ inputs.environment }}-mutex
+
+      - name: Authenticate to ${{ inputs.environment }}
+        id: handle-auth
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with: 
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ inputs.environment }}
+          org-name: ${{ inputs.org-name }}
+          environment-profile:  ${{ inputs.environment-profile }}
+
+      - name: Fetch Release Defn
+        id: fetch-release-defn
+        run: |
+          # Get the latest release defn from releasedefns branch
+          pathToReleaseDef="${{ inputs.releaseDefn }}"
+          extension="${pathToReleaseDef##*.}"
+          if [[ "$extension" == "yaml" || "$extension" == "yml" ]]; then
+              pathWithoutExtension="${pathToReleaseDef%.*}"
+          else
+              pathWithoutExtension="$pathToReleaseDef"
+          fi
+          git config --global --add safe.directory  $GITHUB_WORKSPACE
+          git show origin/${{inputs.branchname}}:${{ inputs.domain }}/$pathWithoutExtension.yml > $pathToReleaseDef.yml
+
+          echo "releaseDefn=$pathToReleaseDef.yml" >> "$GITHUB_OUTPUT"
+
+
+      - name: 'Exclude Packages if  any'
+        uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
+        with:
+          changelog: ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          excludePackages: ${{ inputs.excludePackages }}
+
+      - name: 'Run Override package version if any'
+        uses: flxbl-io/sfops-gh-actions/overridePackageVersionInReleaseDefns@main
+        with:
+          changelog:  ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          overridePackageVersions: ${{ inputs.overridePackageVersions }}
+
+ 
+      # Release to environment
+      - name: Initiate Release
+        id: release
+        run: |
+            if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
+              sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.releaseDefn}}
+            fi
+
+            if [ -z "${{ inputs.environment }}" ]; then
+             sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
+            else
+             sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
+            fi
+        env:
+          NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
+
+      - name: 'Fetch all ReleaseNames'
+        id: getAllReleaseNames
+        uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
+        with:
+          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
+            
+      - name: 'Report changelog'
+        uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
+        if: ${{ inputs.environment != '' }}
+        with:
+           source-branch: ${{inputs.releaselogbranch}}
+           domains: ${{inputs.all-domains}}
+           target-dir: changelog
+           target-repo: ${{ inputs.target-repo }}
+           gh_token: ${{ secrets.gh-token}}
+           source-repo-url: ${{ inputs.source-repo-url}}
+           workitem-url: ${{ inputs.workitem-url}}
+
+      - name: 'Report pipeline-view'
+        uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main  
+        if: ${{ inputs.environment != '' }}
+        continue-on-error: true
+        with:
+           source-branch: ${{inputs.releaselogbranch}}
+           domain: ${{ inputs.domain }}
+           target-dir: release-pipeline-view
+           target-repo: ${{ inputs.target-repo }}
+           gh_token: ${{ secrets.gh-token}}
+           source-repo-url: ${{ inputs.source-repo-url}}
+           environments: "staging,prod"
+           workitem-url: ${{ inputs.workitem-url}}
+  
+  
+      - name: 'Run package version reporter'
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        if: ${{ inputs.environment != '' }}
+        with:
+         alias: ${{ inputs.environment }}
+         env-name: ${{ inputs.environment }}
+         all-envs: ${{ inputs.all-envs }}
+         target-repo: ${{inputs.target-repo}}
+         gh_token: ${{ secrets.gh-token }}
+
+      - name: Create comment on issue after completion of release
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ inputs.issue-number != '' }}
+        with:
+           issue-number: ${{inputs.issue-number}}
+           token:  ${{ secrets.gh-token}}
+           body: |
+             Hello @${{inputs.issue-notifier}} :wave:
+             
+             The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to then environment to  validate the release.
+
+      - name: Create comment on failure of a release
+        uses: peter-evans/create-or-update-comment@v3
+        if:  ${{ failure() && steps.release.conclusion == 'failure' && inputs.issue-number != '' }}
+        with:
+           issue-number: ${{inputs.issue-number}}
+           token:  ${{ secrets.gh-token}}
+           body: |
+             Hello @${{inputs.issue-notifier}} :wave:
+             
+             The release to ${{inputs.environment}} has failed. Please check the logs, fix the issue and retrigger the release
+
+  
+
+
+  
+  

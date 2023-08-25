@@ -1,0 +1,44 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: 'Report package versions of an org to a repo'
+description: 'Report package version of an org to a folder in repo and create an html report'
+inputs:
+  alias:  # id of input
+    description: 'alias of the org'
+    required: true
+  env-name:  # id of input
+    description: 'name of the environment when reported'
+    required: true
+  target-repo:  # id of input
+    description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
+    required: true
+  gh_token:  # id of input
+    description: 'github token to use for commiting to repo'
+    required: true
+  all-envs:  # id of input
+    description: 'All environments and the respective order that should appear in the reports'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+    
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          export GH_TOKEN=${{inputs.gh_token}}
+          mkdir packageVersionReports
+          sfp artifacts:query -u ${{inputs.alias}} --json > packageVersionReports/${{inputs.env-name}}.json
+
+          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH ${{inputs.all-envs}}
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} packageVersionReports packageVersionReports 'updated-package-version-reports'
+      shell: bash
+

@@ -1,0 +1,48 @@
+name: 'Fetches a CI sandbox for a domain'
+description: 'Fetch a sandbox from the pool of the domain'
+inputs:
+  domain:
+    description: 'Fetch a sandbox for the domain'
+    required: true
+  gh_token:  # id of input
+    description: 'github token to use for commiting to repo'
+    required: true
+outputs:
+  sbxname:
+    description: 'Name of the sandbox'
+    value: ${{ steps.fetchSandbox.outputs.SANDBOX_NAME }}
+runs:
+  using: "composite"
+  steps:
+
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y    
+          git config --global --add safe.directory $GITHUB_WORKSPACE            
+      shell: bash
+
+    - name: Lock to get exclusive access to pool var
+      uses: flxbl-io/sfops-gh-actions/lockResource@main
+      with:
+          branch: pool-${{inputs.domain}}
+          repo-token: ${{ inputs.gh_token }}
+
+    - run: |
+         export GH_TOKEN=${{inputs.gh_token}}
+         sbx_name=$($GITHUB_ACTION_PATH/fetchSandbox.sh  ${{github.repository}} ${{inputs.domain}} 20)
+         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
+      shell: bash
+      id: fetchSandbox
+
+    - name: Release locked access to pool vars
+      uses:  flxbl-io/sfops-gh-actions/unlockResource@main
+      if: always()
+      with:
+          branch: pool-${{inputs.domain}}
+          repo-token: ${{ inputs.gh_token }}
+
