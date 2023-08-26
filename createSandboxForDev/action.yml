@@ -16,7 +16,7 @@ inputs:
     required: true
   usersToBeActivated:
      description: 'Comma separated list of users to be activated'
-     required: true
+     required: false
   apexClassId:
     description: 'Apex Class Id to be used for apex test execution'
     required: false
