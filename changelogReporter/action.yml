@@ -7,9 +7,6 @@ inputs:
   target-dir: 
     description: 'name of the directory to commit to'
     required: true
-  domains: 
-    description: 'list of domains of the changelog, separated by commas'
-    required: true
   target-repo:  
     description: 'name of the repo to report to, will create a folder release-pipeline-view in the target repo'
     required: true
@@ -19,6 +16,8 @@ inputs:
   source-repo-url:
       description: 'url of the source repo'
       required: true
+  pathToReleaseConfigs:
+      description: 'The directory that has all release config'
   gh_token:
     description: 'github token to use for committing to repo'
     required: true
@@ -35,13 +34,19 @@ runs:
           && sudo apt update \
           && sudo apt install gh -y                
       shell: bash
+
+    - name: 'Fetch all ReleaseNames'
+      id: getAllReleaseNames
+      uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
+      with:
+          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
     
     - run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
           git fetch --all
           mkdir -p changelogHTML
           export GH_TOKEN=${{inputs.gh_token}}
-          IFS=',' read -ra DOMAIN_ARRAY <<< "${{inputs.domains}}"
+          IFS=',' read -ra DOMAIN_ARRAY <<< "${{steps.getAllReleaseNames.outputs.releaseNames}}"
           for domain in "${DOMAIN_ARRAY[@]}"; do
             git show origin/${{inputs.source-branch}}:${domain}/releasechangelog.json > releasechangelog.json
             node  $GITHUB_ACTION_PATH/changelogToHTML.js releasechangelog.json ${{inputs.workitem-url}} ${{inputs.source-repo-url}} $domain

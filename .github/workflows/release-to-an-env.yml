@@ -29,12 +29,6 @@ on:
       releaselogbranch:  
          description: 'Name of the branch where the release logs are stored in the repo'
          type: 'string'
-      all-envs:
-         description: 'All key environments in your environment strategy to generate report'
-         type: 'string'
-      all-domains:
-         description: 'All domains in this project'
-         type: 'string'
       target-repo:
          description: 'Target repo to submit package version report as HTML'
          type: 'string'
@@ -184,17 +178,6 @@ jobs:
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
             
-      - name: 'Report changelog'
-        uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
-        if: ${{ inputs.environment != '' }}
-        with:
-           source-branch: ${{inputs.releaselogbranch}}
-           domains: ${{inputs.all-domains}}
-           target-dir: changelog
-           target-repo: ${{ inputs.target-repo }}
-           gh_token: ${{ secrets.gh-token}}
-           source-repo-url: ${{ inputs.source-repo-url}}
-           workitem-url: ${{ inputs.workitem-url}}
 
       - name: 'Report pipeline-view'
         uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main  
@@ -217,7 +200,6 @@ jobs:
         with:
          alias: ${{ inputs.environment }}
          env-name: ${{ inputs.environment }}
-         all-envs: ${{ inputs.all-envs }}
          target-repo: ${{inputs.target-repo}}
          gh_token: ${{ secrets.gh-token }}
 

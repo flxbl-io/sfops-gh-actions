@@ -23,9 +23,6 @@ on:
           description: 'Create Html Report of package version from this org along with other orgs'
           type: 'boolean'
           default: false
-      all-envs:
-         description: 'All key environments in your environment strategy to generate report'
-         type: 'string'
       target-repo:
           description: 'Target repo to submit package version report as HTML'
           type: 'string'
@@ -76,7 +73,6 @@ jobs:
         with:
          alias: ${{ inputs.environment }}
          env-name: ${{ inputs.environment }}
-         all-envs: ${{ inputs.all-envs }}
          target-repo: ${{inputs.target-repo}}
          gh_token: ${{ secrets.gh-token }}
 

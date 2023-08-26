@@ -3,20 +3,17 @@
 name: 'Report package versions of an org to a repo'
 description: 'Report package version of an org to a folder in repo and create an html report'
 inputs:
-  alias:  # id of input
+  alias:  
     description: 'alias of the org'
     required: true
-  env-name:  # id of input
+  env-name: 
     description: 'name of the environment when reported'
     required: true
-  target-repo:  # id of input
+  target-repo: 
     description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
     required: true
-  gh_token:  # id of input
+  gh_token:  
     description: 'github token to use for commiting to repo'
-    required: true
-  all-envs:  # id of input
-    description: 'All environments and the respective order that should appear in the reports'
     required: true
 
 runs:
@@ -38,7 +35,12 @@ runs:
           mkdir packageVersionReports
           sfp artifacts:query -u ${{inputs.alias}} --json > packageVersionReports/${{inputs.env-name}}.json
 
-          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH ${{inputs.all-envs}}
+          # Compute all envs
+          envsAsJSONArray=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -c '[.environments[].name]')
+          allEnvs=$(echo $envsAsJSONArray | tr -d '[] ' | sed "s/'//g"))
+
+          
+          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH $allEnvs
           $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} packageVersionReports packageVersionReports 'updated-package-version-reports'
       shell: bash
 
