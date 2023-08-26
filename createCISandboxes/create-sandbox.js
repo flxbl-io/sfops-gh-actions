@@ -27,7 +27,7 @@ async function createSandbox(name, domain, sourceForSandbox, devhubUserName, ape
             sandboxDefinition['SourceSandboxName'] = sourceForSandbox;
         }
 
-        if (apexClassId) {
+        if (apexClassId && apexClassId!='null') { // JQ might set null as a string
             sandboxDefinition['apexClassId'] = apexClassId;
         }
 
