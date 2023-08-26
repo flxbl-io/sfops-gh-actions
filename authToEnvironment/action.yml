@@ -44,7 +44,7 @@ runs:
                 # set an alias to prod
                 if [[ "${{ inputs.org-name  }}" == "prod" ]]
                 then
-                  echo "alias=${{ inputs.org-name }}" >> "$GITHUB_OUTPUT"
+                  echo "alias=prod" >> "$GITHUB_OUTPUT"
                 else
                   echo "alias=${{ inputs.environment }}" >> "$GITHUB_OUTPUT"
                 fi
