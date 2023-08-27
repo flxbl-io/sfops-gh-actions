@@ -21,6 +21,9 @@ outputs:
   alias:
     description: 'Name of the sandbox'
     value: ${{ steps.handle-auth.outputs.alias }}
+  devhub_username:
+    description: 'Devhub username'
+    value: ${{ steps.handle-auth.outputs.devhub_username }}
 
 
 runs:

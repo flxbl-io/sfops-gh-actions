@@ -40,6 +40,7 @@ runs:
           sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
 
+
     - id: createSandbox
       run: |
         # Fetch username
@@ -82,17 +83,17 @@ runs:
 
         sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
 
-        # Append sandbox name to list of users
-        IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
-        for index in "${!usersToBeActivated[@]}"
-        do
-          usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
-        done
-        usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
+        if [ -n "${{ inputs.usersToBeActivated }}" ]; then
+          IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
+          for index in "${!usersToBeActivated[@]}"
+          do
+            usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
+          done
+          usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
 
-        node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name   
+          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name
+        fi
 
-        
         node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }} $sandbox_name   
        
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
