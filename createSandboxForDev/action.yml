@@ -92,6 +92,9 @@ runs:
           usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
 
           node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name
+        else
+          # decativate all users excpet the initiating user
+          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name
         fi
 
         node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }} $sandbox_name   
