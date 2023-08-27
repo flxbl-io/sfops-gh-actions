@@ -61,12 +61,12 @@ runs:
     - run: |
           # Compute all envs
           git config --global --add safe.directory $GITHUB_WORKSPACE
+          
           export GH_TOKEN=${{inputs.gh_token}}
-
-
-          envsAsJSONArray=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -c '[.environments[].name]')
-          allEnvs=$(echo $envsAsJSONArray | tr -d '[] ' | sed "s/'//g")
-
-
+          
+          
+          allEnvs=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -r '.environments[] | .name' | paste -sd ",")
+          
+          
           $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} $allEnvs  testresults apextestResults 'updated test results of ${{inputs.alias}}'
       shell: bash

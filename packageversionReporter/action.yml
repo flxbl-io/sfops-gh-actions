@@ -36,9 +36,8 @@ runs:
           sfp artifacts:query -u ${{inputs.alias}} --json > packageVersionReports/${{inputs.env-name}}.json
 
           # Compute all envs
-          envsAsJSONArray=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -c '[.environments[].name]')
-          allEnvs=$(echo $envsAsJSONArray | tr -d '[] ' | sed "s/'//g")
-
+          allEnvs=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -r '.environments[] | .name' | paste -sd ",")
+          
           
           $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH $allEnvs
           $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} packageVersionReports packageVersionReports 'updated-package-version-reports'
