@@ -52,5 +52,6 @@ runs:
             node  $GITHUB_ACTION_PATH/changelogToHTML.js releasechangelog.json ${{inputs.workitem-url}} ${{inputs.source-repo-url}} $domain
             cp changelog-${domain}.html changelogHTML
           done
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} changelogHTML ${{inputs.target-dir}} "updated changelog for domains ${{inputs.domains}}"
+
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllReleaseNames.outputs.releaseNames}} changelogHTML ${{inputs.target-dir}} "updated changelog for domains ${{inputs.domains}}"
       shell: bash
