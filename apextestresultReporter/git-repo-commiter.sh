@@ -1,9 +1,10 @@
 #!/bin/bash
 
 github_repo_url=$1
-dir_to_copy=$2
-target_dir=$3
-commit_message=$4
+allEnvs=$2
+dir_to_copy=$3
+target_dir=$4
+commit_message=$5
 retries=3
 
 # Create a temporary directory
@@ -20,6 +21,15 @@ else
     echo "Error occurred while cloning the repo."
     exit 1
 fi
+
+
+# Convert allEnvs to a JSON array
+json_array="[$(echo "$allEnvs" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+# Update orgs.json in _data folder
+orgs_json_path="$temp_dir/_data/orgs.json"
+echo $json_array > $orgs_json_path
+git add $orgs_json_path
+
 
 # Copy the provided directory to the cloned repository
 mkdir -p $temp_dir/$target_dir
