@@ -18,34 +18,40 @@ runs:
   using: "composite"
   steps:
     - run: |
-        echo "Fetching installed artifacts..."
-        artifacts_output=$(sfp artifacts:query -u ${{ inputs.target-org }} --json)
-        echo "Artifacts installed in the org is being processed."
+        # Fetching installed artifacts
+        artifacts_output=$(sfp artifacts:query -u ${{ inputs.target-org }} --json || true)
 
+        # Initialize install_package to true by default
         install_package=true
-        echo "Checking if the package is already installed..."
-        for row in $(echo "${artifacts_output}" | jq -r '.result[] | @base64'); do
-          _jq() {
-            echo ${row} | base64 --decode | jq -r ${1}
-          }
 
-          subscriberVersion=$(_jq '.subscriberVersion')
+        # Check if artifacts_output is JSON-compatible
+        if echo "$artifacts_output" | jq empty > /dev/null 2>&1; then
+          echo "Artifacts installed in the org are being processed."
 
-          packageVersion=${{ inputs.package }}
+          # Check if the package is already installed
+          for row in $(echo "${artifacts_output}" | jq -r '.result[] | @base64'); do
+            _jq() {
+              echo ${row} | base64 --decode | jq -r ${1}
+            }
+            
+            subscriberVersion=$(_jq '.subscriberVersion')
+            packageVersion=${{ inputs.package }}
+            
+            if [[ ${#packageVersion} -eq 15 && "$packageVersion" == "${subscriberVersion:0:15}" && ${{ inputs.force-install }} == "false" ]]; then
+              echo "Package already installed. Skipping installation..."
+              install_package=false
+              break
+            elif [[ "$packageVersion" == "${subscriberVersion}" && ${{ inputs.force-install }} == "false" ]]; then
+              echo "Package already installed. Skipping installation..."
+              install_package=false
+              break
+            fi
+          done
+        else
+          echo "Output is not JSON-compatible or empty. Proceeding with package installation."
+        fi
 
-         if [[  ${#packageVersion} -eq 15 && "$packageVersion" == "${subscriberVersion:0:15}" && ${{ inputs.force-install }} == "false" ]]; then
-            echo "Package already installed. Skipping installation..."
-            install_package=false
-            break
-          elif [[ "$packageVersion" == "${subscriberVersion}" && ${{ inputs.force-install }} == "false" ]]; then
-            echo "Package already installed. Skipping installation..."
-            install_package=false
-            break
-          fi
-        
-        done
-        
-
+        # Installation logic
         if $install_package ; then
           echo "Installing package..."
           sf package install -o ${{ inputs.target-org }} -p ${{ inputs.package }} --apex-compile=package --no-prompt --wait=300 ${INSTALLATION_KEY:+-k ${{ inputs.installation-key }}}
