@@ -33,7 +33,7 @@ runs:
       id: getAllEnvs
       uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
       with:
-          gh_token: ${{ secrets.gh-token}}
+          gh_token: ${{ inputs.gh-token}}
 
     
     - run: |
