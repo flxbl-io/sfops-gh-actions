@@ -54,7 +54,7 @@ jobs:
       - name: Lock enviroment 
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         with:
-          repo-token: ${{ secrets.GHA_TOKEN }}
+          repo-token: ${{ secrets.gh-token }}
           branch: ${{ inputs.environment }}-mutex
 
       - name:  'Authenticate Dev Hub'
