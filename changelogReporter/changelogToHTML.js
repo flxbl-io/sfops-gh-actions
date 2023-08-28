@@ -404,8 +404,8 @@ async function generateHTML() {
           <body>
             ${buildNavigation(groupedReleases)}
             ${buildContent(latestReleases,changelogData, workItemBaseURL, gitHubRepoURL)}
-            ${buildLatestReleaseContent(latestReleases)}
-            ${buildReleaseChangesContent(latestReleases, changelogData, workItemBaseURL, gitHubRepoURL)}
+            // ${buildLatestReleaseContent(latestReleases)}
+            // ${buildReleaseChangesContent(latestReleases, changelogData, workItemBaseURL, gitHubRepoURL)}
          
           </body>
         </html>`;
