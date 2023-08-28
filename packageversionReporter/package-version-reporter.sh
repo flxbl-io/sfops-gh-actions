@@ -45,7 +45,7 @@ node $script_path/dist/index.js $temp_dir/packageVersionReports  $all_envs
 cd $temp_dir
 
 # Convert allEnvs to a JSON array
-json_array="[$(echo "$allEnvs" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+json_array="[$(echo "$all_envs" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
 # Update orgs.json in _data folder
 orgs_json_path="$temp_dir/_data/orgs.json"
 echo $json_array > $orgs_json_path
