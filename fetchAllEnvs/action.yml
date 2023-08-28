@@ -9,8 +9,11 @@ inputs:
     required: false    
 outputs:
    allEnvs:
-    description: 'The impacted release defns'
+    description: 'Required environments as comma seperated string'
     value: ${{ steps.fetchAllEnvs.outputs.envs }}
+   allEnvsAsJSON:
+    description: 'Required environments as JSON'
+    value: ${{ steps.fetchAllEnvs.outputs.envsAsJSONOutput }}
 
 
 runs:
@@ -35,6 +38,20 @@ runs:
           
           # Fetch All envs and convert to lower case and comma seperated  
           envs=$($GITHUB_ACTION_PATH/fetchAllEnvs.sh ${{github.repository}} ${{inputs.filter}} )
+
+          IFS=',' read -ra json_array <<< "$envs"
+
+          json_output="["
+          for i in "${!json_array[@]}"; do
+            if [ "$i" -gt 0 ]; then
+              json_output+=","
+            fi
+            json_output+="\"${json_array[$i]}\""
+          done
+          json_output+="]"
+
           echo "envs=\"$envs\"" >> "GITHUB_OUTPUT"
+          echo "envsAsJSONOutput=\"$json_output\"" >> "GITHUB_OUTPUT"
+
       shell: bash
       id: fetchAllEnvs
