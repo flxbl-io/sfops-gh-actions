@@ -3,12 +3,11 @@ if [[ -z "$2" ]]; then
   envs=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments | jq -r '.environments[] | .name' | tr '[:upper:]' '[:lower:]' | paste -sd ",")
 else
 
-    filter_type=$(echo "$2" | cut -d':' -f1)
+    filter_type=$(echo "$2" | cut -d':' -f1 | tr '[:lower:]' '[:upper:]')
     filter_value=$(echo "$2" | cut -d':' -f2 | tr '[:upper:]' '[:lower:]')
 
-
     for env in $(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments | jq -r '.environments[] | .name'); do
-    type_value=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments/$env/variables | jq -r '.variables[] | select(.name="'$filter_type'")|.value' )
+    type_value=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments/$env/variables | jq -r --arg filter "$filter_type" '.variables[] | select(.name==$filter) | .value')
     type_value=$(echo "$type_value" | tr '[:upper:]' '[:lower:]')
     if [[ "$type_value" == "$filter_value" || -z "$2" ]]; then
         envs+=$(echo "$env" | tr '[:upper:]' '[:lower:]')
