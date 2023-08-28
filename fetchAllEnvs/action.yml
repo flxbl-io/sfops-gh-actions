@@ -4,7 +4,7 @@ inputs:
   gh_token:  
     description: 'github token to fetch details from the repo'
     required: true
-  fillter:  
+  filter:  
     description: 'filter environments by  type of envs'
     required: false    
 outputs:
