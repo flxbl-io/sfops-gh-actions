@@ -57,24 +57,20 @@ runs:
 
               handle_sandbox_url() {
                 echo "$1" > ./authfile
-                sfdx auth:sfdxurl:store -f ./authfile -a "$2"
-                echo "alias=$2" >> "$GITHUB_OUTPUT"
+                alias_lower=$(echo "$2" | tr '[:upper:]' '[:lower:]')
+                sfdx auth:sfdxurl:store -f ./authfile -a "$alias_lower"
+                echo "alias=$alias_lower" >> "$GITHUB_OUTPUT"
               }
 
               handle_no_auth_url() {
+                alias_lower=$(echo "$2" | tr '[:upper:]' '[:lower:]')
                 echo "No Auth URL found for $1, Attempting to login assuming the devhub user created environment"
                 sf org sandbox resume -n "$1" -o prod
                 SBX_NAME=$(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
+                SBX_NAME=$(echo "$SBX_NAME" | tr '[:upper:]' '[:lower:]')
                 sf alias set "$2"="$DEVHUB_USERNAME.$SBX_NAME"
-                echo "alias=$2" >> "$GITHUB_OUTPUT"
+                echo "alias=$alias_lower" >> "$GITHUB_OUTPUT"
               }
-
-              # No matter what, authenticate devhub
-              echo "${{ inputs.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
-              sfdx auth:sfdxurl:store -f ./authfile -a prod
-              devhubInfo=$(sf org display -o prod --json)
-              DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
-              echo "devhub_username=$DEVHUB_USERNAME" >> "$GITHUB_OUTPUT"
 
               # Enable case-insensitive matching
               shopt -s nocasematch
