@@ -16,7 +16,7 @@ runs:
   steps:
     - run: |
          releaseNamesAsJSONArray=$(node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.pathToReleaseConfigs}})
-         releaseNames=$(echo $releaseNamesAsJSONArray | tr -d '[] ' | sed "s/'//g"))
+         releaseNames=$(echo $releaseNamesAsJSONArray | tr -d '[] ' | sed "s/'//g")
          echo "releaseNames=$releaseNames" >> $GITHUB_OUTPUT
       shell: bash
       id: getAllReleaseNames
