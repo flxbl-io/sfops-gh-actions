@@ -92,5 +92,5 @@ jobs:
          alias: ${{ inputs.environment-profile }}
          env-name: ${{ inputs.environment }}
          target-repo: flxbl-io/sfops-dashboard
-         gh_token: ${{ secrets.GHA_TOKEN }}
+         gh_token: ${{ secrets.gh-token }}
  
