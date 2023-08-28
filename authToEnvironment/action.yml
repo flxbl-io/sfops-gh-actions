@@ -63,12 +63,15 @@ runs:
               }
 
               handle_no_auth_url() {
+                devhubInfo=$(sf org display -o prod --json)
+                DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+
                 alias_lower=$(echo "$2" | tr '[:upper:]' '[:lower:]')
                 echo "No Auth URL found for $1, Attempting to login assuming the devhub user created environment"
                 sf org sandbox resume -n "$1" -o prod
                 SBX_NAME=$(echo "$1" | sed -e 's/^ *//' -e 's/ *$//')
                 SBX_NAME=$(echo "$SBX_NAME" | tr '[:upper:]' '[:lower:]')
-                sf alias set "$2"="$DEVHUB_USERNAME.$SBX_NAME"
+                sf alias set "$alias_lower"="$DEVHUB_USERNAME.$SBX_NAME"
                 echo "alias=$alias_lower" >> "$GITHUB_OUTPUT"
               }
 
