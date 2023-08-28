@@ -58,15 +58,17 @@ runs:
             
       shell: bash
 
+    - name: 'Fetch all Envs'
+      id: getAllEnvs
+      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+      with:
+          gh_token: ${{ secrets.gh-token}}
+
     - run: |
           # Compute all envs
           git config --global --add safe.directory $GITHUB_WORKSPACE
           
           export GH_TOKEN=${{inputs.gh_token}}
-          
-          
-          allEnvs=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -r '.environments[] | .name' | paste -sd ",")
-          
-          
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} $allEnvs  testresults apextestResults 'updated test results of ${{inputs.alias}}'
+             
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.envs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
       shell: bash

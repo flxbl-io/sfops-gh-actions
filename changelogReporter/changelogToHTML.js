@@ -371,7 +371,7 @@ function buildContent(latestReleases,changelogData, workItemBaseURL, gitHubRepoU
 
 
 function writeHTMLToFile(html) {
-    fs.writeFileSync(`changelog-${domain}.html`, html);
+    fs.writeFileSync(`changelog-${domain.toLocaleLowerCase()}.html`, html);
     console.log('The file has been saved!');
 }
 

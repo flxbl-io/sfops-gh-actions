@@ -6898,7 +6898,7 @@ options: {
 </script>
 </html>`;
 
-    fs.writeFileSync(`testresults/${alias}.html`, htmlContent);
+    fs.writeFileSync(`testresults/${alias.toLocaleLowerCase()}.html`, htmlContent);
 
 
   });

@@ -1,0 +1,40 @@
+name: 'Fetch all environments'
+description: 'Fetch all release names given a path to the directory that contains release defns'
+inputs:
+  gh_token:  
+    description: 'github token to fetch details from the repo'
+    required: true
+  fillter:  
+    description: 'filter environments by  type of envs'
+    required: false    
+outputs:
+   allEnvs:
+    description: 'The impacted release defns'
+    value: ${{ steps.fetchAllEnvs.outputs.envs }}
+
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+
+
+    - run: |
+          # Compute all envs
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          
+          export GH_TOKEN=${{inputs.gh_token}}
+          
+          # Fetch All envs and convert to lower case and comma seperated  
+          envs=$($GITHUB_ACTION_PATH/fetchAllEnvs.sh ${{github.repository}} ${{inputs.filter}} )
+          echo "envs=\"$envs\"" >> "GITHUB_OUTPUT"
+      shell: bash
+      id: fetchAllEnvs

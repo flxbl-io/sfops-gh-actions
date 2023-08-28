@@ -178,6 +178,13 @@ jobs:
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
             
+      - name: 'Fetch all Envs that match release type'
+        id: getAllEnvs
+        uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+        with:
+          gh_token: ${{ secrets.gh-token}}
+          filter: "type:release"
+
 
       - name: 'Report pipeline-view'
         uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main  
@@ -190,7 +197,7 @@ jobs:
            target-repo: ${{ inputs.target-repo }}
            gh_token: ${{ secrets.gh-token}}
            source-repo-url: ${{ inputs.source-repo-url}}
-           environments: "staging,prod"
+           environments: ${{ steps.getAllEnvs.outputs.envs }}
            workitem-url: ${{ inputs.workitem-url}}
   
   

@@ -28,18 +28,20 @@ runs:
           && sudo apt update \
           && sudo apt install gh -y                
       shell: bash
+
+    - name: 'Fetch all Envs'
+      id: getAllEnvs
+      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+      with:
+          gh_token: ${{ secrets.gh-token}}
+
     
     - run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
           export GH_TOKEN=${{inputs.gh_token}}
           mkdir packageVersionReports
           sfp artifacts:query -u ${{inputs.alias}} --json > packageVersionReports/${{inputs.env-name}}.json
-
-          # Compute all envs
-          allEnvs=$(gh api -H "Accept: application/vnd.github+json" /repos/${{github.repository}}/environments | jq -r '.environments[] | .name' | paste -sd ",")
-          
-          
-          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH $allEnvs
+          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH ${{steps.getAllEnvs.outputs.envs}}
           $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} packageVersionReports packageVersionReports 'updated-package-version-reports'
       shell: bash
 
