@@ -38,7 +38,7 @@ fi
 cd $temp_dir
 
 # Convert all release name to a JSON array
-json_array="[$(echo "{{steps.getAllReleaseNames.outputs.releaseNames}}" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+json_array="[$(echo "$allDomains" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
 # Update domains.json in _data folder
 domains_json_path="$temp_dir/_data/domains.json"
 echo $json_array > $domains_json_path

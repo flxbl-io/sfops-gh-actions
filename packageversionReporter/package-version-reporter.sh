@@ -36,6 +36,14 @@ else
 fi
 
 
+
+
+
+
+node $script_path/dist/index.js $temp_dir/packageVersionReports  $all_envs
+
+cd $temp_dir
+
 # Convert allEnvs to a JSON array
 json_array="[$(echo "$allEnvs" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
 # Update orgs.json in _data folder
@@ -43,9 +51,6 @@ orgs_json_path="$temp_dir/_data/orgs.json"
 echo $json_array > $orgs_json_path
 git add $orgs_json_path
 
-
-
-node $script_path/dist/index.js $temp_dir/packageVersionReports  $all_envs
 
 # Navigate to the cloned repository
 cd  $temp_dir/packageVersionReports
