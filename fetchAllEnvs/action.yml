@@ -50,8 +50,8 @@ runs:
           done
           json_output+="]"
 
-          echo "envs=\"$envs\"" >> $GITHUB_OUTPUT
-          echo "envsAsJSONOutput=\"$json_output\"" >> $GITHUB_OUTPUT
+          echo "envs=$envs" >> $GITHUB_OUTPUT
+          echo "envsAsJSONOutput=$json_output" >> $GITHUB_OUTPUT
 
       shell: bash
       id: fetchAllEnvs
