@@ -1,6 +1,7 @@
 if [[ -z "$2" ]]; then
   echo >&2 "Fetch All Envs as filter was not provided"
   envs=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments | jq -r '.environments[] | .name' | tr '[:upper:]' '[:lower:]' | paste -sd ",")
+  echo >&2 "Fetch All Envs without filter $2 $envs"
 else
 
     filter_type=$(echo "$2" | cut -d':' -f1 | tr '[:lower:]' '[:upper:]')
@@ -14,9 +15,11 @@ else
         envs+=","
     fi
     done
-    echo >&2 "Fetch All Envs that match $2"
+
 
     envs=$(echo "$envs" | sed 's/,$//')  # Remove trailing comma
+
+    echo >&2 "Fetch All Envs that match $2 $envs"
  
 fi
 
