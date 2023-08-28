@@ -26,7 +26,9 @@ function getImpactedPackagesFromSfdxProjectJson(baseSha, headSha) {
     const impactedPackages = new Set();
 
     headContent.packageDirectories.forEach((headPackage, index) => {
-        const basePackage = baseContent?.packageDirectories[index];
+        let basePackage = null;
+        if(baseContent?.packageDirectories)
+            basePackage = baseContent?.packageDirectories[index];
         if (!basePackage || JSON.stringify(headPackage) !== JSON.stringify(basePackage)) {
             console.error(`Change detected in package: ${headPackage.package}`);
             impactedPackages.add(headPackage.package);
