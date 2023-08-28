@@ -58,14 +58,23 @@ runs:
             
       shell: bash
 
+
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action 
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          export GH_TOKEN=${{inputs.gh_token}}
+          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+
+
     - name: 'Fetch all Envs'
       id: getAllEnvs
       uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
       with:
-          gh_token: ${{ inputs.gh-token}}
+          gh_token: ${{ env.GH_TOKEN }}
 
     - run: |
-          # Compute all envs
           git config --global --add safe.directory $GITHUB_WORKSPACE
           
           export GH_TOKEN=${{inputs.gh_token}}
