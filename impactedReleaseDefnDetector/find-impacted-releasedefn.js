@@ -11,14 +11,17 @@ function getGitDiffOutput(baseSha, headSha) {
 }
 
 function getFileContentAtCommit(sha, filePath) {
+  try {
     return execSync(`git show ${sha}:${filePath}`).toString();
+  } catch (e) {
+    return null; // File doesn't exist in this commit
+  }
 }
-
 
 function getImpactedPackagesFromSfdxProjectJson(baseSha, headSha) {
     const sfdxProjectJsonPath = 'sfdx-project.json';
-    const baseContent = JSON.parse(getFileContentAtCommit(baseSha, sfdxProjectJsonPath));
-    const headContent = JSON.parse(getFileContentAtCommit(headSha, sfdxProjectJsonPath));
+    const baseContent = JSON.parse(getFileContentAtCommit(baseSha, sfdxProjectJsonPath) || '{}');
+    const headContent = JSON.parse(getFileContentAtCommit(headSha, sfdxProjectJsonPath) || '{}');
 
     const impactedPackages = new Set();
 
