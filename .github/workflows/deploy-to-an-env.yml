@@ -15,6 +15,9 @@ on:
       additional-plugins:
          description: 'Additional plugins to be installed'
          type: 'string'
+      dashboard-repo:
+         description: 'The repo to which the package version report is to be committed'
+         type: 'string'
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
@@ -91,6 +94,6 @@ jobs:
         with:
          alias: ${{ inputs.environment-profile }}
          env-name: ${{ inputs.environment }}
-         target-repo: flxbl-io/sfops-dashboard
+         target-repo: flxbl-io/${{ inputs.dashboard-repo }}
          gh_token: ${{ secrets.gh-token }}
  
