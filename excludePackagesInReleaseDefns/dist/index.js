@@ -4174,7 +4174,6 @@ const parsedYaml = yaml.load(yamlContent);
 
 packagesToComment.forEach((packageName) => {
   if (parsedYaml.artifacts[packageName] !== undefined) {
-    parsedYaml.artifacts[`# ${packageName}`] = parsedYaml.artifacts[packageName];
     delete parsedYaml.artifacts[packageName];
     console.log(`Package ${packageName} commented out in the YAML.`);
   } else {
@@ -4187,6 +4186,9 @@ const newYamlContent = yaml.dump(parsedYaml, {
   noRefs: true
 });
 fs.writeFileSync(yamlPath, newYamlContent);
+
+console.log("Updated YAML content:\n", newYamlContent);
+
 
 })();
 
