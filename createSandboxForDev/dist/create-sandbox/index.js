@@ -89,8 +89,9 @@ let sfdxCommand;
 if(!process.argv[4])
 {
  throw new Error('No Source Sandbox  provided');
+ 
 }
-else if(process.argv[4] == 'production') {
+else if(process.argv[4].toLocaleLowerCase() == 'production' || (process.argv[4].toLocaleLowerCase() == 'prod')) {
     sandboxDefinition['licenseType'] = 'DEVELOPER';
 }
 else {
