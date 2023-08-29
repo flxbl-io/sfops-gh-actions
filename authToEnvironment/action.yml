@@ -82,7 +82,7 @@ runs:
               if [[ "${{ inputs.org-name }}" =~ "prod" || "${{ inputs.org-name }}" =~ "production" || "${{ inputs.environment }}" =~ "prod" || "${{ inputs.environment }}" =~ "production" ]]; then
                 handle_prod_or_production "${{ inputs.org-name }}"
               elif [[ "${{ inputs.SB_SFDX_AUTH_URL }}" != '' ]]; then
-                handle_sandbox_url "${{ inputs.SB_SFDX_AUTH_URL }}" "${{ inputs.environment }}"
+                handle_sandbox_url "${{ inputs.SB_SFDX_AUTH_URL }}" "${{ inputs.environment-profile }}"
               else
                 handle_no_auth_url "${{ inputs.org-name }}" "${{ inputs.environment-profile }}"
               fi
