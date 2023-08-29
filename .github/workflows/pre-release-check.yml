@@ -70,12 +70,19 @@ jobs:
             node-version: "18" 
             registry-url: 'https://npm.pkg.github.com'
 
+      - name: Fetch Environment Variables
+        id: fetch-env-vars
+        uses: raven-actions/environment-variables@v1
+        with:
+          github-token: ${{ secrets.gh-token }}
+          environment:  ${{ inputs.environment }}
+
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ steps.fetch-env-vars.outputs.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
           org-name: ${{ inputs.sbxname }}
           environment-profile:  ${{ inputs.environment }}
