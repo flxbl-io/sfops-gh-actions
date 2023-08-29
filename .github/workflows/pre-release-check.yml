@@ -76,6 +76,7 @@ jobs:
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ inputs.environment }}
           org-name: ${{ inputs.sbxname }}
           environment-profile:  ${{ inputs.environment }}
 
