@@ -67,13 +67,13 @@ async function createUser(profileId, email) {
 
 async function getUserIdOfDefaultUser() {
   
-   let queryOputput=execSync(`sf data query -r csv  -q "SELECT Id, Username, Email FROM User WHERE Username='${targetorg}'" -w 300 -o ${targetOrg} --json`);
+   let queryOputput=execSync(`sf data query -r csv  -q "SELECT Id, Username, Email FROM User WHERE Username='${targetOrg}'" -w 300 -o ${targetOrg} --json`);
    let userId=JSON.parse(queryOputput.toString()).result.records[0].Id;
    return userId;
 }
 
 function updateEmailOfDefaultUser(userId,emailId) {
-  execSync(`sf data update record --sobject User --record-id ${userId} --values "Email=${emailId}" -o ${targetorg}`);
+  execSync(`sf data update record --sobject User --record-id ${userId} --values "Email=${emailId}" -o ${targetOrg}`);
 }
 
 
