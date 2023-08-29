@@ -6,6 +6,7 @@ const pipeline = util.promisify(require('stream').pipeline);
 const exec = util.promisify(require('child_process').exec);
 const { faker } = require('@faker-js/faker');
 const path = require('path');
+const { execSync } = require('child_process');
 
 
 
@@ -15,7 +16,7 @@ const targetOrg = process.argv[4];
 
 async function generateCsvFiles() {
   const queries = [
-    `sfdx data query -r csv  -q "Select Id,UserLicenseId,Name From Profile" -w 300 -o ${targetOrg} > Profile.csv`,
+    `sf data query -r csv  -q "Select Id,UserLicenseId,Name From Profile" -w 300 -o ${targetOrg} > Profile.csv`,
   ];
 
   for (const query of queries) {
@@ -41,19 +42,19 @@ async function readCsv(file) {
 }
 
 
-async function createUser(profileId,email) {
+async function createUser(profileId, email) {
   const firstName = faker.person.firstName().replace(/\s/g, '_');;
   const lastName = faker.hacker.noun().replace(/\s/g, '_');
-  const alias = faker.hacker.noun().replace(/\s/g, '_').slice(0,8);
-  const userName = faker.internet.exampleEmail({ firstName: firstName, lastName:lastName }) +'.'+ targetOrg;
+  const alias = faker.hacker.noun().replace(/\s/g, '_').slice(0, 8);
+  const userName = faker.internet.exampleEmail({ firstName: firstName, lastName: lastName }) + '.' + targetOrg;
   const values = `Alias="${alias}" FirstName="${firstName}" UserName="${userName}" LastName="${lastName}" Email=${email} LocaleSidKey="en_AU" LanguageLocaleKey="en_US" EmailEncodingKey="ISO-8859-1" TimeZoneSidKey="Australia/Melbourne" ProfileId="${profileId}" IsActive="true"`;
 
-  const cmd = `sfdx data:record:create --json -s User  -v "${values}" -o ${targetOrg}`;
+  const cmd = `sf data record create --json -s User  -v "${values}" -o ${targetOrg}`;
 
   try {
     const result = await exec(cmd);
     console.log(`Created User record ${userName} successfully `);
-    
+
     const outputFilePath = path.resolve('username.output');
     fs.writeFileSync(outputFilePath, userName);
 
@@ -62,6 +63,17 @@ async function createUser(profileId,email) {
     console.log(`Failed to create User record ${userName} due to error: ${err}`);
     throw err;
   }
+}
+
+async function getUserIdOfDefaultUser() {
+  
+   let queryOputput=execSync(`sf data query -r csv  -q "SELECT Id, Username, Email FROM User WHERE Username='${targetorg}'" -w 300 -o ${targetOrg} --json`);
+   let userId=JSON.parse(queryOputput.toString()).result.records[0].Id;
+   return userId;
+}
+
+function updateEmailOfDefaultUser(userId,emailId) {
+  execSync(`sf data update record --sobject User --record-id ${userId} --values "Email=${emailId}" -o ${targetorg}`);
 }
 
 
@@ -76,10 +88,16 @@ async function main() {
   }
   let profileId = profile.Id;
 
+  let userId=null;
   // specify the count of users to be created
-  let userId = await createUser(profileId, email); 
-  console.log(`Created User record ${userId} successfully `);
-
+  try {
+    userId = await createUser(profileId, email);
+    console.log(`Created User record ${userId} successfully `);
+  } catch (error) {
+    console.log(`Proceeding to reset password and email for default user account`);
+    userId = await getUserIdOfDefaultUser();
+    updateEmailOfDefaultUser(userId,email);
+  }
 
   let anoymousApex = `
         // get the user
