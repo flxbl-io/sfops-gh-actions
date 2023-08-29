@@ -394,6 +394,9 @@ async function generateHTML() {
         let styles = fs.readFileSync(path.join(__dirname,'styles.css'));
         let scripts = fs.readFileSync(path.join(__dirname,'scripts.js'));
 
+        // ${buildLatestReleaseContent(latestReleases)}
+        // ${buildReleaseChangesContent(latestReleases, changelogData, workItemBaseURL, gitHubRepoURL)}
+
         let html = `
         <html>
           <head>
@@ -403,10 +406,7 @@ async function generateHTML() {
           </head>
           <body>
             ${buildNavigation(groupedReleases)}
-            ${buildContent(latestReleases,changelogData, workItemBaseURL, gitHubRepoURL)}
-            // ${buildLatestReleaseContent(latestReleases)}
-            // ${buildReleaseChangesContent(latestReleases, changelogData, workItemBaseURL, gitHubRepoURL)}
-         
+            ${buildContent(latestReleases,changelogData, workItemBaseURL, gitHubRepoURL)}         
           </body>
         </html>`;
 
