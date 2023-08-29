@@ -47,8 +47,12 @@ runs:
         id: handle-auth
         shell: bash
         run: |
+              # Handle Auth to org
+
               handle_prod_or_production() {
                 if [[ "$1" == "prod" || "$1" == "production" ]]; then
+                  echo "alias=prod" >> "$GITHUB_OUTPUT"
+                elif [ −z $1 ]; then
                   echo "alias=prod" >> "$GITHUB_OUTPUT"
                 else
                   echo "alias=$1" >> "$GITHUB_OUTPUT"
