@@ -273,7 +273,7 @@ function generateAdhocGithubIssueUrl(releaseName, domain) {
 
 
 function generateGithubIssueUrl(releaseName, domain) {
-    const baseURL = `${gitHubRepoURL}/issues/new?assignees=&labels=ops%2Cops-release-request&projects=&template=request-a-release-staging-prod.yml&title=Ops+-+Release+a+domain+into+staging%2Fprod+${encodeURIComponent(domain)}+${encodeURIComponent(releaseName)}&releasedefn=`;
+    const baseURL = `${gitHubRepoURL}/issues/new?assignees=&labels=ops%2Cops-release-request&projects=&template=request-a-release-release-envs.yml&title=Ops+-+Release+a+domain+into+staging%2Fprod+${encodeURIComponent(domain)}+${encodeURIComponent(releaseName)}&releasedefn=`;
     return baseURL + encodeURIComponent(releaseName) + "&domain=" + encodeURIComponent(domain);
 }
 
