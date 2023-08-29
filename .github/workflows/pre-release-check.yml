@@ -50,6 +50,8 @@ on:
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
+        SB_SFDX_AUTH_URL:
+            description: 'Sandbox Auth URL'
         gh-token:
             description: 'GH Token to commit to the target repo'
             
@@ -73,6 +75,7 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           org-name: ${{ inputs.sbxname }}
           environment-profile:  ${{ inputs.environment }}
 
