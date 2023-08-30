@@ -197,7 +197,7 @@ jobs:
            target-repo: ${{ inputs.target-repo }}
            gh_token: ${{ secrets.gh-token}}
            source-repo-url: ${{ inputs.source-repo-url}}
-           environments: ${{ steps.getAllEnvs.outputs.envs }}
+           environments: ${{ steps.getAllEnvs.outputs.allEnvs }}
            workitem-url: ${{ inputs.workitem-url}}
   
   
