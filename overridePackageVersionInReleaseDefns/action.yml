@@ -10,5 +10,5 @@ runs:
   using: "composite"
   steps:
     - run: |
-        node $GITHUB_ACTION_PATH/dist/index.js  ${{ inputs.changelog }}  ${{ inputs.overridePackageVersion }}
+        node $GITHUB_ACTION_PATH/dist/index.js  ${{ inputs.changelog }}  ${{ inputs.overridePackageVersions }}
       shell: bash
