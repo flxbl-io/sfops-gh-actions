@@ -19,6 +19,9 @@ on:
          description: 'Name of the branch where the release defn is stored in the repo'
          required: true
          type: 'string'
+      releaselogbranch:  
+         description: 'Name of the branch where the release logs are stored in the repo'
+         type: 'string'
       releaseDefn: 
          description: 'The release definition to use'
          required: true
@@ -134,7 +137,7 @@ jobs:
         name: Print Incoming Work Items
         continue-on-error: true
         with:
-          source-branch: ${{inputs.branchname}}
+          source-branch: ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}
           domain: ${{inputs.domain}}
           workitem-url: ${{inputs.workitem-url}}
           environment: ${{steps.handle-auth.outputs.alias}}
@@ -157,9 +160,7 @@ jobs:
             echo "Unable to figure out work items in this release, if you think this is incorrect, contact support! " >> message.md
           fi
 
-          cat message.md
-
-      
+          cat message.md      
 
       - uses: mshick/add-pr-comment@v2
         name: Print contents of  release defn
