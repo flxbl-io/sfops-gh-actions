@@ -126,6 +126,17 @@ jobs:
           org-name: ${{ inputs.org-name }}
           environment-profile:  ${{ inputs.environment-profile }}
 
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.gh-token }}
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: [ "${{ inputs.environment }}", "${{ inputs.domain }}"]
+            })
+
       - name: Fetch Release Defn
         id: fetch-release-defn
         run: |
