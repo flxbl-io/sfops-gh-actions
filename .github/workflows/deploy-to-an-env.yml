@@ -18,16 +18,14 @@ on:
       dashboard-repo:
          description: 'The repo to which the package version report is to be committed'
          type: 'string'
-      DEVHUB_SFDX_AUTH_URL:
-            description: 'Devhub Auth URL'
-      SB_SFDX_AUTH_URL:
-            description: 'Sandbox Auth URL'
       gh-token:
             description: 'GH Token to commit to the target repo'
       datadog-api-key:
             description: 'Datadog api key to report metrics'
       datadog-host:
             description: 'Datadog host to report metrics'
+    secrets: 
+       inherit: true
 
 jobs: 
   deploy-to-org: 
@@ -49,27 +47,27 @@ jobs:
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
           echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}" >> $GITHUB_ENV
 
 
       - name: Lock enviroment 
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         with:
-          repo-token: ${{ secrets.gh-token }}
+          repo-token: ${{ inputs.gh-token }}
           branch: ${{ inputs.environment }}-mutex
 
       - name:  'Authenticate Dev Hub'
         run: |
-          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          echo "${{ inputs.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
-          DEVHUB_SFDX_AUTH_URL: ${{ inputs.DEVHUB_SFDX_AUTH_URL }}
-          SB_SFDX_AUTH_URL: ${{ inputs.SB_SFDX_AUTH_URL }}
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
           org-name: ${{ inputs.org-name }}
           environment-profile:  ${{ inputs.environment-profile }}
