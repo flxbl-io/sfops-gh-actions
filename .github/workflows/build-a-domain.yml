@@ -33,8 +33,6 @@ on:
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
-        SB_SFDX_AUTH_URL:
-            description: 'Sandbox Auth URL'
         gh-token:
             description: 'GH Token to commit to the target repo'
         datadog-api-key:
@@ -60,7 +58,6 @@ jobs:
         with:
           gh_token: ${{ secrets.GHA_TOKEN }}
           filter: "type:test"
-
 
   build:
     name: 'Build packages'
@@ -95,7 +92,6 @@ jobs:
           name: logs
           path: .sfpowerscripts/logs
    
-
   deploy:
      strategy:
       fail-fast: false
@@ -112,7 +108,6 @@ jobs:
        dashboard-repo: ${{ inputs.dashboard-repo }}
      secrets:
       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
       gh-token: ${{ secrets.GHA_TOKEN }}
       datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
       datadog-host: ${{ secrets.DATADOG_HOST }}
@@ -190,6 +185,6 @@ jobs:
          allow-repeats : true
          message: |
           This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
-          The link is available at https:/${{customer.repo_owner}}.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+          The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
 
  
