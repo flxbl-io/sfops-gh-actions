@@ -84,7 +84,7 @@ jobs:
       # Publish artifacts
       - uses: actions/upload-artifact@v3
         with:
-          name: build-artifacts
+          name: build-artifacts-${{inputs.domain}}
           path: artifacts
           if-no-files-found: ignore
 
@@ -113,7 +113,7 @@ jobs:
 
       - uses: actions/download-artifact@v3
         with:
-             name: build-artifacts
+             name: build-artifacts-${{inputs.domain}}
              path: artifacts 
 
 
@@ -186,7 +186,7 @@ jobs:
         id: download_artifacts
         continue-on-error: true
         with:
-            name: build-artifacts
+            name: build-artifacts-${{inputs.domain}}
             path: artifacts 
 
 
