@@ -18,14 +18,16 @@ on:
       dashboard-repo:
          description: 'The repo to which the package version report is to be committed'
          type: 'string'
+    secrets:
+      DEVHUB_SFDX_AUTH_URL:
+          description: 'Devhub Auth URL'
       gh-token:
             description: 'GH Token to commit to the target repo'
       datadog-api-key:
             description: 'Datadog api key to report metrics'
       datadog-host:
             description: 'Datadog host to report metrics'
-    secrets: 
-       inherit: true
+
 
 jobs: 
   deploy-to-org: 
@@ -47,19 +49,19 @@ jobs:
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
           echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
 
 
       - name: Lock enviroment 
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         with:
-          repo-token: ${{ inputs.gh-token }}
+          repo-token: ${{ secrets.gh-token }}
           branch: ${{ inputs.environment }}-mutex
 
       - name:  'Authenticate Dev Hub'
         run: |
-          echo "${{ inputs.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
 
       - name: Authenticate to ${{ inputs.environment }}
@@ -92,5 +94,5 @@ jobs:
          alias: ${{ inputs.environment-profile }}
          env-name: ${{ inputs.environment }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
-         gh_token: ${{ inputs.gh-token }}
+         gh_token: ${{ secrets.gh-token }}
  
