@@ -238,10 +238,10 @@ jobs:
          source-branch: releasedefns
          target-dir: changelog
          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
-         target-repo: flxbl-io/sfops-dashboard
+         target-repo: flxbl-io/${{ inputs.dashboard-repo }}
          gh_token: ${{ secrets.gh_token}}
-         source-repo-url: https://github.com/flxbl-io/sf-core
-         workitem-url: https://flxbl.atlassian.net
+         source-repo-url: https://github.com/${{customer.repo_owner}}/sf-core
+         workitem-url: ${{inputs.workitem-url}}
 
       - uses: mshick/add-pr-comment@v2
         with:
