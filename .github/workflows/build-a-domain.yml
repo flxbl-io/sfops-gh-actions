@@ -95,6 +95,9 @@ jobs:
   deploy-to-org: 
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    needs: 
+      - build
+      - fetch-test-envs
     strategy:
       fail-fast: false
       matrix:
