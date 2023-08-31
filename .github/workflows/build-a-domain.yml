@@ -126,7 +126,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         with:
           repo-token: ${{ secrets.gh-token }}
-          branch: ${{ matrix.environment }}  -mutex
+          branch: ${{ matrix.environment }}-mutex
 
       - name:  'Authenticate Dev Hub'
         run: |
