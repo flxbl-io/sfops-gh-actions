@@ -33,6 +33,8 @@ on:
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
+        SB_SFDX_AUTH_URL:
+            description: 'Sandbox Auth URL'
         gh_token:
             description: 'GH Token to commit to the target repo'
         datadog-api-key:
@@ -133,7 +135,7 @@ jobs:
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
 
-      - name: Authenticate to ${{ inputs.environment }}
+      - name: Authenticate to ${{ matrix.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
@@ -243,6 +245,7 @@ jobs:
       - uses: mshick/add-pr-comment@v2
         with:
          allow-repeats : true
+         repo-token : ${{ secrets.gh_token}}
          message: |
           This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
           The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
@@ -253,11 +256,12 @@ jobs:
       if: always() && ( needs.publish.result == 'failure' || needs.publish.result == 'cancelled'  || needs.publish.result == 'skipped')
       steps:
 
-      - name: Create Comment after failure
-        uses: peter-evans/create-or-update-comment@v3
+      - uses: mshick/add-pr-comment@v2
         with:
-          issue-number: ${{github.event.issue.number}}
-          token: ${{ secrets.GHA_TOKEN }}
-          body: |
+         allow-repeats : true
+         repo-token : ${{ secrets.gh_token}}
+         message: |
             Apologies, it seems we ran into an issue, This would need your manual attention please check the job run
             at the link https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
+     
+
