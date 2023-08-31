@@ -106,12 +106,11 @@ jobs:
        environment-profile: ${{ matrix.environment }}
        org-name: ${{ matrix.environment }}
        dashboard-repo: ${{ inputs.dashboard-repo }}
-     secrets:
-      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-      gh-token: ${{ secrets.gh_token}}
-      datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
-      datadog-host: ${{ secrets.DATADOG_HOST }}
- 
+       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+       gh-token: ${{ secrets.gh_token}}
+       datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+       datadog-host: ${{ secrets.DATADOG_HOST }}
+  
   publish:
     name: 'publish'
     runs-on: ubuntu-latest

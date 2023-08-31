@@ -18,16 +18,15 @@ on:
       dashboard-repo:
          description: 'The repo to which the package version report is to be committed'
          type: 'string'
-    secrets: 
-        DEVHUB_SFDX_AUTH_URL:
+      DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
-        SB_SFDX_AUTH_URL:
+      SB_SFDX_AUTH_URL:
             description: 'Sandbox Auth URL'
-        gh-token:
+      gh-token:
             description: 'GH Token to commit to the target repo'
-        datadog-api-key:
+      datadog-api-key:
             description: 'Datadog api key to report metrics'
-        datadog-host:
+      datadog-host:
             description: 'Datadog host to report metrics'
 
 jobs: 
@@ -69,8 +68,8 @@ jobs:
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
-          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          DEVHUB_SFDX_AUTH_URL: ${{ inputs.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ inputs.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
           org-name: ${{ inputs.org-name }}
           environment-profile:  ${{ inputs.environment-profile }}
@@ -95,5 +94,5 @@ jobs:
          alias: ${{ inputs.environment-profile }}
          env-name: ${{ inputs.environment }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
-         gh_token: ${{ secrets.gh-token }}
+         gh_token: ${{ inputs.gh-token }}
  
