@@ -92,99 +92,99 @@ jobs:
           name: logs
           path: .sfpowerscripts/logs
    
-  deploy:
-     strategy:
-      fail-fast: false
-      matrix:
-        environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
-     needs: 
-       - build
-       - fetch-test-envs
-     uses:  flxbl-io/sfops-gh-actions/.github/workflows/deploy-to-an-env.yml@main
-     with:
-       environment: ${{ matrix.environment }}
-       environment-profile: ${{ matrix.environment }}
-       org-name: ${{ matrix.environment }}
-       dashboard-repo: ${{ inputs.dashboard-repo }}
-     secrets:
-      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-      gh-token: ${{ secrets.GHA_TOKEN }}
-      datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
-      datadog-host: ${{ secrets.DATADOG_HOST }}
+  # deploy:
+  #    strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
+  #    needs: 
+  #      - build
+  #      - fetch-test-envs
+  #    uses:  flxbl-io/sfops-gh-actions/.github/workflows/deploy-to-an-env.yml@main
+  #    with:
+  #      environment: ${{ matrix.environment }}
+  #      environment-profile: ${{ matrix.environment }}
+  #      org-name: ${{ matrix.environment }}
+  #      dashboard-repo: ${{ inputs.dashboard-repo }}
+  #    secrets:
+  #     DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+  #     gh-token: ${{ secrets.GHA_TOKEN }}
+  #     datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
+  #     datadog-host: ${{ secrets.DATADOG_HOST }}
  
-  publish:
-    name: 'publish'
-    runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
-    needs: 
-      - deploy
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GHA_TOKEN }}
+  # publish:
+  #   name: 'publish'
+  #   runs-on: ubuntu-latest
+  #   container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+  #   needs: 
+  #     - deploy
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+  #         token: ${{ secrets.GHA_TOKEN }}
 
 
-      - uses: actions/download-artifact@v3
-        id: download_artifacts
-        continue-on-error: true
-        with:
-            name: build-artifacts
-            path: artifacts 
+  #     - uses: actions/download-artifact@v3
+  #       id: download_artifacts
+  #       continue-on-error: true
+  #       with:
+  #           name: build-artifacts
+  #           path: artifacts 
 
 
-      # dont proceed if download artifacts failed, just report success
-      - run: exit 0
-        if: steps.download_artifacts.outcome == 'failure'
+  #     # dont proceed if download artifacts failed, just report success
+  #     - run: exit 0
+  #       if: steps.download_artifacts.outcome == 'failure'
 
-      # Authenticate to npm
-      - uses: actions/setup-node@v3
-        with:
-         registry-url: 'https://npm.pkg.github.com'
+  #     # Authenticate to npm
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #        registry-url: 'https://npm.pkg.github.com'
 
          
-      - name: Compute Release Name
-        run: |
-          echo "RELEASE_NAME=$(echo ${{ inputs.releasename }}-$(date +'%d-%m')-${{github.run_id}})" >> $GITHUB_ENV
-          allDomains=$(echo '${{ toJson(inputs.allReleaseNames) }}' | jq -r 'unique | join(",")')
-          echo "allDomains=$allDomains" >> $GITHUB_ENV
+  #     - name: Compute Release Name
+  #       run: |
+  #         echo "RELEASE_NAME=$(echo ${{ inputs.releasename }}-$(date +'%d-%m')-${{github.run_id}})" >> $GITHUB_ENV
+  #         allDomains=$(echo '${{ inputs.allReleaseNames }}' | jq -r 'unique | join(",")')
+  #         echo "allDomains=$allDomains" >> $GITHUB_ENV
 
 
-      - name: Publish
-        run: |
-          sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
-        env:
-         NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
-         GH_TOKEN: ${{ secrets.GHA_TOKEN }}
+  #     - name: Publish
+  #       run: |
+  #         sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
+  #       env:
+  #        NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
+  #        GH_TOKEN: ${{ secrets.GHA_TOKEN }}
          
 
 
-      - name: Generate release notes
-        if: always()
-        run: |
-           sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
-           sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
-          GH_TOKEN: ${{ secrets.GHA_TOKEN }}
+  #     - name: Generate release notes
+  #       if: always()
+  #       run: |
+  #          sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
+  #          sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
+  #       env:
+  #         NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
+  #         GH_TOKEN: ${{ secrets.GHA_TOKEN }}
 
   
-      - name: 'Report changelog'
-        uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
-        with:
-         source-branch: releasedefns
-         target-dir: changelog
-         pathToReleaseConfigs: config
-         target-repo: flxbl-io/sfops-dashboard
-         gh_token: ${{ secrets.GHA_TOKEN }}
-         source-repo-url: https://github.com/flxbl-io/sf-core
-         workitem-url: https://flxbl.atlassian.net
+  #     - name: 'Report changelog'
+  #       uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
+  #       with:
+  #        source-branch: releasedefns
+  #        target-dir: changelog
+  #        pathToReleaseConfigs: config
+  #        target-repo: flxbl-io/sfops-dashboard
+  #        gh_token: ${{ secrets.GHA_TOKEN }}
+  #        source-repo-url: https://github.com/flxbl-io/sf-core
+  #        workitem-url: https://flxbl.atlassian.net
 
-      - uses: mshick/add-pr-comment@v2
-        with:
-         allow-repeats : true
-         message: |
-          This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
-          The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+  #     - uses: mshick/add-pr-comment@v2
+  #       with:
+  #        allow-repeats : true
+  #        message: |
+  #         This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
+  #         The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
 
  
