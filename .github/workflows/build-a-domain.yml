@@ -6,6 +6,9 @@ on:
       releaseconfig:
           description: 'The path to the release config file'
           type: 'string'
+      pathToReleaseConfigs:
+          description: 'The path to the directory that has all release config'
+          type: 'string'
       domain:
           description: 'The name of the domain to be built'
           type: 'string'
@@ -21,9 +24,6 @@ on:
       releasename:
          description: 'The name of the release'
          type: 'string'
-      allReleaseNames:
-          description: 'All release names'
-          type: 'string'
       workitem-url:
           description: 'The url of the workitem'
           type: 'string'
@@ -196,12 +196,18 @@ jobs:
         with:
          registry-url: 'https://npm.pkg.github.com'
 
+
+      - name: 'Fetch all ReleaseNames'
+        id: getAllReleaseNames
+        uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
+        with:
+          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
+
          
       - name: Compute Release Name
         run: |
           echo "RELEASE_NAME=$(echo ${{ inputs.releasename }}-$(date +'%d-%m')-${{github.run_id}})" >> $GITHUB_ENV
-          allDomains=$(echo '${{ inputs.allReleaseNames }}' | jq -r 'unique | join(",")')
-          echo "allDomains=$allDomains" >> $GITHUB_ENV
+          echo "allDomains={{steps.getAllReleaseNames.outputs.releaseNames}}" >> $GITHUB_ENV
 
 
       - name: Publish
@@ -228,7 +234,7 @@ jobs:
         with:
          source-branch: releasedefns
          target-dir: changelog
-         pathToReleaseConfigs: config
+         pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
          target-repo: flxbl-io/sfops-dashboard
          gh_token: ${{ secrets.gh_token}}
          source-repo-url: https://github.com/flxbl-io/sf-core
