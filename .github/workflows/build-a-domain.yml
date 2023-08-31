@@ -92,32 +92,83 @@ jobs:
           name: logs
           path: .sfpowerscripts/logs
    
-  deploy:
-     strategy:
+  deploy-to-org: 
+    runs-on: ubuntu-latest
+    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    strategy:
       fail-fast: false
       matrix:
         environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
-     needs: 
-       - build
-       - fetch-test-envs
-     uses:  flxbl-io/sfops-gh-actions/.github/workflows/deploy-to-an-env.yml@main
-     with:
-       environment: ${{ matrix.environment }}
-       environment-profile: ${{ matrix.environment }}
-       org-name: ${{ matrix.environment }}
-       dashboard-repo: ${{ inputs.dashboard-repo }}
-     secrets:
-       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-       gh-token: ${{ secrets.gh_token}}
-       datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
-       datadog-host: ${{ secrets.DATADOG_HOST }}
+    environment: ${{ matrix.environment }}  
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v3
+        with:
+             name: build-artifacts
+             path: artifacts 
+
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+
+      - name: Lock enviroment 
+        uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        with:
+          repo-token: ${{ secrets.gh-token }}
+          branch: ${{ matrix.environment }}  -mutex
+
+      - name:  'Authenticate Dev Hub'
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: Authenticate to ${{ inputs.environment }}
+        id: handle-auth
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with: 
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ matrix.environment }}
+          org-name: ${{ matrix.environment }}
+          environment-profile:  ${{ matrix.environment }}
+
+      - name: Install additional plugins if any
+        run: |
+            if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+                IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+                for plugin in "${plugins[@]}"; do
+                    echo "Installing $plugin"
+                    echo 'y' | sfdx plugins:install $plugin
+                done
+            fi
+
+      - name: 'Deploy to ${{ inputs.environment }}'
+        run: |
+          sfpowerscripts orchestrator:deploy -u ${{ inputs.environment-profile }} -g "::group::,::endgroup::" 
+
+      - name: 'Run package version reporter'
+        uses:  flxbl-io//sfops-gh-actions/packageversionReporter@main
+        with:
+         alias: ${{ inputs.environment-profile }}
+         env-name: ${{ inputs.environment }}
+         target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+         gh_token: ${{ secrets.gh-token }}
+ 
   
   publish:
     name: 'publish'
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
     needs: 
-      - deploy
+      - deploy-to-org
     steps:
       - uses: actions/checkout@v3
         with:
