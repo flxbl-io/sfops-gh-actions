@@ -104,7 +104,8 @@ jobs:
       fail-fast: false
       matrix:
         environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
-    environment: ${{ matrix.environment }}  
+    environment:
+      name:  ${{ matrix.environment }}  
     steps:
       - uses: actions/checkout@v3
         with:
