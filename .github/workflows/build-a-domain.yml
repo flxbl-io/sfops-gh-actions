@@ -65,8 +65,6 @@ jobs:
     name: 'Build packages'
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
-    outputs:
-       artifacts-exist-${{inputs.domain}}: ${{ steps.sfpowerscripts-build.outputs.artifacts-exist }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -82,18 +80,6 @@ jobs:
         id: sfpowerscripts-build
         run: |
           sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
-
-
-
-      - name: 'Check for artifacts'
-        id: sfpowerscripts-build
-        run: |
-          if [[ -z "$(ls -A artifacts)" ]]; then
-            echo "No artifacts found"
-            echo "artifacts-exist=false" >> $GITHUB_OUTPUT
-          else
-            echo "artifacts-exist=true" >> $GITHUB_OUTPUT
-          fi
 
 
       # Publish artifacts
@@ -113,7 +99,6 @@ jobs:
   deploy-to-org: 
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
-    if: needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' 
     needs: 
       - build
       - fetch-test-envs
@@ -124,9 +109,22 @@ jobs:
     environment:
       name:  ${{ matrix.environment }}  
     steps:
+
+      - name: 'Check for artifacts'
+        id: sfpowerscripts-build
+        run: |
+          if [[ -z "$(ls -A artifacts)" ]]; then
+            echo "No artifacts found"
+            exit 0
+          fi
+
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+    
+
 
       - uses: actions/download-artifact@v3
         with:
@@ -189,11 +187,19 @@ jobs:
   publish:
     name: 'publish'
     runs-on: ubuntu-latest
-    if:  needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' 
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
     needs: 
       - deploy-to-org
     steps:
+
+      - name: 'Check for artifacts'
+        id: sfpowerscripts-build
+        run: |
+          if [[ -z "$(ls -A artifacts)" ]]; then
+            echo "No artifacts found"
+            exit 0
+          fi
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
