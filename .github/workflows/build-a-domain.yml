@@ -113,7 +113,7 @@ jobs:
   deploy-to-org: 
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
-    if: ${{ needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' }}
+    if: needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' 
     needs: 
       - build
       - fetch-test-envs
@@ -189,7 +189,7 @@ jobs:
   publish:
     name: 'publish'
     runs-on: ubuntu-latest
-    if: ${{ needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' }}
+    if:  needs.build.outputs.artifacts-exist-${{inputs.domain}} == 'true' 
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
     needs: 
       - deploy-to-org
