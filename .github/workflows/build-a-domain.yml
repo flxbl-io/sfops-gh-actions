@@ -153,15 +153,15 @@ jobs:
                 done
             fi
 
-      - name: 'Deploy to ${{ inputs.environment }}'
+      - name: 'Deploy to ${{ matrix.environment }}'
         run: |
-          sfpowerscripts orchestrator:deploy -u ${{ inputs.environment-profile }} -g "::group::,::endgroup::" 
+          sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::" 
 
       - name: 'Run package version reporter'
         uses:  flxbl-io//sfops-gh-actions/packageversionReporter@main
         with:
-         alias: ${{ inputs.environment-profile }}
-         env-name: ${{ inputs.environment }}
+         alias: ${{ matrix.environment }}
+         env-name: ${{ matrix.environment }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
          gh_token: ${{ secrets.gh-token }}
  
