@@ -56,7 +56,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
         id: fetchAllEnvs
         with:
-          gh_token: ${{ secrets.gh-token }}
+          gh-token: ${{ secrets.gh-token }}
           filter: "type:test"
 
   build:
@@ -93,6 +93,7 @@ jobs:
           path: .sfpowerscripts/logs
    
   deploy-to-org: 
+    name: 'Deploy to org ${{ matrix.environment }}'
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
     needs: 
@@ -133,7 +134,7 @@ jobs:
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
 
-      - name: Authenticate to ${{ inputs.environment }}
+      - name: Authenticate to ${{ matrix.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
@@ -163,7 +164,7 @@ jobs:
          alias: ${{ matrix.environment }}
          env-name: ${{ matrix.environment }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
-         gh_token: ${{ secrets.gh-token }}
+         gh-token: ${{ secrets.gh-token }}
  
   
   publish:
@@ -176,7 +177,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.gh_token}}
+          token: ${{ secrets.gh-token}}
 
 
       - uses: actions/download-artifact@v3
@@ -208,8 +209,8 @@ jobs:
         run: |
           sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
-         NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
-         GH_TOKEN: ${{ secrets.gh_token}}
+         NODE_AUTH_TOKEN: ${{ secrets.gh-token}}
+         gh-token: ${{ secrets.gh-token}}
          
 
 
@@ -219,8 +220,8 @@ jobs:
            sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
-          GH_TOKEN: ${{ secrets.gh_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.gh-token}}
+          gh-token: ${{ secrets.gh-token}}
 
   
       - name: 'Report changelog'
@@ -230,7 +231,7 @@ jobs:
          target-dir: changelog
          pathToReleaseConfigs: config
          target-repo: flxbl-io/sfops-dashboard
-         gh_token: ${{ secrets.gh_token}}
+         gh-token: ${{ secrets.gh-token}}
          source-repo-url: https://github.com/flxbl-io/sf-core
          workitem-url: https://flxbl.atlassian.net
 

@@ -18,16 +18,17 @@ on:
       dashboard-repo:
          description: 'The repo to which the package version report is to be committed'
          type: 'string'
-    secrets:
-      DEVHUB_SFDX_AUTH_URL:
-          description: 'Devhub Auth URL'
-      gh-token:
+    secrets: 
+        DEVHUB_SFDX_AUTH_URL:
+            description: 'Devhub Auth URL'
+        SB_SFDX_AUTH_URL:
+            description: 'Sandbox Auth URL'
+        gh-token:
             description: 'GH Token to commit to the target repo'
-      datadog-api-key:
+        datadog-api-key:
             description: 'Datadog api key to report metrics'
-      datadog-host:
+        datadog-host:
             description: 'Datadog host to report metrics'
-
 
 jobs: 
   deploy-to-org: 
