@@ -56,7 +56,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
         id: fetchAllEnvs
         with:
-          gh_token: ${{ secrets.GHA_TOKEN }}
+          gh_token: ${{ secrets.gh-token }}
           filter: "type:test"
 
   build:
@@ -108,7 +108,7 @@ jobs:
        dashboard-repo: ${{ inputs.dashboard-repo }}
      secrets:
       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-      gh-token: ${{ secrets.GHA_TOKEN }}
+      gh-token: ${{ secrets.gh_token}}
       datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
       datadog-host: ${{ secrets.DATADOG_HOST }}
  
@@ -122,7 +122,7 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.GHA_TOKEN }}
+          token: ${{ secrets.gh_token}}
 
 
       - uses: actions/download-artifact@v3
@@ -154,8 +154,8 @@ jobs:
         run: |
           sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
-         NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
-         GH_TOKEN: ${{ secrets.GHA_TOKEN }}
+         NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
+         GH_TOKEN: ${{ secrets.gh_token}}
          
 
 
@@ -165,8 +165,8 @@ jobs:
            sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GHA_TOKEN }}
-          GH_TOKEN: ${{ secrets.GHA_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
+          GH_TOKEN: ${{ secrets.gh_token}}
 
   
       - name: 'Report changelog'
@@ -176,7 +176,7 @@ jobs:
          target-dir: changelog
          pathToReleaseConfigs: config
          target-repo: flxbl-io/sfops-dashboard
-         gh_token: ${{ secrets.GHA_TOKEN }}
+         gh_token: ${{ secrets.gh_token}}
          source-repo-url: https://github.com/flxbl-io/sf-core
          workitem-url: https://flxbl.atlassian.net
 
