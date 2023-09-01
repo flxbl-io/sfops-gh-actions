@@ -65,6 +65,9 @@ on:
       pathToReleaseConfigs:
             description: 'The path to release config'
             type: 'string'
+      releaseBoard:
+            description: 'The release board to be used'
+            type: 'string'
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
@@ -92,6 +95,17 @@ jobs:
         with:
             node-version: "18" 
             registry-url: 'https://npm.pkg.github.com'
+
+
+      - name: Update Project Card
+        uses: peter-evans/create-or-update-project-card@v2
+        if: ${{ inputs.releaseBoard != '' }}
+        continue-on-error: true
+        with:
+          project-name: ${{ inputs.releaseBoard }}
+          column-name: InProgress
+          issue-number: ${{inputs.issue-number}}
+
 
       - name: Install additional plugins if any
         run: |
@@ -230,7 +244,7 @@ jobs:
            body: |
              Hello @${{inputs.issue-notifier}} :wave:
              
-             The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to then environment to  validate the release.
+             The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to the environment to  validate the release.
 
       - name: Create comment on failure of a release
         uses: peter-evans/create-or-update-comment@v3
