@@ -251,7 +251,7 @@ jobs:
          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
          gh_token: ${{ secrets.gh_token}}
-         source-repo-url: https://github.com/flxbl-io/${{github.repository}}
+         source-repo-url: https://github.com/${{github.repository}}
          workitem-url: ${{inputs.workitem-url}}
 
       - uses: mshick/add-pr-comment@v2
