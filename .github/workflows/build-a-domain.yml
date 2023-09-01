@@ -59,7 +59,7 @@ jobs:
         id: fetchAllEnvs
         with:
           gh_token: ${{ secrets.gh_token }}
-          filter: "type:test"
+          filter: "type:test,branch:${{ inputs.branchname }}"
 
   build:
     name: 'Build packages'
