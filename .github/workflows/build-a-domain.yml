@@ -102,7 +102,7 @@ jobs:
     needs: 
       - build
       - fetch-test-envs
-    if: ${{ needs.fetch-test-envs.outputs.allEnvsAsJSON != "{"include":[]}" }}
+    if: ${{ needs.fetch-test-envs.outputs.allEnvsAsJSON != "{\"include\":[]}" }}
     strategy:
       fail-fast: false
       matrix:
