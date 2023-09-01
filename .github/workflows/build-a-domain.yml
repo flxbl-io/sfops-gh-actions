@@ -273,7 +273,6 @@ jobs:
 
       - uses: mshick/add-pr-comment@v2
         name: Print Any Deployment errors
-        ignore_failure: true
         with:
           allow-repeats: true
           repo-token: ${{ secrets.GHA_TOKEN}}
