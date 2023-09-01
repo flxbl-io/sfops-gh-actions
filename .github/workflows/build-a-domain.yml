@@ -255,12 +255,31 @@ jobs:
          workitem-url: ${{inputs.workitem-url}}
 
       - uses: mshick/add-pr-comment@v2
+        name: Report Comment on originating PR
         with:
          allow-repeats : true
          repo-token : ${{ secrets.gh_token}}
          message: |
           This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
           The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+
+      - name: Create Message Body as File
+        id: message_template
+        if: always()
+        run: |
+          if [ -f .sfpowerscripts/outputs/deployment-error.md.md ]; then
+           cat .sfpowerscripts/outputs/deployment-error.md.md >> message.md
+          fi
+
+      - uses: mshick/add-pr-comment@v2
+        name: Print Any Deployment errors
+        ignore_failure: true
+        with:
+          allow-repeats: true
+          repo-token: ${{ secrets.GHA_TOKEN}}
+          message-path: |
+             message.md 
+
 
   comment_issue_on_error:
       runs-on: ubuntu-latest
