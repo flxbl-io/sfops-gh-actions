@@ -275,7 +275,7 @@ jobs:
         name: Print Any Deployment errors
         with:
           allow-repeats: true
-          repo-token: ${{ secrets.GHA_TOKEN}}
+          repo-token: ${{ secrets.gh_token }}
           message-path: |
              message.md 
 
