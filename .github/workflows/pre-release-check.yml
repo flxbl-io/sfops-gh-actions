@@ -131,17 +131,6 @@ jobs:
         env:
           NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
 
-
-
-      - uses: flxbl-io/sfops-gh-actions/workItemReporter@main
-        name: Print Incoming Work Items
-        continue-on-error: true
-        with:
-          source-branch: ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}
-          domain: ${{inputs.domain}}
-          workitem-url: ${{inputs.workitem-url}}
-          environment: ${{steps.handle-auth.outputs.alias}}
-
       - name: Create Message Body as File
         id: message_template
         run: |
@@ -154,8 +143,8 @@ jobs:
           else
             echo "Unable to figure out deployment breakdown, contact support! " >> message.md
           fi
-          if [ -f changelog-${{inputs.domain}}.md ]; then
-            cat changelog-${{inputs.domain}}.md >> message.md
+          if [ -f release-changelog.md ]; then
+            cat release-changelog.md  >> message.md
           else
             echo "Unable to figure out work items in this release, if you think this is incorrect, contact support! " >> message.md
           fi
