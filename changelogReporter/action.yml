@@ -10,6 +10,9 @@ inputs:
   target-repo:  
     description: 'name of the repo to report to, will create a folder release-pipeline-view in the target repo'
     required: true
+  additional-releaseName:  
+    description: 'Additional releaseName to process'
+    required: false
   workitem-url:
      description: 'url of the jira board'
      required: true
@@ -47,6 +50,9 @@ runs:
           mkdir -p changelogHTML
           export GH_TOKEN=${{inputs.gh_token}}
           IFS=',' read -ra DOMAIN_ARRAY <<< "${{steps.getAllReleaseNames.outputs.releaseNames}}"
+          if [[ ! -z "${{inputs.additional-releaseName}}" ]]; then
+            DOMAIN_ARRAY+=("${{inputs.additional-releaseName}}")
+          fi
           for domain in "${DOMAIN_ARRAY[@]}"; do
             git show origin/${{inputs.source-branch}}:${domain}/releasechangelog.json > releasechangelog.json
             node  $GITHUB_ACTION_PATH/changelogToHTML.js releasechangelog.json ${{inputs.workitem-url}} ${{inputs.source-repo-url}} $domain
