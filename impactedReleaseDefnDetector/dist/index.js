@@ -4291,7 +4291,10 @@ function findImpactedReleaseDefs(impactedPackages, configDir, filterBy) {
   };
 
   const outputPath = path.join(process.cwd(), 'impacted-releases.json');
-  fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+  if(impactedReleaseDefs && impactedReleaseDefs.length > 0)
+    fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
+  else
+    fs.writeFileSync(outputPath, JSON.stringify([], null, 2));
   if(!filterBy)
    console.error(`Impacted release definitions written to ${outputPath} , impacted release length: ${impactedReleaseDefs.length}`);
   else
