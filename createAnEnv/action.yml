@@ -1,0 +1,59 @@
+name: 'Create a CI Sandbox - Developer License'
+description: 'Create a CI sandbox with developer license'
+
+inputs:
+  envName:
+     description: 'Name of environment'
+     required: true
+  type:
+     description: 'Name of environment'
+     required: true
+  branch:
+    description: 'Branch of the environment to be associated with'
+    required: true
+  envApprovers:
+    description: 'List of approvers for the environment'
+    required: false
+  sbxName:
+    description: 'Name of sandbox'
+    required: true
+  gh_token:
+    description: 'Token for GitHub API'
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+
+
+     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+       shell: bash
+
+     - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+       shell: bash
+       
+
+     - name: Create environments
+       uses: thijsvtol/create-environments@main
+       with:
+          token: ${{ inputs.gh_token} }
+          repo: ${{ github.repository }}
+          environments: ${{ inputs.envName }}
+          required_reviewers:  ${{ inputs.envApprovers }}
+    
+     - name: Setup Environment Variables
+       shell: bash
+       env:
+          GH_TOKEN: ${{ inputs.gh_token }}
+       run: |
+          gh variable set  BRANCH  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.branch }}
+          gh variable set  TYPE  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.type }}
+          gh variable set  SBX_NAME  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.sbxName }} 
