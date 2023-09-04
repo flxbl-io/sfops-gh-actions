@@ -73,8 +73,8 @@ runs:
         node $GITHUB_ACTION_PATH/dist/create-sandbox/index.js $sandbox_name devhub ${{ inputs.sourceSB  }} ${{ inputs.apexClassId  }}  
 
 
-        #Do one more authentication
-        sf sandbox resume -n $sandbox_name -o devhub
+  
+    
   
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
