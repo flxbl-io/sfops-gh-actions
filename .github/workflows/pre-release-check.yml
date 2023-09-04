@@ -143,8 +143,8 @@ jobs:
           else
             echo "Unable to figure out deployment breakdown, contact support! " >> message.md
           fi
-          if [ -f release-changelog.md ]; then
-            cat release-changelog.md  >> message.md
+          if [ -f .sfpowerscripts/outputs/release-changelog.md ]; then
+            cat .sfpowerscripts/outputs/release-changelog.md  >> message.md
           else
             echo "Unable to figure out work items in this release, if you think this is incorrect, contact support! " >> message.md
           fi
