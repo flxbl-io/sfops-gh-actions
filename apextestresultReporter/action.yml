@@ -33,7 +33,7 @@ runs:
 
             # ignore failure of this command
             set +e
-            sf apex  run  test -o  ${{ inputs.alias }} -l RunAllTestsInOrg -w 300 -y -d testresults -r json 
+            sf apex  run  test -o  ${{ inputs.alias }} -l RunLocalTests -w 300 -y -d testresults -r json 
             set -e
 
             # calculate elapsed time
