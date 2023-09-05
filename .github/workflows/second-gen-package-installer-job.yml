@@ -1,0 +1,79 @@
+# Reusable job not to be used directly
+
+name: 'Install an unlocked/managed package to target org'
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Name of the environment'
+        required: true
+        type: 'string'
+      package:
+        description: 'ID of the package version to install'
+        required: true
+        type: 'string'
+      installation-key:
+        description: 'Installation keys if any for the packages'
+        type: 'string'    
+      forceInstall:
+        description: 'Force Install the package?'
+        type: 'string'
+      reportPackageVersion:
+          description: 'Create Html Report of package version from this org along with other orgs'
+          type: 'boolean'
+          default: false
+      target-repo:
+          description: 'Target repo to submit package version report as HTML'
+          type: 'string'
+    secrets: 
+      DEVHUB_SFDX_AUTH_URL:
+        description: 'Devhub Auth URL'
+      SB_SFDX_AUTH_URL:
+        description: 'Sandbox Auth URL'
+      gh-token:
+        description: 'GH Token to commit to the target repo'
+      
+            
+
+jobs:
+  install-unlocked:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+            node-version: "18" 
+
+      - name: Authenticate to ${{ inputs.environment }}
+        id: handle-auth
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with: 
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ inputs.environment }}
+          org-name: ${{ inputs.environment }}
+          environment-profile:  ${{ inputs.environment }}
+
+
+      - name: Install Second Generation Package
+        uses: flxbl-io/sfops-gh-actions/secondGenPackageInstaller@main
+        with:
+            target-org: ${{steps.handle-auth.outputs.alias}}
+            package: ${{ inputs.package }}
+            installation-key: ${{ inputs.installation-key }}
+            force-install: ${{ inputs.forceInstall }}
+            
+      - name: 'Run package version reporter'
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        if: ${{ inputs.reportPackageVersion == 'true' }}
+        with:
+         alias: ${{ inputs.environment }}
+         env-name: ${{ inputs.environment }}
+         target-repo: ${{inputs.target-repo}}
+         gh_token: ${{ secrets.gh-token }}
+
+  
