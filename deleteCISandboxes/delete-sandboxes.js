@@ -28,7 +28,7 @@ function deleteMatchingGitHubVariables(sandboxName, repository) {
         const pattern = `[A-Za-z0-9]+_${sandboxName}_SBX`;
         const variablesCommand = `gh api "/repos/${repository}/actions/variables" --paginate --jq ".variables[] | select(.name | test(\\\"${pattern}\\\" )).name"`;
         const variablesToDelete = execSync(variablesCommand).toString().trim().split('\n');
-        
+
         for (const variable of variablesToDelete) {
             execSync(`gh variable delete ${variable} -R ${repository}`);
             console.log(`Successfully deleted GitHub variable: ${variable}`);
@@ -58,7 +58,7 @@ function extractCompletedNumericSandboxNames(jsonData) {
 let repository = process.argv[2];
 let devHubUserName = process.argv[3];
 
-let stdOut = execSync(`sf data query -q "SELECT Id, Status, SandboxName, SandboxInfoId, LicenseType, CreatedDate, CopyProgress, SandboxOrganization, SourceId, Description, EndDate FROM SandboxProcess WHERE Status!='D'" -o ${devHubUserName} -t --json  2>/dev/null`).toString();
+let stdOut = execSync(`sf data query -q "SELECT Id, Status, SandboxName, SandboxInfoId, LicenseType, CreatedDate, CopyProgress, SandboxOrganization, SourceId, Description, EndDate FROM SandboxProcess WHERE Status!='D' AND WHERE Description LIKE 'CI Sandboxes Auto Provisioned%'" -o ${devHubUserName} -t --json  2>/dev/null`, { maxBuffer: Infinity }).toString();
 let jsonData = JSON.parse(stdOut);
 const completedNumericSandboxNames = extractCompletedNumericSandboxNames(jsonData);
 console.log(`Found ${completedNumericSandboxNames.length} completed sandboxes that matches spec`);
@@ -66,7 +66,7 @@ for (const sandboxName of completedNumericSandboxNames) {
     try {
         console.log(`Deleting Sandbox ${sandboxName}`)
         deleteSandbox(devHubUserName, sandboxName);
-        deleteMatchingGitHubVariables(sandboxName,repository);
+        deleteMatchingGitHubVariables(sandboxName, repository);
     } catch (err) {
         console.log(`Error deleting sandbox ${sandboxName},skipping`)
     }
