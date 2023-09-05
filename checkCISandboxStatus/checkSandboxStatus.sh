@@ -11,7 +11,7 @@ declare -a sandboxesInProgress
 declare -A variableNamesForSandboxes
 
 # Get matching sandboxes and check their status
-gh api "/repos/$GITHUB_REPO/actions/variables" -F per_page=100  --paginate --jq ".variables[] | select(.name | test(\"$pattern\")).name" > "$tempfile"
+gh api "/repos/$GITHUB_REPO/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\"$pattern\")).name" > "$tempfile"
 
 while read variable_name; do
   sandbox_json=$(gh api "/repos/$GITHUB_REPO/actions/variables/$variable_name" --paginate --jq ".value | fromjson")

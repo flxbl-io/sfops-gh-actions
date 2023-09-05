@@ -25,7 +25,7 @@ fi
 DOMAIN=$(echo $DOMAIN | tr 'a-z' 'A-Z')
 
 # Fetch current sandbox details
-sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${SANDBOX_NAME}_SBX  -F per_page=100  --paginate --jq ".value")
+sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${SANDBOX_NAME}_SBX?per_page=100  --jq ".value")
 
 # Update sandbox status to "Available"
 updatedSandboxDetails=$(echo $sandboxDetails | jq '.status = "Available"')

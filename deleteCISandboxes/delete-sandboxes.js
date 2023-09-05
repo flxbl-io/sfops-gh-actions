@@ -26,7 +26,7 @@ function deleteSandbox(devHubUserName, sandboxName) {
 function deleteMatchingGitHubVariables(sandboxName, repository) {
     try {
         const pattern = `[A-Za-z0-9]+_${sandboxName}_SBX`;
-        const variablesCommand = `gh api "/repos/${repository}/actions/variables"  -F per_page=100  --paginate --jq ".variables[] | select(.name | test(\\\"${pattern}\\\" )).name"`;
+        const variablesCommand = `gh api "/repos/${repository}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"${pattern}\\\" )).name"`;
         const variablesToDelete = execSync(variablesCommand).toString().trim().split('\n');
 
         for (const variable of variablesToDelete) {
