@@ -58,7 +58,7 @@ function extractCompletedNumericSandboxNames(jsonData) {
 let repository = process.argv[2];
 let devHubUserName = process.argv[3];
 
-let stdOut = execSync(`sf data query -q "SELECT Id, Status, SandboxName, SandboxInfoId, LicenseType, CreatedDate, CopyProgress, SandboxOrganization, SourceId, Description, EndDate FROM SandboxProcess WHERE Status!='D' AND WHERE Description LIKE 'CI Sandboxes Auto Provisioned%'" -o ${devHubUserName} -t --json  2>/dev/null`, { maxBuffer: Infinity }).toString();
+let stdOut = execSync(`sf data query -q "SELECT Id, Status, SandboxName, SandboxInfoId, LicenseType, CreatedDate, CopyProgress, SandboxOrganization, SourceId, Description, EndDate FROM SandboxProcess WHERE Status!='D' AND  Description LIKE 'CI Sandboxes Auto Provisioned%'" -o ${devHubUserName} -t --json  2>/dev/null`, { maxBuffer: Infinity }).toString();
 let jsonData = JSON.parse(stdOut);
 const completedNumericSandboxNames = extractCompletedNumericSandboxNames(jsonData);
 console.log(`Found ${completedNumericSandboxNames.length} completed sandboxes that matches spec`);
