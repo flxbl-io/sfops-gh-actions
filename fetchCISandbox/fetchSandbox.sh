@@ -12,7 +12,7 @@ end=$(expr $(date +%s) + $((TIMEOUT_MINUTES * 60)))
 
 while true; do
   tempfile=$(mktemp)
-  gh api /repos/$GITHUB_REPO/actions/variables  -F per_page=100  --paginate --jq ".variables[] | select(.name | test(\"^${DOMAIN}_.*_SBX\$\")).name" > "$tempfile"
+  gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_.*_SBX\$\")).name" > "$tempfile"
 
 
   while read sandbox_name; do
