@@ -50,7 +50,7 @@ runs:
           git config --global --add safe.directory $GITHUB_WORKSPACE
           git fetch --all
           mkdir -p _data/releasechangelog
-          export GH_TOKEN=${{inputs.gh_token}
+          export GH_TOKEN=${{inputs.gh_token}}
           git show origin/${{inputs.source-branch}}:${{input.domain}}/releasechangelog.json > _data/releasechangelog/${{input.domain}}.json
           $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllReleaseNames.outputs.releaseNames}} _data _data "updated changelog for domain ${{input.domain}}"
    
