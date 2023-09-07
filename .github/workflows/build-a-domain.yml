@@ -247,9 +247,9 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
         with:
          source-branch: releasedefns
-         target-dir: changelog
          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+         domain: ${{inputs.domain}}
          gh_token: ${{ secrets.gh_token}}
          source-repo-url: https://github.com/${{github.repository}}
          workitem-url: ${{inputs.workitem-url}}

@@ -4,23 +4,25 @@ inputs:
   source-branch: 
     description: 'name of the branch from which to read changelog.json'
     required: true
-  target-dir: 
-    description: 'name of the directory to commit to'
-    required: true
   target-repo:  
     description: 'name of the repo to report to, will create a folder release-pipeline-view in the target repo'
     required: true
+  pathToReleaseConfigs:
+    description: 'The path to the directory that contains release defns'
+    required: true
+    default: 'config'
   additional-releaseName:  
     description: 'Additional releaseName to process'
     required: false
+  domain:  
+    description: 'name of the domain for which to report changelog'
+    required: true
   workitem-url:
      description: 'url of the jira board'
      required: true
   source-repo-url:
       description: 'url of the source repo'
       required: true
-  pathToReleaseConfigs:
-      description: 'The directory that has all release config'
   gh_token:
     description: 'github token to use for committing to repo'
     required: true
@@ -47,17 +49,9 @@ runs:
     - run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
           git fetch --all
-          mkdir -p changelogHTML
-          export GH_TOKEN=${{inputs.gh_token}}
-          IFS=',' read -ra DOMAIN_ARRAY <<< "${{steps.getAllReleaseNames.outputs.releaseNames}}"
-          if [[ ! -z "${{inputs.additional-releaseName}}" ]]; then
-            DOMAIN_ARRAY+=("${{inputs.additional-releaseName}}")
-          fi
-          for domain in "${DOMAIN_ARRAY[@]}"; do
-            git show origin/${{inputs.source-branch}}:${domain}/releasechangelog.json > releasechangelog.json
-            node  $GITHUB_ACTION_PATH/changelogToHTML.js releasechangelog.json ${{inputs.workitem-url}} ${{inputs.source-repo-url}} $domain
-            cp changelog-${domain}.html changelogHTML
-          done
-
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllReleaseNames.outputs.releaseNames}} changelogHTML ${{inputs.target-dir}} "updated changelog for domains ${{inputs.domains}}"
+          mkdir -p _data/releasechangelog
+          export GH_TOKEN=${{inputs.gh_token}
+          git show origin/${{inputs.source-branch}}:${{input.domain}}/releasechangelog.json > _data/releasechangelog/${{input.domain}}.json
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllReleaseNames.outputs.releaseNames}} _data _data "updated changelog for domain ${{input.domain}}"
+   
       shell: bash
