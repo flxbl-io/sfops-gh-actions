@@ -211,14 +211,13 @@ jobs:
           filter: "type:release"
 
 
-      - name: 'Report pipeline-view'
+      - name: 'Report release logs'
         uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main  
         if: ${{ inputs.environment != '' }}
         continue-on-error: true
         with:
            source-branch: ${{inputs.releaselogbranch}}
            domain: ${{ inputs.domain }}
-           target-dir: release-pipeline-view
            target-repo: ${{ inputs.target-repo }}
            gh_token: ${{ secrets.gh-token}}
            source-repo-url: ${{ inputs.source-repo-url}}

@@ -4,9 +4,6 @@ inputs:
   source-branch: 
     description: 'name of the branch from which to read changelog.json'
     required: true
-  target-dir: 
-    description: 'name of the directory to commit to'
-    required: true
   environments: 
     description: 'list of environments of the changelog, separated by commas'
     required: true  
@@ -42,16 +39,14 @@ runs:
     - run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
           git fetch --all
-          mkdir -p release-pipeline-view
+
           export GH_TOKEN=${{inputs.gh_token}}
 
           # Loop through each environment and fetch the corresponding release changelog
           IFS=',' read -ra ENVIRONMENTS <<< "${{inputs.environments}}"
           for env in "${ENVIRONMENTS[@]}"; do
-            git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > releasechangelog-$env.json
+            mkdir -p _data/releaselogs/$env
+            git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > _data/releaselogs/$env/${{inputs.domain}}.json
           done
-
-          node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.environments}} ${{inputs.domain}}
-          cp release-pipeline-${{inputs.domain}}.html release-pipeline-view
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} release-pipeline-view ${{inputs.target-dir}} "updated pipeline view for domain ${{inputs.domain}}" 
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated  env changelog for domain ${{inputs.domain}}"
       shell: bash

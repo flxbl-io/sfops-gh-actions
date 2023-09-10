@@ -36,6 +36,7 @@ fi
 # Navigate to the cloned repository
 cd $temp_dir
 
+
 # Configure git 
 git config --global user.email "buildbot@adiza.dev"
 git config --global user.name "buildbot"
@@ -52,10 +53,18 @@ git remote add kramo https://sfpowerscripts:$GH_TOKEN@github.com/$github_repo_ur
 attempt=0
 until [ $attempt -ge $retries ]
 do
-   git pull --rebase kramo main && git push kramo main && break
+   git pull --rebase kramo main
+   if [ $? -ne 0 ]; then
+       # Conflict occurred, reset and use our version for the copied files
+       git reset $temp_dir/$target_dir/*
+       git add $temp_dir/$target_dir/*
+       git rebase --continue
+   fi
+   git push kramo main && break
    attempt=$[$attempt+1]
    sleep 15
 done
+
 
 # Check if pushing was successful
 if [ $? -eq 0 ]; then
