@@ -31,6 +31,7 @@ runs:
       with:
           branch: pool-${{inputs.domain}}
           repo-token: ${{ inputs.gh_token }}
+          timeout-minute: 60
 
     - run: |
          export GH_TOKEN=${{inputs.gh_token}}
