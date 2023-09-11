@@ -14,7 +14,7 @@ declare -A variableNamesForSandboxes
 gh api "/repos/$GITHUB_REPO/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\"$pattern\")).name" > "$tempfile"
 
 while read variable_name; do
-  sandbox_json=$(gh api "/repos/$GITHUB_REPO/actions/variables/$variable_name" --paginate --jq ".value | fromjson")
+  sandbox_json=$(gh api "/repos/$GITHUB_REPO/actions/variables/$variable_name?per_page=100" --jq ".value | fromjson")
   status=$(echo $sandbox_json | jq -r '.status')
   isActive=$(echo $sandbox_json | jq -r '.isActive')
   sandbox_name=$(echo $sandbox_json | jq -r '.name')
@@ -26,6 +26,8 @@ while read variable_name; do
 done < "$tempfile"
 
 echo "${sandboxesInProgress[@]}" | jq -R 'split(" ")' > sandboxes.json
+
+cat sandboxes.json
 
 # Read the sandboxes.json file
 sandboxes=$(<sandboxes.json)
