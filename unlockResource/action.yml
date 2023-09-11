@@ -24,6 +24,11 @@ inputs:
     description: '[Internal] The location to store the mutex repo'
     required: false
     default: '/run/gh-action-mutex/repo'
+  ticket_id:
+    description: 'The  id to the ticket'
+    required: false
+
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
@@ -33,6 +38,7 @@ runs:
     ARG_REPOSITORY: ${{ inputs.repository }}
     ARG_REPO_TOKEN: ${{ inputs.repo-token }}
     ARG_DEBUG: ${{ inputs.debug }}
+    ARG_TICKET_ID: ${{ inputs.ticket_id }}
   entrypoint: '/scripts/unlock.sh'
 
 

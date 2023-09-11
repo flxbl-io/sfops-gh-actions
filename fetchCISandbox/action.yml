@@ -28,10 +28,11 @@ runs:
 
     - name: Lock to get exclusive access to pool var
       uses: flxbl-io/sfops-gh-actions/lockResource@main
+      id: lockResource
       with:
           branch: pool-${{inputs.domain}}
           repo-token: ${{ inputs.gh_token }}
-          timeout-minute: 5
+
 
     - run: |
          export GH_TOKEN=${{inputs.gh_token}}
@@ -46,4 +47,5 @@ runs:
       with:
           branch: pool-${{inputs.domain}}
           repo-token: ${{ inputs.gh_token }}
+          ticket_id: ${{ steps.lockResource.outputs.ticket_id }}
 

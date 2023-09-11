@@ -24,6 +24,11 @@ inputs:
     description: '[Internal] The location to store the mutex repo'
     required: false
     default: '/run/gh-action-mutex/repo'
+outputs:
+  ticket_id:
+    description: 'The  id to the ticket'
+
+
 runs:
   using: 'docker'
   image: 'Dockerfile'

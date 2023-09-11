@@ -16,7 +16,7 @@ while true; do
 
 
   while read sandbox_name; do
-    sandbox_json=$(gh api /repos/$GITHUB_REPO/actions/variables/$sandbox_name  --paginate --jq ".value | fromjson")
+    sandbox_json=$(gh api /repos/$GITHUB_REPO/actions/variables/$sandbox_name --jq ".value | fromjson")
     >&2 echo $sandbox_json
     status=$(echo $sandbox_json | jq -r '.status')
     isActive=$(echo $sandbox_json | jq -r '.isActive')
