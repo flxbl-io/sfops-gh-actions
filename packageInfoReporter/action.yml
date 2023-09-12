@@ -1,0 +1,69 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: 'Report package info from the version control'
+description: 'Report package version of an org to a folder in repo and create an html report'
+inputs:
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: false
+  target-repo: 
+    description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
+    required: true
+  pathToReleaseConfigs:
+    description: 'The path to the directory that contains release defns'
+    required: true
+    default: 'config'
+  gh_token:  
+    description: 'github token to use for commiting to repo'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+          # Install gh cli on ubuntu
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y                
+      shell: bash
+
+
+
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action 
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          export GH_TOKEN=${{inputs.gh_token}}
+          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+
+    - name: 'Fetch all ReleaseNames'
+      id: getAllReleaseNames
+      uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
+      with:
+          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
+    
+
+    
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --all
+          mkdir -p _data
+        
+          cp sfdx-project.json _data/sfdx-project.json
+
+          # Convert all release name to a JSON array
+          json_array="[$(echo "$allDomains" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+          # Update domains.json in _data folder
+          domains_json_path="_data/domains.json"
+          echo $json_array > $domains_json_path
+
+
+
+          export GH_TOKEN=${{inputs.gh_token}}
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated packages for env ${{inputs.alias}}"
+      shell: bash
+
