@@ -1,9 +1,10 @@
 #!/bin/bash
 
 github_repo_url=$1
-dir_to_copy=$2
-target_dir=$3
-commit_message=$3
+allEnvs=$2
+dir_to_copy=$3
+target_dir=$4
+commit_message=$5
 retries=3
 
 # Create a temporary directory
@@ -36,6 +37,14 @@ fi
 # Navigate to the cloned repository
 cd $temp_dir
 
+# Convert all orgs to a JSON array
+json_array="[$(echo "$allEnvs" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+# Update domains.json in _data folder
+envs_json_path="$temp_dir/_data/orgs.json"
+echo $json_array > $envs_json_path
+git add $envs_json_path
+
+
 # Configure git 
 git config --global user.email "buildbot@adiza.dev"
 git config --global user.name "buildbot"
@@ -52,10 +61,18 @@ git remote add kramo https://sfpowerscripts:$GH_TOKEN@github.com/$github_repo_ur
 attempt=0
 until [ $attempt -ge $retries ]
 do
-   git pull --rebase kramo main && git push kramo main && break
+   git pull --rebase kramo main
+   if [ $? -ne 0 ]; then
+       # Conflict occurred, reset and use our version for the copied files
+       git reset $temp_dir/$target_dir/*
+       git add $temp_dir/$target_dir/*
+       git rebase --continue
+   fi
+   git push kramo main && break
    attempt=$[$attempt+1]
    sleep 15
 done
+
 
 # Check if pushing was successful
 if [ $? -eq 0 ]; then

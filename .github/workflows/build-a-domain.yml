@@ -24,6 +24,9 @@ on:
       releasename:
          description: 'The name of the release'
          type: 'string'
+      metrics-provider:
+            description: 'The metrics provider to be used'
+            type: 'string'
       workitem-url:
           description: 'The url of the workitem'
           type: 'string'
@@ -71,6 +74,14 @@ jobs:
           fetch-depth: 0
 
 
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+          
       - name: 'Authenticate Dev Hub'
         run: |
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile

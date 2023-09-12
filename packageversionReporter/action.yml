@@ -48,10 +48,10 @@ runs:
     
     - run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
+          git fetch --all
+          mkdir -p _data/packageVersionReports
           export GH_TOKEN=${{inputs.gh_token}}
-          mkdir packageVersionReports
-          sfp artifacts:query -u ${{inputs.alias}} --json > packageVersionReports/${{inputs.env-name}}.json
-          $GITHUB_ACTION_PATH/package-version-reporter.sh ${{inputs.target-repo}} $GITHUB_ACTION_PATH ${{steps.getAllEnvs.outputs.allEnvs}}
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} packageVersionReports packageVersionReports 'updated-package-version-reports'
+          sfp artifacts:query -u ${{inputs.alias}} --json > _data/packageVersionReports/${{inputs.env-name}}.json
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
       shell: bash
 
