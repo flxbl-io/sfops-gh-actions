@@ -82,8 +82,6 @@ runs:
         # do not fail even if the metrics where not able to be send
         end=$(date +%s)
         elapsed=$(( end - start ))
-        sfp metrics:report -m "dev.sandbox.creation.duration" -t timer -v $elapsed || true
-        sfp metrics:report -m "dev.sandbox.creation" -t counter || true
 
         sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
 

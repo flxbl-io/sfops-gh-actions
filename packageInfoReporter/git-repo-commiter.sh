@@ -43,6 +43,9 @@ git config --global user.email "buildbot@adiza.dev"
 git config --global user.name "buildbot"
 
 
+# Add the changes to git.
+git add .
+
 # Commit the changes with the provided message
 git commit -m "$commit_message"
 
