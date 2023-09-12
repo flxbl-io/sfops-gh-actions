@@ -92,6 +92,13 @@ jobs:
         run: |
           sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
 
+      - name: 'Report  Package Info'
+        uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main  
+        with:
+         pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
+         target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+         gh_token: ${{ secrets.gh_token}}
+
 
       # Publish artifacts
       - uses: actions/upload-artifact@v3
