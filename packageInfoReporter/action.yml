@@ -56,7 +56,7 @@ runs:
           cp sfdx-project.json _data/sfdx-project.json
 
           # Convert all release name to a JSON array
-          json_array="[$(echo "$allDomains" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
+          json_array="[$(echo "${{steps.getAllReleaseNames.outputs.releaseNames}}" | sed 's/,/","/g' | sed 's/\(.*\)/"\1"/')]"
           # Update domains.json in _data folder
           domains_json_path="_data/domains.json"
           echo $json_array > $domains_json_path
@@ -64,6 +64,6 @@ runs:
 
 
           export GH_TOKEN=${{inputs.gh_token}}
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated packages for env ${{inputs.alias}}"
+          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated package and domain info"
       shell: bash
 
