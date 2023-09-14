@@ -4286,9 +4286,27 @@ function findImpactedReleaseDefs(impactedPackages, configDir, filterBy) {
     }
   });
 
+
+  const sortedImpactedReleaseDefs = impactedReleaseDefs.sort((a, b) => {
+    if (!a.impactedPackages.length && !b.impactedPackages.length) return 0;
+    if (!a.impactedPackages.length) return 1; // Move releases with no impacted packages to the end
+    if (!b.impactedPackages.length) return -1; // Same as above
+  
+    const indexA = impactedPackages.indexOf(a.impactedPackages[0]);
+    const indexB = impactedPackages.indexOf(b.impactedPackages[0]);
+  
+    if (indexA === -1 && indexB === -1) return 0; // Neither package is in impactedPackages
+    if (indexA === -1) return 1; // Move releases with unknown impacted packages to the end
+    if (indexB === -1) return -1; // Same as above
+  
+    return indexA - indexB; // Sort based on index in impactedPackages
+  });
+  
   const output = {
-    include: impactedReleaseDefs,
+    include: sortedImpactedReleaseDefs,
   };
+
+
 
   const outputPath = path.join(process.cwd(), 'impacted-releases.json');
   if(impactedReleaseDefs && impactedReleaseDefs.length > 0)
