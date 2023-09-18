@@ -3635,7 +3635,7 @@ async function run() {
 
         console.log(`Generating project...`);
         process.chdir(tempDir);
-        child_process.execSync('sf project generate -n component-remover', { stdio: 'ignore' });
+        child_process.execSync('sf project generate -n component-remover --api-version=58.0', { stdio: 'ignore' });
 
         console.log(`Retrieving project...`);
         process.chdir(path.join(tempDir, 'component-remover'));
