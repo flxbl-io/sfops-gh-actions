@@ -141,12 +141,9 @@ jobs:
             name: build-artifacts-${{inputs.domain}}
             path: artifacts 
 
-      # dont proceed if download artifacts failed, just report success
-      - run: exit 0
-        if: steps.download_artifacts.outcome == 'failure'
 
       - name: Export Datadog Environment Variables
-        if: ${{ inputs.metrics-provider == 'datadog'}}
+        if: ${{ inputs.metrics-provider == 'datadog' && steps.download_artifacts.outcome == 'success'}}
         run: |
           echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
           echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
@@ -155,17 +152,20 @@ jobs:
 
       - name: Lock enviroment 
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           repo-token: ${{ secrets.gh_token }}
           branch: ${{ matrix.environment }}-mutex
 
       - name:  'Authenticate Dev Hub'
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
           echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
           sfdx auth:sfdxurl:store -f authfile -a devhub
 
       - name: Authenticate to ${{ matrix.environment }}
         id: handle-auth
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
@@ -175,6 +175,7 @@ jobs:
           environment-profile:  ${{ matrix.environment }}
 
       - name: Install additional plugins if any
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
             if [[ -n "${{ inputs.additional-plugins }}" ]]; then
                 IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
@@ -185,6 +186,7 @@ jobs:
             fi
 
       - name: 'Deploy to ${{ matrix.environment }}'
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::" 
 
@@ -221,24 +223,23 @@ jobs:
             path: artifacts 
 
 
-      # dont proceed if download artifacts failed, just report success
-      - run: exit 0
-        if: steps.download_artifacts.outcome == 'failure'
-
       # Authenticate to npm
       - uses: actions/setup-node@v3
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
          registry-url: 'https://npm.pkg.github.com'
 
 
       - name: 'Fetch all ReleaseNames'
         id: getAllReleaseNames
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
 
          
       - name: Compute Release Name
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
           BRANCH_NAME=${{ github.ref_name }}
           if [[ $BRANCH_NAME == release* ]]; then
@@ -251,6 +252,7 @@ jobs:
 
 
       - name: Publish
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
           sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
@@ -260,7 +262,7 @@ jobs:
 
 
       - name: Generate release notes
-        if: always()
+        if: {{ always() && steps.download_artifacts.outcome == 'success' }}
         run: |
            sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
@@ -271,6 +273,7 @@ jobs:
   
       - name: 'Report changelog'
         uses: flxbl-io/sfops-gh-actions/changelogReporter@main  
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
          source-branch: releasedefns
          pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
@@ -293,6 +296,7 @@ jobs:
 
       - uses: mshick/add-pr-comment@v2
         name: Report Comment on originating PR
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
          allow-repeats : true
          repo-token : ${{ secrets.gh_token}}
