@@ -262,7 +262,7 @@ jobs:
 
 
       - name: Generate release notes
-        if: {{ always() && steps.download_artifacts.outcome == 'success' }}
+        if: ${{ always() && steps.download_artifacts.outcome == 'success' }}
         run: |
            sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
