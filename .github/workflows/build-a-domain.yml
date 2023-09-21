@@ -192,6 +192,7 @@ jobs:
 
       - name: 'Run package version reporter'
         uses:  flxbl-io//sfops-gh-actions/packageversionReporter@main
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
          alias: ${{ matrix.environment }}
          env-name: ${{ matrix.environment }}
