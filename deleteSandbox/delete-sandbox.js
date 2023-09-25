@@ -30,12 +30,8 @@ function deleteSandbox(devHubUserName, sandboxName) {
     } catch(error)
     {
         console.log(`Error authenticating to sandbox: ${sandboxName} due to ${error}`);
-        if(error.message.includes(`No authorization information found`))
-        {
-            console.log(`The provided sandbox with name ${sandboxName} is no longer available in the org, Did you delete this directly?`);
-            return;
-
-        }
+        console.log(`The provided sandbox with name ${sandboxName} is no longer available in the org, Did you delete this directly?`);
+        return;
     }
 
 
