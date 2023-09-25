@@ -34,6 +34,7 @@ runs:
         # Use jq to extract the username
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
 
+        export SF_JSON_TO_STDOUT=true
         # Run the delete-sandbox.js script and capture the exit code
         node $GITHUB_ACTION_PATH/delete-sandbox.js  $DEVHUB_USERNAME  ${{inputs.sandboxName}} 2>&1
         delete_status=$?
@@ -45,4 +46,5 @@ runs:
         else
           echo "deleted=false" >> "$GITHUB_OUTPUT"
         fi
+        export SF_JSON_TO_STDOUT=false
       shell: bash
