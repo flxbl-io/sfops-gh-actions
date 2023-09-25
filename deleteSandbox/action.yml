@@ -22,7 +22,7 @@ runs:
 
     - run: |
           echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sfdx auth:sfdxurl:store -f authfile -a devhub
+          sf auth sfdxurl store -f authfile -a devhub
       shell: bash
 
     - id: deleteSandbox
