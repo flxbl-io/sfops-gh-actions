@@ -133,6 +133,7 @@ jobs:
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
+        if: ${{ inputs.environment != '' }}
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
@@ -140,6 +141,15 @@ jobs:
           environment: ${{ inputs.environment }}
           org-name:  ${{ vars.SBXNAME }}
           environment-profile:  ${{ inputs.environment-profile }}
+
+      - name: Authenticate to ${{ inputs.org-name }}
+        id: handle-auth
+        if: ${{ inputs.environment = '' }}
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with: 
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          org-name:  ${{ inputs.org-name }}
+          environment-profile:  ${{ inputs.environment-profile }}          
 
       - uses: actions/github-script@v6
         with:
