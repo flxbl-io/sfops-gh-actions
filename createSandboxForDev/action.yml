@@ -20,6 +20,12 @@ inputs:
   apexClassId:
     description: 'Apex Class Id to be used for apex test execution'
     required: false
+  metrics-provider:
+    description: 'The metrics provider to be used'
+  datadog-api-key:
+    description: 'Datadog api key to report metrics'
+  datadog-host:
+    description: 'Datadog host to report metrics'
 
 outputs:
   SANDBOX_NAME:
@@ -105,6 +111,13 @@ runs:
 
         SANDBOX_USERNAME=$(cat username.output)
         echo "SANDBOX_USERNAME=$SANDBOX_USERNAME" >> "$GITHUB_OUTPUT"
+
+        if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
+          export "SFPOWERSCRIPTS_DATADOG=true" 
+          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
+          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
+          sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {\"type\":\"dev\"}
+        fi
 
 
       shell: bash

@@ -55,6 +55,9 @@ process_sandbox() {
 
     echo $variable_name
     gh variable set "$variable_name" -b "$value" --repo $GITHUB_REPO
+
+    sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {\"type\":\"ci\"}
+
   fi
 }
 

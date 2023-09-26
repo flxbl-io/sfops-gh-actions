@@ -14,6 +14,12 @@ inputs:
   gh_token: 
     description: 'GitHub Token'
     required: true
+  metrics-provider:
+    description: 'The metrics provider to be used'
+  datadog-api-key:
+    description: 'Datadog api key to report metrics'
+  datadog-host:
+    description: 'Datadog host to report metrics'
 
 
 runs:
@@ -42,6 +48,12 @@ runs:
          devhubInfo=$(sf org display -o devhub --json)
          DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
          export GH_TOKEN=${{inputs.gh_token}}
+         if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
+          export "SFPOWERSCRIPTS_DATADOG=true" 
+          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
+          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
+         fi
+
          $GITHUB_ACTION_PATH/checkSandboxStatus.sh  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.usersToBeActivated }}
          node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
       shell: bash
