@@ -153,9 +153,9 @@ jobs:
      
 
       - uses: actions/github-script@v6
+        if: ${{ inputs.environment != '' }}
         with:
           github-token: ${{ secrets.gh-token }}
-          if: ${{ inputs.environment != '' }}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
