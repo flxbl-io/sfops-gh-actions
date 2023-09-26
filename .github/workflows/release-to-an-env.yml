@@ -1,4 +1,4 @@
-# Reusable job not to be used directly
+it# Reusable job not to be used directly
 
 name: 'Trigger Release to an org'
 
@@ -144,7 +144,7 @@ jobs:
 
       - name: Authenticate to ${{ inputs.org-name }}
         id: handle-auth
-        if: ${{ inputs.environment = '' }}
+        if: ${{ inputs.environment == '' }}
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
