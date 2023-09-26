@@ -155,6 +155,7 @@ jobs:
       - uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.gh-token }}
+          if: ${{ inputs.environment != '' }}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
@@ -211,12 +212,14 @@ jobs:
 
       - name: 'Fetch all ReleaseNames'
         id: getAllReleaseNames
+        if: ${{ inputs.environment != '' }}
         uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
             
       - name: 'Fetch all Envs that match release type'
         id: getAllEnvs
+        if: ${{ inputs.environment != '' }}
         uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
         with:
           gh_token: ${{ secrets.gh-token}}
