@@ -130,6 +130,7 @@ jobs:
         with:
           branch: ${{ inputs.environment }}-mutex
 
+
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
@@ -137,7 +138,7 @@ jobs:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
-          org-name: ${{ inputs.org-name }}
+          org-name:  ${{ vars.SBXNAME }}
           environment-profile:  ${{ inputs.environment-profile }}
 
       - uses: actions/github-script@v6

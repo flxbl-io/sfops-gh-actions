@@ -15,7 +15,7 @@ inputs:
     description: "Environment profile to use"
     required: false
   org-name:
-    description: "Name of the sandbox in case of non env sandbox"
+    description: "Name of the sandbox in case SB_SFDX_AUTH_URL is not provided"
     required: false
 outputs:
   alias:
