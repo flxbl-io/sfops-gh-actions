@@ -7,10 +7,10 @@ on:
           description: 'Name of the environment'
           type: 'string'
       environment-profile:
-          description: 'The profile of the enviroment to be used in release'
+          description: 'The profile of the enviroment to be used for operation'
           type: 'string'
       org-name:
-          description: 'The name of the org to be released'
+          description: 'The name of the sandbox if any for deployment'
           type: 'string'  
       additional-plugins:
          description: 'Additional plugins to be installed'
@@ -71,7 +71,7 @@ jobs:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
-          org-name: ${{ inputs.org-name }}
+          org-name: ${{ vars.SBXNAME }}
           environment-profile:  ${{ inputs.environment-profile }}
 
       - name: Install additional plugins if any
