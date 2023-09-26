@@ -147,7 +147,7 @@ jobs:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
-          org-name:  ${{ steps.handle-sandbox-name.outputs.SBXNAME }}
+          org-name:  ${{ steps.handle-sandbox-name.outputs.SBX_NAME }}
           environment-profile:  ${{ inputs.environment-profile }}
 
      
