@@ -1,4 +1,4 @@
-it# Reusable job not to be used directly
+# Reusable job not to be used directly
 
 name: 'Trigger Release to an org'
 
