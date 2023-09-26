@@ -4,6 +4,9 @@ const yaml = require('js-yaml');
 const releaseDefnPath = process.argv[2];
 const packagesToUpdate = process.argv[3];
 
+
+// Splits coma seperated values
+//Parses package version provided as x.y.z.buildno to x.y.z-buildnumber (for npm)
 function parsePackages(packagesString) {
     return packagesString
       .split(',')
