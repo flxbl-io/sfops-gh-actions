@@ -130,26 +130,27 @@ jobs:
         with:
           branch: ${{ inputs.environment }}-mutex
 
+      - name: Fetch Sandbox Name if any
+        id: handle-sandbox-name
+        run: |
+           if [[ -n "${{ inputs.environment }}" ]]; then
+             echo "SBX_NAME=${{ vars.SBXNAME }}" >> $GITHUB_OUTPUT   
+           else
+             echo "SBX_NAME=${{inputs.org-name}}" >> $GITHUB_OUTPUT   
+           fi
+
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
-        if: ${{ inputs.environment != '' }}
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
-          org-name:  ${{ vars.SBXNAME }}
+          org-name:  ${{ steps.handle-sandbox-name.outputs.SBXNAME }}
           environment-profile:  ${{ inputs.environment-profile }}
 
-      - name: Authenticate to ${{ inputs.org-name }}
-        id: handle-auth
-        if: ${{ inputs.environment == '' }}
-        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
-        with: 
-          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-          org-name:  ${{ inputs.org-name }}
-          environment-profile:  ${{ inputs.environment-profile }}          
+     
 
       - uses: actions/github-script@v6
         with:
