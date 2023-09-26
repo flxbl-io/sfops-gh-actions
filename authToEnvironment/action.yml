@@ -83,8 +83,8 @@ runs:
               shopt -s nocasematch
 
               # Main logic
-              if [[ "${{ inputs.org-name }}" =~ "prod" || "${{ inputs.org-name }}" =~ "production" || "${{ inputs.environment }}" =~ "prod" || "${{ inputs.environment }}" =~ "production" ]]; then
-                handle_prod_or_production "${{ inputs.org-name }}"
+              if [[ "${{ inputs.environment }}" =~ "prod" || "${{ inputs.environment }}" =~ "production" || "${{ inputs.org-name }}" =~ "prod" || "${{ inputs.org-name }}" =~ "production" ]]; then
+                handle_prod_or_production "${{ inputs.environment }}"
               elif [[ "${{ inputs.SB_SFDX_AUTH_URL }}" != '' ]]; then
                 handle_sandbox_url "${{ inputs.SB_SFDX_AUTH_URL }}" "${{ inputs.environment-profile }}"
               else
