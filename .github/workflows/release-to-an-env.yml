@@ -199,7 +199,7 @@ jobs:
         id: release
         run: |
             if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
-              sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.releaseDefn}}
+              sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.outputs.releaseDefn}}
             fi
 
             if [ -z "${{ inputs.environment }}" ]; then
