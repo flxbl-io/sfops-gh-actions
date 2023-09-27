@@ -27,4 +27,4 @@ jobs:
        run: |
           gh variable set  BRANCH  -e ${{ needs.issue-analyzer.outputs.name }}  --repo  ${{ github.repository }} -b  ${{ needs.issue-analyzer.outputs.branch }}
           gh variable set  TYPE  -e ${{ needs.issue-analyzer.outputs.name }}  --repo  ${{ github.repository }} -b  ${{ needs.issue-analyzer.outputs.type }}
-          gh variable set  SBX_NAME  -e ${{ needs.issue-analyzer.outputs.name }}  --repo  ${{ github.repository }} -b  ${{ needs.issue-analyzer.outputs.name }} 
+          gh variable set  SBXNAME  -e ${{ needs.issue-analyzer.outputs.name }}  --repo  ${{ github.repository }} -b  ${{ needs.issue-analyzer.outputs.name }} 
