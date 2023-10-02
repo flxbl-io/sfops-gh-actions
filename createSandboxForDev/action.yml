@@ -107,6 +107,10 @@ runs:
 
         node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name 
        
+        #Reset Source tracking
+        sf project reset -o $DEVHUB_USERNAME.$sandbox_name 
+
+        
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
         SANDBOX_USERNAME=$(cat username.output)
