@@ -272,7 +272,6 @@ jobs:
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
            rm -rf artifacts
-           git config --global --add safe.directory $GITHUB_WORKSPACE
            git fetch --all
            # do a fetch again for accuracy
            git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
