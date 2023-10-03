@@ -273,6 +273,7 @@ jobs:
         run: |
            rm -rf artifacts
            git fetch --all
+           git config --global --add safe.directory $GITHUB_WORKSPACE
            # do a fetch again for accuracy
            git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
            sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
