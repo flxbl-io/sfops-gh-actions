@@ -203,8 +203,9 @@ jobs:
   publish:
     name: 'publish'
     runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
-    options: --user 1001
+    container:
+      image:  ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+      options: --user 1001
     needs: 
       - deploy-to-org
     if: |
