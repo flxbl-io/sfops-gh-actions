@@ -255,18 +255,29 @@ jobs:
       - name: Publish
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
-          sfpowerscripts orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
+          sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
          GH_TOKEN: ${{ secrets.gh_token}}
          
-
-
-      - name: Generate release notes
-        if: ${{ always() && steps.download_artifacts.outcome == 'success' }}
+      - name: Generate release defn
+        if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
-           sfpowerscripts releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
-           sfpowerscripts changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
+           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
+          GH_TOKEN: ${{ secrets.gh_token}}
+
+      - name: Generate changelog
+        if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
+        run: |
+           rm -rf artifacts
+           git config --global --add safe.directory '*'
+           git fetch --all
+           # do a fetch again for accuracy
+           git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
+           sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
+           sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
         env:
           NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
           GH_TOKEN: ${{ secrets.gh_token}}
