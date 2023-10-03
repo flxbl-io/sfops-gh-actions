@@ -276,7 +276,7 @@ jobs:
            git fetch --all
            # do a fetch again for accuracy
            git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
-           sfp artifacts:fetch -p releasedefn.yml -d artifacts
+           sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
            sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}  
         env:
           NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
