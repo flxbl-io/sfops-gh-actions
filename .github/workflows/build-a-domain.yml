@@ -204,6 +204,7 @@ jobs:
     name: 'publish'
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    options: --user 1001
     needs: 
       - deploy-to-org
     if: |
@@ -272,8 +273,8 @@ jobs:
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
            rm -rf artifacts
-           git fetch --all
            git config --global --add safe.directory $GITHUB_WORKSPACE
+           git fetch --all
            # do a fetch again for accuracy
            git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
            sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
