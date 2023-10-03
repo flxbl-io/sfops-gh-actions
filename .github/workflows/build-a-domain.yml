@@ -260,15 +260,20 @@ jobs:
          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
          GH_TOKEN: ${{ secrets.gh_token}}
          
+      - name: Generate release defn
+        if: ${{ always() && steps.download_artifacts.outcome == 'success' }}
+        run: |
+           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
+          GH_TOKEN: ${{ secrets.gh_token}}
 
-
-      - name: Generate release notes
+      - name: Generate changelog
         if: ${{ always() && steps.download_artifacts.outcome == 'success' }}
         run: |
            rm -rf artifacts
            git config --global --add safe.directory $GITHUB_WORKSPACE
            git fetch --all
-           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            # do a fetch again for accuracy
            git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
            sfp artifacts:fetch -p releasedefn.yml -d artifacts
