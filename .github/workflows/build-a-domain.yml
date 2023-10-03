@@ -265,6 +265,7 @@ jobs:
       - name: Generate release notes
         if: ${{ always() && steps.download_artifacts.outcome == 'success' }}
         run: |
+           git config --global --add safe.directory $GITHUB_WORKSPACE
            rm -rf artifacts
            sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
            # do a fetch again for accuracy
