@@ -45,6 +45,7 @@ runs:
       uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
       with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
+          pathReleaseConfigsCopiedTo: _data/releaseconfigs
     
 
     
