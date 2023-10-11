@@ -25,7 +25,7 @@ on:
       SB_SFDX_AUTH_URL:
         description: 'Sandbox Auth URL'
       gh-token:
-        description: 'GH Token to commit to the target repo'
+        description: 'GH Token for fetching artifact'
       
             
 
@@ -74,6 +74,8 @@ jobs:
             done
 
             sfp  artifacts:fetch -p release_definition.yaml --npm --scope ${{ github.repository_owner }} 
+        env:
+          NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
 
       - name: Install the artifact to respective org
         run: |
