@@ -87,8 +87,10 @@ runs:
                 handle_prod_or_production "${{ inputs.environment-profile }}"
               elif [[ "${{ inputs.SB_SFDX_AUTH_URL }}" != '' ]]; then
                 handle_sandbox_url "${{ inputs.SB_SFDX_AUTH_URL }}" "${{ inputs.environment-profile }}"
-              else
+              elif [[ "${{ inputs.org-name }}" != '' ]]; then
                 handle_no_auth_url "${{ inputs.org-name }}" "${{ inputs.environment-profile }}"
+              else
+                 handle_no_auth_url "${{ inputs.environment }}" "${{ inputs.environment-profile }}"
               fi
 
               # Disable case-insensitive matching
