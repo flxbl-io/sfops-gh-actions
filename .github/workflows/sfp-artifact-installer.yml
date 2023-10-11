@@ -1,0 +1,102 @@
+# Reusable job not to be used directly
+
+name: 'Install a sfpowerscripts artifact to target org'
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: 'Name of the environment'
+        required: true
+        type: 'string'
+      packages:
+        description: 'package and versions seperated by coma if multiple'
+        required: true
+        type: 'string' 
+      forceInstall:
+        description: 'Force Install the package?'
+        type: 'string'
+      target-repo:
+          description: 'Target repo to submit package version report as HTML'
+          type: 'string'
+    secrets: 
+      DEVHUB_SFDX_AUTH_URL:
+        description: 'Devhub Auth URL'
+      SB_SFDX_AUTH_URL:
+        description: 'Sandbox Auth URL'
+      gh-token:
+        description: 'GH Token to commit to the target repo'
+      
+            
+
+jobs:
+  install-sfp-artifact:
+    runs-on: ubuntu-latest
+    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    environment: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+            node-version: "18" 
+            registry-url: 'https://npm.pkg.github.com'
+
+      - name: Authenticate to ${{ inputs.environment }}
+        id: handle-auth
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with: 
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ inputs.environment }}
+          org-name: ${{ vars.SBXNAME }}
+          environment-profile:  ${{ inputs.environment }}
+
+
+      - name: Fetch the artifact from Github Packages
+        run: |
+            #create a just in time release defn to fetch the artifacts:fetch
+
+            # Input: Release name and Comma-separated values of package:version
+            release_name=$(date +'%d-%m-%Y')
+            input=${{ inputs.packages }}
+
+            # Start writing to YAML file
+            echo "release: $release_name" > release_definition.yaml
+            echo "artifacts:" >> release_definition.yaml
+
+            # Parse input to add artifacts
+            IFS=',' read -ra packages <<< "$input"
+            for pkg in "${packages[@]}"; do
+              pkg_name=$(echo $pkg | cut -d':' -f1)
+              pkg_version=$(echo $pkg | cut -d':' -f2)
+              echo "  $pkg_name: $pkg_version" >> release_definition.yaml
+            done
+
+            sfp  artifacts:fetch -p release_definition.yaml --npm --scope ${{ github.repository_owner }} 
+
+      - name: Install the artifact to respective org
+        run: |
+          input=${{ inputs.packages }}
+          forceInstall=${{ inputs.forceInstall }}
+          # Parse input to install  artifacts
+          IFS=',' read -ra packages <<< "$input"
+          for pkg in "${packages[@]}"; do
+              pkg_name=$(echo $pkg | cut -d':' -f1)
+              if [ "$forceInstall" == "true" ]; then
+                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name 
+              else
+                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name --skipifalreadyinstalled
+              fi
+           done
+          
+            
+      - name: 'Run package version reporter'
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        with:
+         alias: ${{ inputs.environment }}
+         env-name: ${{ inputs.environment }}
+         target-repo: ${{inputs.target-repo}}
+         gh_token: ${{ secrets.gh-token }}
+
+  
