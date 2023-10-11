@@ -41,6 +41,7 @@ jobs:
         with:
             node-version: "18" 
             registry-url: 'https://npm.pkg.github.com'
+            token: ${{ secrets.gh-token }}
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
