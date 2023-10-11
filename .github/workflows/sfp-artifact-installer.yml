@@ -74,7 +74,7 @@ jobs:
               echo "  $pkg_name: $pkg_version" >> release_definition.yaml
             done
 
-            sfp  artifacts:fetch -p release_definition.yaml --npm --scope ${{ github.repository_owner }} 
+            sfp  artifacts:fetch -p release_definition.yaml -d artifacts --npm --scope ${{ github.repository_owner }} 
         env:
           NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
 
