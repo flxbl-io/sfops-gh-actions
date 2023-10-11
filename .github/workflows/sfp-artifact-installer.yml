@@ -75,6 +75,8 @@ jobs:
             done
 
             sfp  artifacts:fetch -p release_definition.yaml -d artifacts --npm --scope ${{ github.repository_owner }} 
+
+            find artifacts -type d -or -type f -exec echo {} \;
         env:
           NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
 
