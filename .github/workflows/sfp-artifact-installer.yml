@@ -54,38 +54,26 @@ jobs:
           environment-profile:  ${{ inputs.environment }}
 
 
+      - name: Create a temporary releasedefn for fetching artifact
+        id: create-release-defn
+        uses: flxbl-io/sfops-gh-actions/releasedefnCreator@main
+        with: 
+          releaseName: 'install-sfp-artifact'
+          packageVersionMap: ${{ inputs.packages }}
+
       - name: Fetch the artifact from Github Packages
         run: |
-            #create a just in time release defn to fetch the artifacts:fetch
-
-            # Input: Release name and Comma-separated values of package:version
-            release_name=$(date +'%d-%m-%Y')
-            input=${{ inputs.packages }}
-
-            # Start writing to YAML file
-            echo "release: $release_name" > release_definition.yaml
-            echo "artifacts:" >> release_definition.yaml
-
-            # Parse input to add artifacts
-            IFS=',' read -ra packages <<< "$input"
-            for pkg in "${packages[@]}"; do
-              pkg_name=$(echo $pkg | cut -d':' -f1)
-              pkg_version=$(echo $pkg | cut -d':' -f2)
-              echo "  $pkg_name: $pkg_version" >> release_definition.yaml
-            done
-
             sfp  artifacts:fetch -p release_definition.yaml -d artifacts --npm --scope ${{ github.repository_owner }} 
-
             find artifacts -type d -or -type f -exec echo {} \;
         env:
           NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
 
       - name: Install the artifact to respective org
         run: |
-          input=${{ inputs.packages }}
+          packageVersionMap=${{ inputs.packages }}
           forceInstall=${{ inputs.forceInstall }}
           # Parse input to install  artifacts
-          IFS=',' read -ra packages <<< "$input"
+          IFS=',' read -ra packages <<< "$packageVersionMap"
           for pkg in "${packages[@]}"; do
               pkg_name=$(echo $pkg | cut -d':' -f1)
               if [ "$forceInstall" == "true" ]; then
@@ -95,9 +83,11 @@ jobs:
               fi
            done
           
-            
+
+  #Only report if the environment is really valid, not just a CI or Dev Sandbox     
       - name: 'Run package version reporter'
         uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        if: ${{ vars.SBXNAME!='' || secrets.SB_SFDX_AUTH_URL!='' }}
         with:
          alias: ${{ inputs.environment }}
          env-name: ${{ inputs.environment }}
