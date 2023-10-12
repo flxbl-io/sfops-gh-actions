@@ -7,6 +7,13 @@ prod=""
 if [[ -z "$2" ]]; then
   echo >&2 "Fetch All Envs as filter was not provided"
   for env in $(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments | jq -r '.environments[] | .name'); do
+
+      # skip envs that do not have any vars, as these are not sfops envs
+      variable_count=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments/$env/variables | jq '.variables | length')
+      if [ "$variable_count" -eq 0 ]; then
+        continue
+      fi
+
       lower_env=$(echo "$env" | tr '[:upper:]' '[:lower:]')
       
       if [[ "$lower_env" == "qa" ]]; then
@@ -21,6 +28,13 @@ else
   IFS=',' read -ra filters <<< "$2"  # Split the filters by comma into an array
   
   for env in $(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments | jq -r '.environments[] | .name'); do
+    
+     # skip envs that do not have any vars, as these are not sfops envs
+    variable_count=$(gh api -H "Accept: application/vnd.github+json" /repos/$1/environments/$env/variables | jq '.variables | length')
+    if [ "$variable_count" -eq 0 ]; then
+        continue
+    fi
+
     all_filters_match=true  # Assume all filters match initially
     
     for filter in "${filters[@]}"; do
