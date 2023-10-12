@@ -77,9 +77,9 @@ jobs:
           for pkg in "${packages[@]}"; do
               pkg_name=$(echo $pkg | cut -d':' -f1)
               if [ "$forceInstall" == "true" ]; then
-                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name --artifactdir artifacts/$(date +'%d-%m-%Y')
+                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name --artifactdir artifacts
               else
-                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name --skipifalreadyinstalled --artifactdir artifacts/$(date +'%d-%m-%Y')
+                 sfp package:install -u ${{ steps.handle-auth.outputs.alias }} -n $pkg_name --skipifalreadyinstalled --artifactdir artifacts
               fi
            done
           
