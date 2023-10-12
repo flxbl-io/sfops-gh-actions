@@ -84,10 +84,22 @@ jobs:
            done
           
 
+      - name: Set output value if at least one variable is present
+        id: check-for-real-env
+        run: |
+          if [[ -n "$SBXNAME" || -n "$SB_SFDX_AUTH_URL" ]]; then
+             echo "valid=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          SBXNAME: ${{ vars.SBXNAME }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+        continue-on-error: true
+ 
+ 
   #Only report if the environment is really valid, not just a CI or Dev Sandbox     
       - name: 'Run package version reporter'
         uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
-        if: ${{ vars.SBXNAME!='' || secrets.SB_SFDX_AUTH_URL!='' }}
+        if: ${{ steps.check-for-real-env.valid == 'true' }}
         with:
          alias: ${{ inputs.environment }}
          env-name: ${{ inputs.environment }}
