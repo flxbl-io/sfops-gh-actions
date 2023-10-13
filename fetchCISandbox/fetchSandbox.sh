@@ -16,6 +16,13 @@ while true; do
   tempfile=$(mktemp)
   gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_.*_SBX\$\")).name" > "$tempfile"
 
+
+  # No Sandbox Pools Found, try looking for scratch org pools
+  if [ ! -s "$tempfile" ]; then
+    >&2 echo "No Sandbox pools  found for domain: $DOMAIN...Exiting"
+    exit 1
+  fi
+
   firstInUseSandbox=""
 
   while read sandbox_name; do
