@@ -157,6 +157,8 @@ jobs:
           issue: ${{inputs.issue-number}}
           allow-repeats: true
           repo-token: ${{ secrets.gh-token}}
+          message-id: ${{ inputs.environment }}
+          refresh-message-position: true
           message-path: |
                 message.md
             

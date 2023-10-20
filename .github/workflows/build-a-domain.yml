@@ -330,6 +330,8 @@ jobs:
         with:
           allow-repeats: true
           repo-token: ${{ secrets.gh_token }}
+          message-id: ${{matrix.filePath}}
+          refresh-message-position: true
           message-path: |
                message.md 
 
