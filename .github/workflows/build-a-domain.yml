@@ -67,7 +67,7 @@ jobs:
   build:
     name: 'Build packages'
     runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    container: ghcr.io/flxbl-io/sfops:latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -116,7 +116,7 @@ jobs:
    
   deploy-to-org: 
     runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    container: ghcr.io/flxbl-io/sfops:latest
     needs: 
       - build
       - fetch-test-envs
@@ -191,7 +191,7 @@ jobs:
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::" 
 
       - name: 'Run package version reporter'
-        uses:  flxbl-io//sfops-gh-actions/packageversionReporter@main
+        uses:  flxbl-io/sfops-gh-actions/packageversionReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
          alias: ${{ matrix.environment }}
@@ -203,7 +203,7 @@ jobs:
   publish:
     name: 'publish'
     runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    container: ghcr.io/flxbl-io/sfops:latest
     needs: 
       - deploy-to-org
     if: |
