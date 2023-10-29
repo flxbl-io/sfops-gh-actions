@@ -5,6 +5,9 @@ inputs:
   DEVHUB_SFDX_AUTH_URL:
     description: "Auth URL to DEVHUB"
     required: true
+  ENV_SFDX_AUTH_URL:
+    description: "Auth URL to Environment"
+    required: false
   SB_SFDX_AUTH_URL:
     description: "Auth URL to Sandbox"
     required: false
@@ -43,7 +46,7 @@ runs:
               echo "devhub_username=$DEVHUB_USERNAME" >> "$GITHUB_OUTPUT"
 
 
-      - name: Authenticate to ${{ inputs.environment }}3
+      - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         shell: bash
         run: |
@@ -85,6 +88,8 @@ runs:
               # Main logic
               if [[ "${{ inputs.environment }}" =~ "prod" || "${{ inputs.environment }}" =~ "production" || "${{ inputs.org-name }}" =~ "prod" || "${{ inputs.org-name }}" =~ "production" ]]; then
                 handle_prod_or_production "${{ inputs.environment-profile }}"
+              elif [[ "${{ inputs.ENV_SFDX_AUTH_URL }}" != '' ]]; then
+                handle_sandbox_url "${{ inputs.ENV_SFDX_AUTH_URL }}" "${{ inputs.environment-profile }}"
               elif [[ "${{ inputs.SB_SFDX_AUTH_URL }}" != '' ]]; then
                 handle_sandbox_url "${{ inputs.SB_SFDX_AUTH_URL }}" "${{ inputs.environment-profile }}"
               elif [[ "${{ inputs.org-name }}" != '' ]]; then
