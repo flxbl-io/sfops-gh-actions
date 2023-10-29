@@ -310,7 +310,9 @@ jobs:
         name: Report Comment on originating PR
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-         allow-repeats : true
+         allow-repeats : false
+         message-id: ${{inputs.domain}}
+         refresh-message-position: true
          repo-token : ${{ secrets.gh_token}}
          message: |
           This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
@@ -328,7 +330,7 @@ jobs:
         name: Print Any Deployment errors
         continue-on-error: true
         with:
-          allow-repeats: true
+          allow-repeats: false
           repo-token: ${{ secrets.gh_token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
@@ -344,7 +346,9 @@ jobs:
 
       - uses: mshick/add-pr-comment@v2
         with:
-         allow-repeats : true
+         allow-repeats : false
+         message-id: ${{inputs.domain}}
+         refresh-message-position: true
          repo-token : ${{ secrets.gh_token}}
          message: |
             Apologies, it seems we ran into an issue, This would need your manual attention please check the job run

@@ -155,7 +155,7 @@ jobs:
         name: Print contents of  release defn
         with:
           issue: ${{inputs.issue-number}}
-          allow-repeats: true
+          allow-repeats: false
           repo-token: ${{ secrets.gh-token}}
           message-id: ${{ inputs.environment }}
           refresh-message-position: true
