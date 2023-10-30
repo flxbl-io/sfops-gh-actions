@@ -49,7 +49,7 @@ runs:
     - id: assign_user
       shell: bash
       run: |
-         if [ -z "${{ inputs.usersToBeAssigned }}" ]
+         if [ -z "${{ inputs.email }}" ]
          then
             echo "No users to be assigned"
          else
