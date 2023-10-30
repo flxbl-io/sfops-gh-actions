@@ -53,7 +53,7 @@ on:
     secrets: 
         DEVHUB_SFDX_AUTH_URL:
             description: 'Devhub Auth URL'
-        SB_SFDX_AUTH_URL:
+        ENV_SFDX_AUTH_URL:
             description: 'Sandbox Auth URL'
         gh-token:
             description: 'GH Token to commit to the target repo'
