@@ -1,0 +1,63 @@
+name: 'Fetches a  developer scratch org for a provided tag'
+description: 'Fetch a scratch org from the pool given a tag'
+inputs:
+  tag:
+    description: 'The tag of the scratch org pool'
+    required: true
+  devhub_sfdx_auth_url:
+    description: 'Devhub SFDX Auth URL'
+    required: true
+  email:
+    description: "Email of the user for which the scratch org is to be assigned"
+    required: true
+  gh_token:  # id of input
+    description: 'github token to use for commiting to repo'
+    required: true
+  daysToKeep:
+    description: "Amount of days the scratch org should be kept for"
+    required: true
+outputs:
+  SO_USERNAME:
+    description: "Name of the user name in scratch org"
+    value: ${{ steps.fetch_so.outputs.SO_USERNAME }}
+  ASSIGNED_USERNAME:
+    description: "Name of the user name in scratch org"
+    value: ${{ steps.assign_user.outputs.ASSIGNED_USERNAME }}
+runs:
+  using: "composite"
+  steps:
+
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action 
+    - run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
+          export GH_TOKEN=${{inputs.gh_token}}
+          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+      shell: bash
+  
+    - id: fetch_so
+      shell: bash
+      run: |
+          scratchOrgInfo=$(sfp pool:fetch -t ${{ inputs.tag }} -v devhub --json)
+          SO_USERNAME=$(echo $scratchOrgInfo | jq -r '.username')
+          echo "SO_USERNAME=$SO_USERNAME" >> "$GITHUB_OUTPUT"
+
+    - id: assign_user
+      shell: bash
+      run: |
+         if [ -z "${{ inputs.usersToBeAssigned }}" ]
+         then
+            echo "No users to be assigned"
+         else
+            node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ steps.fetch_so.outputs.SO_USERNAME }} ${{ inputs.email }}   false
+             ASSIGNED_USERNAME=$(cat username.output)
+             echo "ASSIGNED_USERNAME=$ASSIGNED_USERNAME" >> "$GITHUB_OUTPUT"
+         fi
+ 
+
+
+

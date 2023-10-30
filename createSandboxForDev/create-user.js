@@ -13,6 +13,7 @@ const { execSync } = require('child_process');
 const profileName = process.argv[2];
 const email = process.argv[3];
 const targetOrg = process.argv[4];
+const appendTargetOrg = process.argv[5];
 
 async function generateCsvFiles() {
   const queries = [
@@ -46,7 +47,10 @@ async function createUser(profileId, email) {
   const firstName = faker.person.firstName().replace(/\s/g, '_');;
   const lastName = faker.hacker.noun().replace(/\s/g, '_');
   const alias = faker.hacker.noun().replace(/\s/g, '_').slice(0, 8);
-  const userName = faker.internet.exampleEmail({ firstName: firstName, lastName: lastName }) + '.' + targetOrg;
+  let userName = faker.internet.exampleEmail({ firstName: firstName, lastName: lastName });
+  if(appendTargetOrg==='true'){
+   userName+= '.' + targetOrg;
+  }
   const values = `Alias="${alias}" FirstName="${firstName}" UserName="${userName}" LastName="${lastName}" Email=${email} LocaleSidKey="en_AU" LanguageLocaleKey="en_US" EmailEncodingKey="ISO-8859-1" TimeZoneSidKey="Australia/Melbourne" ProfileId="${profileId}" IsActive="true"`;
 
   const cmd = `sf data record create --json -s User  -v "${values}" -o ${targetOrg}`;
@@ -108,7 +112,7 @@ async function main() {
   `
 
   fs.writeFileSync('resetPassword.apex', anoymousApex);
-  const cmd = ` sfdx apex run -f resetPassword.apex  -o ${targetOrg}`;
+  const cmd = ` sf apex run -f resetPassword.apex  -o ${targetOrg}`;
   const result = await exec(cmd);
   console.log(`Reset password for User record ${userId} successfully `);
 

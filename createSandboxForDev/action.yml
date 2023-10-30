@@ -105,7 +105,7 @@ runs:
           node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name
         fi
 
-        node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name 
+        node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name true
        
         #Reset Source tracking
         sf project reset -o $DEVHUB_USERNAME.$sandbox_name 
