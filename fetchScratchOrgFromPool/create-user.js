@@ -101,6 +101,8 @@ async function main() {
     console.log(`Proceeding to reset password and email for default user account`);
     userId = await getUserIdOfDefaultUser();
     updateEmailOfDefaultUser(userId,email);
+    const outputFilePath = path.resolve('username.output');
+    fs.writeFileSync(outputFilePath, targetOrg);
   }
 
   let anoymousApex = `
