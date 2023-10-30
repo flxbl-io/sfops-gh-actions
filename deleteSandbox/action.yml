@@ -1,12 +1,12 @@
-name: 'Delete a Sandbox'
-description: 'Delete a sandbox with developer license'
+name: "Delete a Sandbox"
+description: "Delete a sandbox with developer license"
 
 inputs:
   sandboxName:
-    description: 'Name of the sandbox to be deleted'
+    description: "Name of the sandbox to be deleted"
     required: true
   devhub_sfdx_auth_url:
-    description: 'Devhub SFDX Auth URL'
+    description: "Devhub SFDX Auth URL"
     required: true
 
 outputs:
@@ -21,8 +21,8 @@ runs:
       shell: bash
 
     - run: |
-          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sf auth sfdxurl store -f authfile -a devhub
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sf auth sfdxurl store -f authfile -a devhub
       shell: bash
 
     - id: deleteSandbox

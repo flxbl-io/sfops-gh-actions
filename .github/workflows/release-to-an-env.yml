@@ -1,85 +1,84 @@
 # Reusable job not to be used directly
 
-name: 'Trigger Release to an org'
+name: "Trigger Release to an org"
 
 on:
   workflow_call:
     inputs:
       environment:
-          description: 'Name of the environment'
-          type: 'string'
+        description: "Name of the environment"
+        type: "string"
       environment-profile:
-          description: 'The profile of the enviroment to be used in release'
-          type: 'string'
+        description: "The profile of the enviroment to be used in release"
+        type: "string"
       org-name:
-          description: 'The name of the org to be released'
-          type: 'string'
-      domain: 
-         description: 'Domain  that need to be released'
-         required: true
-         type: 'string'
-      releaseDefn: 
-         description: 'The release definition to use'
-         required: true
-         type: 'string'
-      branchname:  
-         description: 'Name of the branch where the release defn is stored in the repo'
-         required: true
-         type: 'string'
-      releaselogbranch:  
-         description: 'Name of the branch where the release logs are stored in the repo'
-         type: 'string'
+        description: "The name of the org to be released"
+        type: "string"
+      domain:
+        description: "Domain  that need to be released"
+        required: true
+        type: "string"
+      releaseDefn:
+        description: "The release definition to use"
+        required: true
+        type: "string"
+      branchname:
+        description: "Name of the branch where the release defn is stored in the repo"
+        required: true
+        type: "string"
+      releaselogbranch:
+        description: "Name of the branch where the release logs are stored in the repo"
+        type: "string"
       target-repo:
-         description: 'Target repo to submit package version report as HTML'
-         type: 'string'
+        description: "Target repo to submit package version report as HTML"
+        type: "string"
       source-repo-url:
-        description: 'Source repo url to be used in the changelog'
-        type: 'string'
+        description: "Source repo url to be used in the changelog"
+        type: "string"
       workitem-url:
-         description: 'Workitem URL to be used in the changelog'
-         type: 'string'
+        description: "Workitem URL to be used in the changelog"
+        type: "string"
       additional-plugins:
-         description: 'Additional plugins to be installed'
-         type: 'string'
+        description: "Additional plugins to be installed"
+        type: "string"
       overrideSkipIfAlreadyInstalled:
-         description: 'Override skipIfAlreadyInstalled flag in the release defintion'
-         type: 'string'
+        description: "Override skipIfAlreadyInstalled flag in the release defintion"
+        type: "string"
       excludePackages:
-          description: 'Exclude packages from the release'
-          type: 'string'
+        description: "Exclude packages from the release"
+        type: "string"
       overridePackageVersions:
-          description: 'Override package version in the release'
-          type: 'string'
+        description: "Override package version in the release"
+        type: "string"
       issue-number:
-         description: 'If this action is triggered from an issue, the issue number'
-         type: 'string'
+        description: "If this action is triggered from an issue, the issue number"
+        type: "string"
       issue-author:
-          description: 'The initiator of the issue'
-          type: 'string'
+        description: "The initiator of the issue"
+        type: "string"
       issue-notifier:
-            description: 'Who all need to be need to be notified'
-            type: 'string'
+        description: "Who all need to be need to be notified"
+        type: "string"
       metrics-provider:
-            description: 'The metrics provider to be used'
-            type: 'string'
+        description: "The metrics provider to be used"
+        type: "string"
       pathToReleaseConfigs:
-            description: 'The path to release config'
-            type: 'string'
+        description: "The path to release config"
+        type: "string"
       releaseBoard:
-            description: 'The release board to be used'
-            type: 'string'
-    secrets: 
-        DEVHUB_SFDX_AUTH_URL:
-            description: 'Devhub Auth URL'
-        SB_SFDX_AUTH_URL:
-            description: 'Sandbox Auth URL'
-        gh-token:
-            description: 'GH Token to commit to the target repo'
-        datadog-api-key:
-            description: 'Datadog api key to report metrics'
-        datadog-host:
-            description: 'Datadog host to report metrics'
-            
+        description: "The release board to be used"
+        type: "string"
+    secrets:
+      DEVHUB_SFDX_AUTH_URL:
+        description: "Devhub Auth URL"
+      SB_SFDX_AUTH_URL:
+        description: "Sandbox Auth URL"
+      gh-token:
+        description: "GH Token to commit to the target repo"
+      datadog-api-key:
+        description: "Datadog api key to report metrics"
+      datadog-host:
+        description: "Datadog host to report metrics"
 
 jobs:
   release-to-org:
@@ -89,13 +88,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-            fetch-depth: 0
+          fetch-depth: 0
 
       - uses: actions/setup-node@v3
         with:
-            node-version: "18" 
-            registry-url: 'https://npm.pkg.github.com'
-
+          node-version: "18"
+          registry-url: "https://npm.pkg.github.com"
 
       - name: Update Project Card
         uses: peter-evans/create-or-update-project-card@v2
@@ -106,16 +104,15 @@ jobs:
           column-name: InProgress
           issue-number: ${{inputs.issue-number}}
 
-
       - name: Install additional plugins if any
         run: |
-            if [[ -n "${{ inputs.additional-plugins }}" ]]; then
-                IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
-                for plugin in "${plugins[@]}"; do
-                    echo "Installing $plugin"
-                    echo 'y' | sfdx plugins:install $plugin
-                done
-            fi
+          if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+              IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+              for plugin in "${plugins[@]}"; do
+                  echo "Installing $plugin"
+                  echo 'y' | sfdx plugins:install $plugin
+              done
+          fi
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
@@ -124,7 +121,7 @@ jobs:
           echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
           echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
 
-      - name: Lock enviroment 
+      - name: Lock enviroment
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ inputs.environment != '' }}
         with:
@@ -133,24 +130,21 @@ jobs:
       - name: Fetch Sandbox Name if any
         id: handle-sandbox-name
         run: |
-           if [[ -n "${{ inputs.environment }}" ]]; then
-             echo "SBX_NAME=${{ vars.SBXNAME }}" >> $GITHUB_OUTPUT   
-           else
-             echo "SBX_NAME=${{inputs.org-name}}" >> $GITHUB_OUTPUT   
-           fi
-
+          if [[ -n "${{ inputs.environment }}" ]]; then
+            echo "SBX_NAME=${{ vars.SBXNAME }}" >> $GITHUB_OUTPUT   
+          else
+            echo "SBX_NAME=${{inputs.org-name}}" >> $GITHUB_OUTPUT   
+          fi
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
-        with: 
+        with:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
-          org-name:  ${{ steps.handle-sandbox-name.outputs.SBX_NAME }}
-          environment-profile:  ${{ inputs.environment-profile }}
-
-     
+          org-name: ${{ steps.handle-sandbox-name.outputs.SBX_NAME }}
+          environment-profile: ${{ inputs.environment-profile }}
 
       - uses: actions/github-script@v6
         if: ${{ inputs.environment != '' }}
@@ -180,99 +174,89 @@ jobs:
 
           echo "releaseDefn=$pathToReleaseDef.yml" >> "$GITHUB_OUTPUT"
 
-
-      - name: 'Exclude Packages if  any'
+      - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
         with:
           changelog: ${{steps.fetch-release-defn.outputs.releaseDefn}}
           excludePackages: ${{ inputs.excludePackages }}
 
-      - name: 'Run Override package version if any'
+      - name: "Run Override package version if any"
         uses: flxbl-io/sfops-gh-actions/overridePackageVersionInReleaseDefns@main
         with:
-          changelog:  ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          changelog: ${{steps.fetch-release-defn.outputs.releaseDefn}}
           overridePackageVersions: ${{ inputs.overridePackageVersions }}
 
- 
       # Release to environment
       - name: Initiate Release
         id: release
         run: |
-            if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
-              sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.outputs.releaseDefn}}
-            fi
+          if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
+            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          fi
 
-            if [ -z "${{ inputs.environment }}" ]; then
-             sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
-            else
-             sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
-            fi
+          if [ -z "${{ inputs.environment }}" ]; then
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
+          else
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
+          fi
         env:
-          NODE_AUTH_TOKEN:  ${{ secrets.gh-token}}
+          NODE_AUTH_TOKEN: ${{ secrets.gh-token}}
 
-      - name: 'Fetch all ReleaseNames'
+      - name: "Fetch all ReleaseNames"
         id: getAllReleaseNames
         if: ${{ inputs.environment != '' }}
-        uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main  
+        uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
-            
-      - name: 'Fetch all Envs that match release type'
+
+      - name: "Fetch all Envs that match release type"
         id: getAllEnvs
         if: ${{ inputs.environment != '' }}
-        uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+        uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
         with:
           gh_token: ${{ secrets.gh-token}}
           filter: "type:release"
 
-
-      - name: 'Report release logs'
-        uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main  
+      - name: "Report release logs"
+        uses: flxbl-io/sfops-gh-actions/releaseToOrgMapReporter@main
         if: ${{ inputs.environment != '' }}
         continue-on-error: true
         with:
-           source-branch: ${{inputs.releaselogbranch}}
-           domain: ${{ inputs.domain }}
-           target-repo: ${{ inputs.target-repo }}
-           gh_token: ${{ secrets.gh-token}}
-           source-repo-url: ${{ inputs.source-repo-url}}
-           environments: ${{ steps.getAllEnvs.outputs.allEnvs }}
-           workitem-url: ${{ inputs.workitem-url}}
-  
-  
-      - name: 'Run package version reporter'
+          source-branch: ${{inputs.releaselogbranch}}
+          domain: ${{ inputs.domain }}
+          target-repo: ${{ inputs.target-repo }}
+          gh_token: ${{ secrets.gh-token}}
+          source-repo-url: ${{ inputs.source-repo-url}}
+          environments: ${{ steps.getAllEnvs.outputs.allEnvs }}
+          workitem-url: ${{ inputs.workitem-url}}
+
+      - name: "Run package version reporter"
         uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
         if: ${{ inputs.environment != '' }}
         with:
-         alias: ${{ inputs.environment }}
-         env-name: ${{ inputs.environment }}
-         target-repo: ${{inputs.target-repo}}
-         gh_token: ${{ secrets.gh-token }}
+          alias: ${{ inputs.environment }}
+          env-name: ${{ inputs.environment }}
+          target-repo: ${{inputs.target-repo}}
+          gh_token: ${{ secrets.gh-token }}
 
       - name: Create comment on issue after completion of release
         uses: peter-evans/create-or-update-comment@v3
         if: ${{ inputs.issue-number != '' }}
         with:
-           issue-number: ${{inputs.issue-number}}
-           token:  ${{ secrets.gh-token}}
-           body: |
-             Hello @${{inputs.issue-notifier}} :wave:
-             
-             The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to the environment to  validate the release.
+          issue-number: ${{inputs.issue-number}}
+          token: ${{ secrets.gh-token}}
+          body: |
+            Hello @${{inputs.issue-notifier}} :wave:
+
+            The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to the environment to  validate the release.
 
       - name: Create comment on failure of a release
         uses: peter-evans/create-or-update-comment@v3
-        if:  ${{ failure() && steps.release.conclusion == 'failure' && inputs.issue-number != '' }}
+        if: ${{ failure() && steps.release.conclusion == 'failure' && inputs.issue-number != '' }}
         with:
-           issue-number: ${{inputs.issue-number}}
-           token:  ${{ secrets.gh-token}}
-           body: |
-             Hello @${{inputs.issue-notifier}} :wave:
-             
-             The release to ${{inputs.environment}} has failed. Please check the logs, fix the issue and retrigger the release
+          issue-number: ${{inputs.issue-number}}
+          token: ${{ secrets.gh-token}}
+          body: |
+            Hello @${{inputs.issue-notifier}} :wave:
 
-  
-
-
-  
-  
+            The release to ${{inputs.environment}} has failed. Please check the logs, fix the issue and retrigger the release

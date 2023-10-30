@@ -1,49 +1,45 @@
-name: 'Create a CI Sandbox - Developer License'
-description: 'Create a CI sandbox with developer license'
+name: "Create a CI Sandbox - Developer License"
+description: "Create a CI sandbox with developer license"
 
 inputs:
   envName:
-     description: 'Name of environment'
-     required: true
+    description: "Name of environment"
+    required: true
   type:
-     description: 'Name of environment'
-     required: true
+    description: "Name of environment"
+    required: true
   branch:
-    description: 'Branch of the environment to be associated with'
+    description: "Branch of the environment to be associated with"
     required: true
   envApprovers:
-    description: 'List of approvers for the environment'
+    description: "List of approvers for the environment"
     required: false
   sbxName:
-    description: 'Name of sandbox'
+    description: "Name of sandbox"
     required: true
   gh_token:
-    description: 'Token for GitHub API'
+    description: "Token for GitHub API"
     required: true
-
 
 runs:
   using: "composite"
   steps:
+    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+      shell: bash
 
+    - name: Create environments
+      uses: thijsvtol/create-environments@main
+      with:
+        token: ${{ inputs.gh_token} }
+        repo: ${{ github.repository }}
+        environments: ${{ inputs.envName }}
+        required_reviewers: ${{ inputs.envApprovers }}
 
-     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
-       shell: bash
-
-    
-     - name: Create environments
-       uses: thijsvtol/create-environments@main
-       with:
-          token: ${{ inputs.gh_token} }
-          repo: ${{ github.repository }}
-          environments: ${{ inputs.envName }}
-          required_reviewers:  ${{ inputs.envApprovers }}
-    
-     - name: Setup Environment Variables
-       shell: bash
-       env:
-          GH_TOKEN: ${{ inputs.gh_token }}
-       run: |
-          gh variable set  BRANCH  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.branch }}
-          gh variable set  TYPE  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.type }}
-          gh variable set  SBX_NAME  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.sbxName }} 
+    - name: Setup Environment Variables
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh_token }}
+      run: |
+        gh variable set  BRANCH  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.branch }}
+        gh variable set  TYPE  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.type }}
+        gh variable set  SBX_NAME  -e ${{ inputs.envName }}  --repo  ${{ github.repository }} -b  ${{ inputs.sbxName }}

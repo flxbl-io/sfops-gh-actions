@@ -1,11 +1,11 @@
-name: 'Freeze all users in a provided org'
-description: 'Freeze users in a provided org'
+name: "Freeze all users in a provided org"
+description: "Freeze users in a provided org"
 inputs:
   profiles:
-    description: 'Name of the profiles to be excluded from from frozen, by default only System Adminstrator profile is excluded'
+    description: "Name of the profiles to be excluded from from frozen, by default only System Adminstrator profile is excluded"
     required: true
   target-org-alias:
-    description: 'Alias of the target org from which the users will be frozen'
+    description: "Alias of the target org from which the users will be frozen"
     required: true
 runs:
   using: "composite"

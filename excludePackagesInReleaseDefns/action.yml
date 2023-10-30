@@ -1,11 +1,11 @@
-name: 'Exclude Packages from Release Defn'
-description: 'Exclude packages from release defn'
+name: "Exclude Packages from Release Defn"
+description: "Exclude packages from release defn"
 inputs:
   changelog:
-    description: 'Path to the changelog file'
+    description: "Path to the changelog file"
     required: true
   excludePackages:
-    description: 'Exclude package version by providing a package name in a comma separated format'
+    description: "Exclude package version by providing a package name in a comma separated format"
 runs:
   using: "composite"
   steps:

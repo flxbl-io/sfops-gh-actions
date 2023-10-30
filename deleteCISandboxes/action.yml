@@ -1,12 +1,12 @@
-name: 'Delete a Sandbox'
-description: 'Delete a sandbox with developer license'
+name: "Delete a Sandbox"
+description: "Delete a sandbox with developer license"
 
 inputs:
   devhub_sfdx_auth_url:
-    description: 'Devhub SFDX Auth URL'
+    description: "Devhub SFDX Auth URL"
     required: true
   gh_token:
-    description: 'Token for GitHub API'
+    description: "Token for GitHub API"
     required: true
 
 runs:
@@ -18,12 +18,10 @@ runs:
     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
       shell: bash
 
-
     - run: |
-          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sfdx auth:sfdxurl:store -f authfile -a devhub
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
-
 
     - id: deleteCISandboxes
       run: |

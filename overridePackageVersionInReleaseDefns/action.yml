@@ -1,11 +1,11 @@
-name: 'Override Packages from Release Defn'
-description: 'Override packages from release defn'
+name: "Override Packages from Release Defn"
+description: "Override packages from release defn"
 inputs:
   changelog:
-    description: 'Path to the changelog file'
+    description: "Path to the changelog file"
     required: true
   overridePackageVersions:
-    description: 'Override package version by providing a package name and version in a comma separated format'
+    description: "Override package version by providing a package name and version in a comma separated format"
 runs:
   using: "composite"
   steps:

@@ -1,26 +1,20 @@
 # sfops-gh-actions
 
-Reusable Github actions and workflows that make it easier to apply sfpowercripts / dx@scale to GitHub. 
-Please note this repo is licensed using BSL [License](./LICENSE) and should only be used after 
+Reusable Github actions and workflows that make it easier to apply sfpowercripts / dx@scale to GitHub.
+Please note this repo is licensed using BSL [License](./LICENSE) and should only be used after
 explicit permission is requested
-
-
 
 This folder houses reusable github actions used by projects
 
 Reusable GitHub Actions
 
-
-
-
 1. packageversionreporter
 
-This action reports the packages installed in an org, and updates the equivalent html reports. 
+This action reports the packages installed in an org, and updates the equivalent html reports.
 
 2. gitrepocommitter
 
 This action can be used to commit a directory to another target directory in the rpo
-
 
 3. apextestresultreporter
 
@@ -41,4 +35,3 @@ This action deletes a sandbox
 7. unlockedPackageInstaller
 
 This action can be used to install 2GP package into org
-

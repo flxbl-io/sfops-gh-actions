@@ -1,26 +1,25 @@
-name: 'Check a CI Sandbox Status'
-description: 'Check a status of CI Sandbox and add to the pool if ready, Also deactivate all other users'
+name: "Check a CI Sandbox Status"
+description: "Check a status of CI Sandbox and add to the pool if ready, Also deactivate all other users"
 
 inputs:
   devhub_sfdx_auth_url:
-    description: 'Devhub SFDX Auth URL'
+    description: "Devhub SFDX Auth URL"
     required: true
   usersToBeActivated:
-     description: 'Comma separated list of users to be activated'
-     required: true
+    description: "Comma separated list of users to be activated"
+    required: true
   pathToPoolConfigFile:
-     description: 'Path to pool config file'
-     required: true
-  gh_token: 
-    description: 'GitHub Token'
+    description: "Path to pool config file"
+    required: true
+  gh_token:
+    description: "GitHub Token"
     required: true
   metrics-provider:
-    description: 'The metrics provider to be used'
+    description: "The metrics provider to be used"
   datadog-api-key:
-    description: 'Datadog api key to report metrics'
+    description: "Datadog api key to report metrics"
   datadog-host:
-    description: 'Datadog host to report metrics'
-
+    description: "Datadog host to report metrics"
 
 runs:
   using: "composite"
@@ -28,24 +27,22 @@ runs:
     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
       shell: bash
 
-
-
     - run: |
-          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sfdx auth:sfdxurl:store -f authfile -a devhub
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
- 
+
     - id: checkSandboxStatus
       run: |
-         devhubInfo=$(sf org display -o devhub --json)
-         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
-         export GH_TOKEN=${{inputs.gh_token}}
-         if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
-          export "SFPOWERSCRIPTS_DATADOG=true" 
-          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
-          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
-         fi
+        devhubInfo=$(sf org display -o devhub --json)
+        DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+        export GH_TOKEN=${{inputs.gh_token}}
+        if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
+         export "SFPOWERSCRIPTS_DATADOG=true" 
+         export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
+         export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
+        fi
 
-         $GITHUB_ACTION_PATH/checkSandboxStatus.sh  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.usersToBeActivated }}
-         node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
+        $GITHUB_ACTION_PATH/checkSandboxStatus.sh  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.usersToBeActivated }}
+        node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
       shell: bash

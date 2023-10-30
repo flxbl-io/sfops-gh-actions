@@ -1,5 +1,5 @@
-name: 'Create a Sandbox - Developer License'
-description: 'Create a sandbox with developer license'
+name: "Create a Sandbox - Developer License"
+description: "Create a sandbox with developer license"
 
 inputs:
   email:
@@ -9,23 +9,23 @@ inputs:
     description: "Amount of days the sandbox should be kept for"
     required: true
   sourceSB:
-    description: 'Pick a source sandbox for the source of this sandbox'
+    description: "Pick a source sandbox for the source of this sandbox"
     required: true
   devhub_sfdx_auth_url:
-    description: 'Devhub SFDX Auth URL'
+    description: "Devhub SFDX Auth URL"
     required: true
   usersToBeActivated:
-     description: 'Comma separated list of users to be activated'
-     required: false
+    description: "Comma separated list of users to be activated"
+    required: false
   apexClassId:
-    description: 'Apex Class Id to be used for apex test execution'
+    description: "Apex Class Id to be used for apex test execution"
     required: false
   metrics-provider:
-    description: 'The metrics provider to be used'
+    description: "The metrics provider to be used"
   datadog-api-key:
-    description: 'Datadog api key to report metrics'
+    description: "Datadog api key to report metrics"
   datadog-host:
-    description: 'Datadog host to report metrics'
+    description: "Datadog host to report metrics"
 
 outputs:
   SANDBOX_NAME:
@@ -42,10 +42,9 @@ runs:
       shell: bash
 
     - run: |
-          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sfdx auth:sfdxurl:store -f authfile -a devhub
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
-
 
     - id: createSandbox
       run: |
@@ -71,17 +70,17 @@ runs:
         esac
         sandbox_appender_name=$(dd bs=512 if=/dev/urandom count=1 2>/dev/null | LC_ALL=C tr -dc '0-9' | head -c 6)
         sandbox_name="$trimmed_user$sandbox_appender_name"
-        
-        
+
+
         echo Name of the sandbox to be created : $sandbox_name
-        
+
         #Create sandbox
         node $GITHUB_ACTION_PATH/dist/create-sandbox/index.js $sandbox_name devhub ${{ inputs.sourceSB  }} ${{ inputs.apexClassId  }}  
 
 
-  
-    
-  
+
+
+
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
         # calculate elapsed time and report
@@ -106,11 +105,11 @@ runs:
         fi
 
         node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name true
-       
+
         #Reset Source tracking
         sf project reset -o $DEVHUB_USERNAME.$sandbox_name 
 
-        
+
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
         SANDBOX_USERNAME=$(cat username.output)
@@ -122,6 +121,5 @@ runs:
           export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
           sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"dev\"}
         fi
-
 
       shell: bash

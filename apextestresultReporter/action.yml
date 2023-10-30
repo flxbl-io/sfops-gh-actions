@@ -1,74 +1,70 @@
 #always assume it needs sfpowerscripts docker image as the run time
 
-name: 'Report execution of run all local tests of an or go to a repo'
-description: 'Report package version of an org to a folder in repo and create an html report'
+name: "Report execution of run all local tests of an or go to a repo"
+description: "Report package version of an org to a folder in repo and create an html report"
 inputs:
-  alias:  # id of input
-    description: 'alias of the org'
+  alias: # id of input
+    description: "alias of the org"
     required: true
-  target-repo:  # id of input
-    description: 'name of the repo to report to, will create a folder apexTestResults in the target repo'
+  target-repo: # id of input
+    description: "name of the repo to report to, will create a folder apexTestResults in the target repo"
     required: true
-  gh_token:  # id of input
-    description: 'github token to use for commiting to repo'
+  gh_token: # id of input
+    description: "github token to use for commiting to repo"
     required: true
 
 runs:
   using: "composite"
   steps:
-    
     - run: |
-    
-            # add a var for tracking metrics
-            start=$(date +%s)
 
-            # ignore failure of this command
-            set +e
-            sf apex  run  test -o  ${{ inputs.alias }} -l RunLocalTests -w 300 -y -d testresults -r json 
-            set -e
+        # add a var for tracking metrics
+        start=$(date +%s)
 
-            # calculate elapsed time
-            end=$(date +%s)
-            elapsed=$(( end - start ))
+        # ignore failure of this command
+        set +e
+        sf apex  run  test -o  ${{ inputs.alias }} -l RunLocalTests -w 300 -y -d testresults -r json 
+        set -e
 
-            # Find the file that ends with -junit.xml in the testresults directory
-            FILE=$(find ./testresults -type f -name '*-junit.xml')
+        # calculate elapsed time
+        end=$(date +%s)
+        elapsed=$(( end - start ))
 
-            if [ -z "$FILE" ]
-            then
-            echo "No file found ending with -junit.xml in testresults directory"
-            exit 1
-            fi
+        # Find the file that ends with -junit.xml in the testresults directory
+        FILE=$(find ./testresults -type f -name '*-junit.xml')
 
-            sfp metrics:report -m "testrun.elapsedtime" -t timer -v $elapsed -g {\"env\":\"${{inputs.alias}}\"}
+        if [ -z "$FILE" ]
+        then
+        echo "No file found ending with -junit.xml in testresults directory"
+        exit 1
+        fi
 
-            # Run the Node.js script with the file path as an argument
-            node $GITHUB_ACTION_PATH/dist/index.js "$FILE"  ${{inputs.alias}}
+        sfp metrics:report -m "testrun.elapsedtime" -t timer -v $elapsed -g {\"env\":\"${{inputs.alias}}\"}
 
-            find ./testresults -type f ! -name '*.html' -delete
-            
+        # Run the Node.js script with the file path as an argument
+        node $GITHUB_ACTION_PATH/dist/index.js "$FILE"  ${{inputs.alias}}
+
+        find ./testresults -type f ! -name '*.html' -delete
+
       shell: bash
 
-
-    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action 
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
     - run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          export GH_TOKEN=${{inputs.gh_token}}
-          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
 
-
-
-    - name: 'Fetch all Envs'
+    - name: "Fetch all Envs"
       id: getAllEnvs
-      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
       with:
-          gh_token: ${{ env.GH_TOKEN }}
+        gh_token: ${{ env.GH_TOKEN }}
 
     - run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          
-          export GH_TOKEN=${{inputs.gh_token}}
-             
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+
+        export GH_TOKEN=${{inputs.gh_token}}
+           
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
       shell: bash

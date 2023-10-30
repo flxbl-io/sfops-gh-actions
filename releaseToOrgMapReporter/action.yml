@@ -1,42 +1,42 @@
-name: 'ReleaseReporter'
-description: 'Report releases in each org'
+name: "ReleaseReporter"
+description: "Report releases in each org"
 inputs:
-  source-branch: 
-    description: 'name of the branch from which to read changelog.json'
+  source-branch:
+    description: "name of the branch from which to read changelog.json"
     required: true
-  environments: 
-    description: 'list of environments of the changelog, separated by commas'
-    required: true  
-  domain: 
-    description: 'domain for this particular changelog'
+  environments:
+    description: "list of environments of the changelog, separated by commas"
     required: true
-  target-repo:  
-    description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
+  domain:
+    description: "domain for this particular changelog"
+    required: true
+  target-repo:
+    description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   workitem-url:
-     description: 'url of the jira board'
-     required: true
+    description: "url of the jira board"
+    required: true
   source-repo-url:
-      description: 'url of the source repo'
-      required: true
+    description: "url of the source repo"
+    required: true
   gh_token:
-    description: 'github token to use for committing to repo'
+    description: "github token to use for committing to repo"
     required: true
 
 runs:
   using: "composite"
   steps:
     - run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          git fetch --all
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git fetch --all
 
-          export GH_TOKEN=${{inputs.gh_token}}
+        export GH_TOKEN=${{inputs.gh_token}}
 
-          # Loop through each environment and fetch the corresponding release changelog
-          IFS=',' read -ra ENVIRONMENTS <<< "${{inputs.environments}}"
-          for env in "${ENVIRONMENTS[@]}"; do
-            mkdir -p _data/releaselogs/$env
-            git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > _data/releaselogs/$env/${{inputs.domain}}.json
-          done
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated  env changelog for domain ${{inputs.domain}}"
+        # Loop through each environment and fetch the corresponding release changelog
+        IFS=',' read -ra ENVIRONMENTS <<< "${{inputs.environments}}"
+        for env in "${ENVIRONMENTS[@]}"; do
+          mkdir -p _data/releaselogs/$env
+          git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > _data/releaselogs/$env/${{inputs.domain}}.json
+        done
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated  env changelog for domain ${{inputs.domain}}"
       shell: bash

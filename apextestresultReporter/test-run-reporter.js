@@ -1,12 +1,12 @@
-const fs = require('fs');
-const xml2js = require('xml2js');
-const { execSync } = require('child_process');
+const fs = require("fs");
+const xml2js = require("xml2js");
+const { execSync } = require("child_process");
 
 const junitFilePath = process.argv[2];
 const alias = process.argv[3];
 
 if (!junitFilePath) {
-  console.log('Please provide the path to the JUnit XML file as an argument.');
+  console.log("Please provide the path to the JUnit XML file as an argument.");
   process.exit(1);
 }
 
@@ -144,8 +144,8 @@ fs.readFile(junitFilePath, (err, data) => {
 
     let totalTestTime;
 
-    properties.forEach(property => {
-      if (property.$.name === 'testTotalTime') {
+    properties.forEach((property) => {
+      if (property.$.name === "testTotalTime") {
         totalTestTime = parseFloat(property.$.value.slice(0, -2));
       }
     });
@@ -153,21 +153,21 @@ fs.readFile(junitFilePath, (err, data) => {
     let passedTestCases = 0;
     let failedTestCases = 0;
 
-    testCases.forEach(testCase => {
+    testCases.forEach((testCase) => {
       const name = testCase.$.name;
       const className = testCase.$.classname;
       const time = parseFloat(testCase.$.time);
-      const status = testCase.failure ? 'Failed' : 'Passed';
-      const failureMessage = testCase.failure ? testCase.failure[0]._ : '';
+      const status = testCase.failure ? "Failed" : "Passed";
+      const failureMessage = testCase.failure ? testCase.failure[0]._ : "";
 
-      if (status === 'Passed') {
+      if (status === "Passed") {
         passedTestCases++;
       } else {
         failedTestCases++;
       }
 
       htmlContent += `
-        <tr${status === 'Failed' ? ' class="failed"' : ''}>
+        <tr${status === "Failed" ? ' class="failed"' : ""}>
           <td>${name}</td>
           <td>${className}</td>
           <td>${time}</td>
@@ -176,18 +176,18 @@ fs.readFile(junitFilePath, (err, data) => {
         </tr>`;
     });
 
-    console.log('Total Test Cases: ' + testCases.length);
-    console.log('Passed Test Cases: ' + passedTestCases);
-    console.log('Failed Test Cases: ' + failedTestCases);
+    console.log("Total Test Cases: " + testCases.length);
+    console.log("Passed Test Cases: " + passedTestCases);
+    console.log("Failed Test Cases: " + failedTestCases);
 
     let command = `sfpowerscripts metrics:report -m 'testrun.passed' -t 'gauge' -v '${passedTestCases}'  -g '{\"env\":\"${alias}\"}'`;
-    let output = execSync(command, { encoding: 'utf8' });
+    let output = execSync(command, { encoding: "utf8" });
 
     command = `sfpowerscripts metrics:report -m 'testrun.executed' -t 'gauge' -v '${testCases.length}' -g '{\"env\":\"${alias}\"}'`;
-    output = execSync(command, { encoding: 'utf8' });
+    output = execSync(command, { encoding: "utf8" });
 
     command = `sfpowerscripts metrics:report -m 'testrun.failed' -t 'gauge' -v '${failedTestCases}'  -g '{\"env\":\"${alias}\"}'`;
-    output = execSync(command, { encoding: 'utf8' });
+    output = execSync(command, { encoding: "utf8" });
 
     htmlContent += `
     </tbody>
@@ -216,8 +216,9 @@ options: {
 </script>
 </html>`;
 
-    fs.writeFileSync(`testresults/${alias.toLocaleLowerCase()}.html`, htmlContent);
-
-
+    fs.writeFileSync(
+      `testresults/${alias.toLocaleLowerCase()}.html`,
+      htmlContent,
+    );
   });
 });

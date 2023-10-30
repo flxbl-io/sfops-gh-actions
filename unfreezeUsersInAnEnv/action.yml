@@ -1,11 +1,11 @@
-name: 'UnFreeze all users in a provided org'
-description: 'UnFreeze users in a provided org'
+name: "UnFreeze all users in a provided org"
+description: "UnFreeze users in a provided org"
 inputs:
   profiles:
-    description: 'Name of the profiles to be unfrozen, if omitted all users will be unfrozen'
+    description: "Name of the profiles to be unfrozen, if omitted all users will be unfrozen"
     required: true
   target-org-alias:
-    description: 'Alias of the target org from which the users will be frozen'
+    description: "Alias of the target org from which the users will be frozen"
     required: true
 runs:
   using: "composite"

@@ -1,39 +1,38 @@
-name: 'Create a CI Sandbox - Developer License'
-description: 'Create a CI sandbox with developer license'
+name: "Create a CI Sandbox - Developer License"
+description: "Create a CI sandbox with developer license"
 
 inputs:
   pathToPoolConfigFile:
-     description: 'Path to pool config file'
-     required: true
+    description: "Path to pool config file"
+    required: true
   devhub_sfdx_auth_url:
-    description: 'Devhub SFDX Auth URL'
+    description: "Devhub SFDX Auth URL"
     required: true
   gh_token:
-    description: 'Token for GitHub API'
+    description: "Token for GitHub API"
     required: true
-
 
 runs:
   using: "composite"
   steps:
     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
       shell: bash
-      
+
     - run: |
-          echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
-          sfdx auth:sfdxurl:store -f authfile -a devhub
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
 
     - id: createSandbox
       run: |
-          export GH_TOKEN=${{inputs.gh_token}}
-          config=$(cat ${{ inputs.pathToPoolConfigFile }})
-          export GH_TOKEN=${{inputs.gh_token}}
+        export GH_TOKEN=${{inputs.gh_token}}
+        config=$(cat ${{ inputs.pathToPoolConfigFile }})
+        export GH_TOKEN=${{inputs.gh_token}}
 
-          for entry in $(echo "$config" | jq -c '.[]'); do
-             echo 'Processing domain: ' $(echo $entry | jq -r '.domain')
-             $GITHUB_ACTION_PATH/process-domain.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
-           done
+        for entry in $(echo "$config" | jq -c '.[]'); do
+           echo 'Processing domain: ' $(echo $entry | jq -r '.domain')
+           $GITHUB_ACTION_PATH/process-domain.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
+         done
 
-          wait # Wait for all background jobs to finish
+        wait # Wait for all background jobs to finish
       shell: bash

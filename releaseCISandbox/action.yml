@@ -1,24 +1,21 @@
-name: 'Releases an In Use CI sandbox for a domain'
-description: 'Release a sandbox back to the pool for the domain'
+name: "Releases an In Use CI sandbox for a domain"
+description: "Release a sandbox back to the pool for the domain"
 inputs:
   domain:
-    description: 'Domain the sandbox belongs to'
+    description: "Domain the sandbox belongs to"
     required: true
-  gh_token:  # id of input
-    description: 'github token to use for commiting to repo'
+  gh_token: # id of input
+    description: "github token to use for commiting to repo"
     required: true
   sbxname:
-    description: 'Name of the sandbox'
+    description: "Name of the sandbox"
     required: true
 
 runs:
   using: "composite"
   steps:
-
     - run: |
-         export GH_TOKEN=${{inputs.gh_token}}
-         sbx_name=$($GITHUB_ACTION_PATH/releaseSandbox.sh  ${{ github.repository }} ${{inputs.domain}}  ${{inputs.sbxname}})
+        export GH_TOKEN=${{inputs.gh_token}}
+        sbx_name=$($GITHUB_ACTION_PATH/releaseSandbox.sh  ${{ github.repository }} ${{inputs.domain}}  ${{inputs.sbxname}})
       shell: bash
       id: fetchSandbox
-
-

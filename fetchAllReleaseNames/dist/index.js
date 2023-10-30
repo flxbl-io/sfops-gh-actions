@@ -4184,18 +4184,21 @@ function isYAML(fileContent) {
 function getAllReleaseDefns(configDir, outputDir = null) {
   const allReleaseNames = [];
 
-  fs.readdirSync(configDir).forEach(file => {
+  fs.readdirSync(configDir).forEach((file) => {
     const filePath = path.join(configDir, file);
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    
+    const fileContent = fs.readFileSync(filePath, "utf8");
+
     if (isYAML(fileContent)) {
       const releaseConfig = yaml.load(fileContent);
       if (releaseConfig.releaseName) {
         allReleaseNames.push(releaseConfig.releaseName);
-        
+
         if (outputDir) {
           // Copy file to user-provided directory with renaming
-          const outputFilePath = path.join(outputDir, `${releaseConfig.releaseName}.yaml`);
+          const outputFilePath = path.join(
+            outputDir,
+            `${releaseConfig.releaseName}.yaml`,
+          );
           fs.copyFileSync(filePath, outputFilePath);
         }
       }
@@ -4206,7 +4209,7 @@ function getAllReleaseDefns(configDir, outputDir = null) {
     include: allReleaseNames,
   };
 
-  const outputPath = path.join(process.cwd(), 'all-releases.json');
+  const outputPath = path.join(process.cwd(), "all-releases.json");
   fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
   console.error(`Identified release defns written to ${outputPath}`);
   return output.include;
@@ -4214,7 +4217,9 @@ function getAllReleaseDefns(configDir, outputDir = null) {
 
 function main() {
   if (process.argv.length < 3) {
-    console.error('Usage: fetchAllReleaseNames.js <config_directory> [output_directory]');
+    console.error(
+      "Usage: fetchAllReleaseNames.js <config_directory> [output_directory]",
+    );
     process.exit(1);
   }
 

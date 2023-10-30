@@ -1,26 +1,23 @@
-name: 'Figure out impacted release defns'
-description: 'Figures out impacted release defns based on git diff'
+name: "Figure out impacted release defns"
+description: "Figures out impacted release defns based on git diff"
 inputs:
   pathToReleaseDefns:
-    description: 'The path to the directory that contains release defns'
+    description: "The path to the directory that contains release defns"
     required: true
   from-commit:
-    description: 'The commit id from where changes should be analyzed'
+    description: "The commit id from where changes should be analyzed"
     required: true
   to-commit:
-    description: 'The commit id to which changes should be analyzed'
+    description: "The commit id to which changes should be analyzed"
     required: true
   filterby:
-    description: 'Only return if the provided release defn is impacted'
+    description: "Only return if the provided release defn is impacted"
     required: false
-
 
 runs:
   using: "composite"
   steps:
     - run: |
-         node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.pathToReleaseDefns}} ${{inputs.from-commit}} ${{inputs.to-commit}} ${{inputs.filterby}}
+        node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.pathToReleaseDefns}} ${{inputs.from-commit}} ${{inputs.to-commit}} ${{inputs.filterby}}
       shell: bash
       id: computeImpactedReleaseDefns
-
-

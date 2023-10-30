@@ -1,15 +1,17 @@
-const fs = require('fs');
-const yaml = require('js-yaml');
+const fs = require("fs");
+const yaml = require("js-yaml");
 
 const yamlPath = process.argv[2];
-const packagesToComment = process.argv[3] ? process.argv[3].split(',').map(pkg => pkg.trim()) : [];
+const packagesToComment = process.argv[3]
+  ? process.argv[3].split(",").map((pkg) => pkg.trim())
+  : [];
 
 if (!fs.existsSync(yamlPath)) {
-  console.error('YAML file does not exist.');
+  console.error("YAML file does not exist.");
   process.exit(1);
 }
 
-const yamlContent = fs.readFileSync(yamlPath, 'utf8');
+const yamlContent = fs.readFileSync(yamlPath, "utf8");
 const parsedYaml = yaml.load(yamlContent);
 
 packagesToComment.forEach((packageName) => {
@@ -23,9 +25,8 @@ packagesToComment.forEach((packageName) => {
 
 const newYamlContent = yaml.dump(parsedYaml, {
   noCompatMode: true,
-  noRefs: true
+  noRefs: true,
 });
 fs.writeFileSync(yamlPath, newYamlContent);
 
 console.log("Updated YAML content:\n", newYamlContent);
-

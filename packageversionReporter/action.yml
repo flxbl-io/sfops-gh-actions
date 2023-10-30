@@ -1,46 +1,42 @@
 #always assume it needs sfpowerscripts docker image as the run time
 
-name: 'Report package versions of an org to a repo'
-description: 'Report package version of an org to a folder in repo and create an html report'
+name: "Report package versions of an org to a repo"
+description: "Report package version of an org to a folder in repo and create an html report"
 inputs:
-  alias:  
-    description: 'alias of the org'
+  alias:
+    description: "alias of the org"
     required: true
-  env-name: 
-    description: 'name of the environment when reported'
+  env-name:
+    description: "name of the environment when reported"
     required: true
-  target-repo: 
-    description: 'name of the repo to report to, will create a folder packageVersionReports in the target repo'
+  target-repo:
+    description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
-  gh_token:  
-    description: 'github token to use for commiting to repo'
+  gh_token:
+    description: "github token to use for commiting to repo"
     required: true
 
 runs:
   using: "composite"
   steps:
-
-    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action 
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
     - run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          export GH_TOKEN=${{inputs.gh_token}}
-          echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
 
-
-    - name: 'Fetch all Envs'
+    - name: "Fetch all Envs"
       id: getAllEnvs
-      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main  
+      uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
       with:
         gh_token: ${{ env.GH_TOKEN }}
 
-    
     - run: |
-          git config --global --add safe.directory $GITHUB_WORKSPACE
-          git fetch --all
-          mkdir -p _data/packageVersionReports
-          export GH_TOKEN=${{inputs.gh_token}}
-          sfp artifacts:query -u ${{inputs.alias}} --json > _data/packageVersionReports/${{inputs.env-name}}.json
-          $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git fetch --all
+        mkdir -p _data/packageVersionReports
+        export GH_TOKEN=${{inputs.gh_token}}
+        sfp artifacts:query -u ${{inputs.alias}} --json > _data/packageVersionReports/${{inputs.env-name}}.json
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
       shell: bash
-

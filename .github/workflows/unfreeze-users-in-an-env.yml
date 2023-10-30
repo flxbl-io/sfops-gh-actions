@@ -1,26 +1,23 @@
-
-name: 'UnFreeze Users in an org'
+name: "UnFreeze Users in an org"
 
 on:
   workflow_call:
     inputs:
       environment:
-          description: 'Name of the environment'
-          type: 'string'
+        description: "Name of the environment"
+        type: "string"
       org-name:
-          description: 'The name of the org to be released'
-          type: 'string'
-      profiles: 
-         description: 'Profiles that need be included to be unfrozen'
-         required: true
-         type: 'string'
-    secrets: 
-        DEVHUB_SFDX_AUTH_URL:
-            description: 'Devhub Auth URL'
-        SB_SFDX_AUTH_URL:
-            description: 'Sandbox Auth URL'
-      
-            
+        description: "The name of the org to be released"
+        type: "string"
+      profiles:
+        description: "Profiles that need be included to be unfrozen"
+        required: true
+        type: "string"
+    secrets:
+      DEVHUB_SFDX_AUTH_URL:
+        description: "Devhub Auth URL"
+      SB_SFDX_AUTH_URL:
+        description: "Sandbox Auth URL"
 
 jobs:
   unfreeze-an-org:
@@ -30,14 +27,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-            fetch-depth: 0
+          fetch-depth: 0
 
       - uses: actions/setup-node@v3
         with:
-            node-version: "18" 
-            registry-url: 'https://npm.pkg.github.com'
+          node-version: "18"
+          registry-url: "https://npm.pkg.github.com"
 
-      - name: Lock enviroment 
+      - name: Lock enviroment
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ inputs.environment != '' }}
         with:
@@ -46,17 +43,15 @@ jobs:
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
-        with: 
+        with:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
           org-name: ${{ vars.SBXNAME }}
-          environment-profile:  ${{ inputs.org-name }}
+          environment-profile: ${{ inputs.org-name }}
 
       - name: UnFreeze Users
         uses: flxbl-io/sfops-gh-actions/unfreezeUsersInAnEnv@main
         with:
-            target-org-alias: ${{steps.handle-auth.outputs.alias}}
-            profiles: ${{ inputs.profiles }}
-            
-            
+          target-org-alias: ${{steps.handle-auth.outputs.alias}}
+          profiles: ${{ inputs.profiles }}
