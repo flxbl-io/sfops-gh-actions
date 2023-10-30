@@ -73,8 +73,9 @@ async function getUserIdOfDefaultUser() {
   
    let queryOputput=execSync(`sf data query -r csv  -q "SELECT Id, Username, Email FROM User WHERE Username='${targetOrg}'" -w 300 -o ${targetOrg} --json`);
    let userId=JSON.parse(queryOputput.toString()).result.records[0].Id;
+   let userName=JSON.parse(queryOputput.toString()).result.records[0].Username;
    const outputFilePath = path.resolve('username.output');
-   fs.writeFileSync(outputFilePath, result.records[0].Username);
+   fs.writeFileSync(outputFilePath, userName);
    return userId;
 }
 
