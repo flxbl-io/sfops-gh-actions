@@ -53,7 +53,7 @@ runs:
          then
             echo "No users to be assigned"
          else
-            node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ steps.fetch_so.outputs.SO_USERNAME }} ${{ inputs.email }}   false
+            node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}   ${{ steps.fetch_so.outputs.SO_USERNAME }}  false
              ASSIGNED_USERNAME=$(cat username.output)
              echo "ASSIGNED_USERNAME=$ASSIGNED_USERNAME" >> "$GITHUB_OUTPUT"
          fi
