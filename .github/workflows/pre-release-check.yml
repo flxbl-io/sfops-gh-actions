@@ -85,6 +85,7 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          ENV_SFDX_AUTH_URL:  ${{ secrets.ENV_SFDX_AUTH_URL }}
           environment: ${{ inputs.environment }}
           org-name:  ${{ steps.fetch-env-vars.outputs.SBXNAME }}
           environment-profile:  ${{ inputs.environment }}
