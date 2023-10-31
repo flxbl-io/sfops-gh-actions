@@ -18,6 +18,6 @@ runs:
   using: "composite"
   steps:
     - run: |
-        node $GITHUB_ACTION_PATH/dist/index.js ${{inputs.pathToReleaseDefns}} ${{inputs.from-commit}} ${{inputs.to-commit}} ${{inputs.filterby}}
+        sfp impact:releaseconfig --basebranch=${{ inputs.from-commit }} --releaseconfig=${{ inputs.pathToReleaseDefns }}
       shell: bash
       id: computeImpactedReleaseDefns
