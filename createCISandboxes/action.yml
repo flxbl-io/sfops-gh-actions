@@ -30,7 +30,7 @@ runs:
         export GH_TOKEN=${{inputs.gh_token}}
 
         for entry in $(echo "$config" | jq -c '.[]'); do
-           echo 'Processing domain: ' $(echo $entry | jq -r '.domain')
+           echo 'Processing pool: ' $(echo $entry | jq -r '.pool')
            $GITHUB_ACTION_PATH/process-domain.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
          done
 

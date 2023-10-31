@@ -98,8 +98,8 @@ function findImpactedReleaseDefs(impactedPackages, configDir, filterBy) {
           if (releaseConfig.releaseName.includes(filterBy)) {
             impactedReleaseDefs.push({
               releaseName: releaseConfig.releaseName,
-              domainNameUsedForPools: releaseConfig.domainNameUsedForPools
-                ? releaseConfig.domainNameUsedForPools
+              pool: releaseConfig.pool
+                ? releaseConfig.pool
                 : releaseConfig.releaseName,
               filePath: filePath,
               impactedPackages: releaseImpactedPackages, // Including the impacted packages
@@ -109,8 +109,8 @@ function findImpactedReleaseDefs(impactedPackages, configDir, filterBy) {
         } else {
           impactedReleaseDefs.push({
             releaseName: releaseConfig.releaseName,
-            domainNameUsedForPools: releaseConfig.domainNameUsedForPools
-              ? releaseConfig.domainNameUsedForPools
+            pool: releaseConfig.pool
+              ? releaseConfig.pool
               : releaseConfig.releaseName,
             filePath: filePath,
             impactedPackages: releaseImpactedPackages, // Including the impacted packages

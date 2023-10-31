@@ -1,8 +1,8 @@
-name: "Fetches a CI sandbox for a domain"
-description: "Fetch a sandbox from the pool of the domain"
+name: "Fetches a CI sandbox from pool"
+description: "Fetch a CI sandbox from the pool"
 inputs:
-  domain:
-    description: "Fetch a sandbox for the domain"
+  pool:
+    description: "Fetch a sandbox from the pool"
     required: true
   gh_token: # id of input
     description: "github token to use for commiting to repo"
@@ -25,12 +25,12 @@ runs:
       uses: flxbl-io/sfops-gh-actions/lockResource@main
       id: lockResource
       with:
-        branch: pool-${{inputs.domain}}
+        branch: pool-${{inputs.pool}}
         repo-token: ${{ inputs.gh_token }}
 
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
-        sbx_name=$($GITHUB_ACTION_PATH/fetchSandbox.sh  ${{github.repository}} ${{inputs.domain}} 20)
+        sbx_name=$($GITHUB_ACTION_PATH/fetchSandbox.sh  ${{github.repository}} ${{inputs.pool}} 20)
         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash
       id: fetchSandbox
@@ -39,6 +39,6 @@ runs:
       uses: flxbl-io/sfops-gh-actions/unlockResource@main
       if: always()
       with:
-        branch: pool-${{inputs.domain}}
+        branch: pool-${{inputs.pool}}
         repo-token: ${{ inputs.gh_token }}
         ticket_id: ${{ steps.lockResource.outputs.ticket_id }}
