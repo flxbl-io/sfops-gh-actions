@@ -31,7 +31,7 @@ runs:
 
         for entry in $(echo "$config" | jq -c '.[]'); do
            echo 'Processing pool: ' $(echo $entry | jq -r '.pool')
-           $GITHUB_ACTION_PATH/process-domain.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
+           $GITHUB_ACTION_PATH/process-sandbox-pool.sh  $GITHUB_ACTION_PATH  ${{ github.repository }} $entry &
          done
 
         wait # Wait for all background jobs to finish
