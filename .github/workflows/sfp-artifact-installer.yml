@@ -19,13 +19,17 @@ on:
       target-repo:
         description: "Target repo to submit package version report as HTML"
         type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
-      gh-token:
-        description: "GH Token for fetching artifact"
+      sfopsbot-private-key:
+        description: "Private key of the bot app used"
+
 
 jobs:
   install-sfp-artifact:
@@ -35,11 +39,17 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
           registry-url: "https://npm.pkg.github.com"
-          token: ${{ secrets.gh-token }}
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
@@ -99,4 +109,4 @@ jobs:
           alias: ${{ inputs.environment }}
           env-name: ${{ inputs.environment }}
           target-repo: ${{inputs.target-repo}}
-          gh_token: ${{ secrets.gh-token }}
+          gh_token: ${{ steps.app-token.outputs.token }}

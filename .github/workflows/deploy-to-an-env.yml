@@ -18,15 +18,18 @@ on:
       dashboard-repo:
         description: "The repo to which the package version report is to be committed"
         type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
-      gh-token:
-        description: "GH Token to commit to the target repo"
       datadog-api-key:
         description: "Datadog api key to report metrics"
       datadog-host:
         description: "Datadog host to report metrics"
+      sfopsbot-private-key:
+        description: "Private key of the bot app used"
 
 jobs:
   deploy-to-org:
@@ -37,6 +40,13 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
 
       - uses: actions/download-artifact@v3
         with:
@@ -53,7 +63,7 @@ jobs:
       - name: Lock enviroment
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         with:
-          repo-token: ${{ secrets.gh-token }}
+          repo-token: ${{ steps.app-token.outputs.token }}
           branch: ${{ inputs.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -91,4 +101,4 @@ jobs:
           alias: ${{ inputs.environment-profile }}
           env-name: ${{ inputs.environment }}
           target-repo: flxbl-io/${{ inputs.dashboard-repo }}
-          gh_token: ${{ secrets.gh-token }}
+          gh_token: ${{ steps.app-token.outputs.token }}

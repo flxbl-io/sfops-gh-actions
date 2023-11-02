@@ -50,13 +50,16 @@ on:
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       ENV_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
-      gh-token:
-        description: "GH Token to commit to the target repo"
+      sfopsbot-private-key:
+        description: "Private key of the bot app used"
 
 jobs:
   pre-release-to-org:
@@ -67,6 +70,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -76,7 +85,7 @@ jobs:
         id: fetch-env-vars
         uses: raven-actions/environment-variables@v1
         with:
-          github-token: ${{ secrets.gh-token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           environment: ${{ inputs.environment }}
 
       - name: Authenticate to ${{ inputs.environment }}
@@ -127,7 +136,7 @@ jobs:
 
            sfpowerscripts orchestrator:release --dryrun -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}  -v prod -g "::group::,::endgroup::"
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh-token}}
+          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Create Message Body as File
         id: message_template
@@ -154,7 +163,7 @@ jobs:
         with:
           issue: ${{inputs.issue-number}}
           allow-repeats: false
-          repo-token: ${{ secrets.gh-token}}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message-id: ${{ inputs.environment }}
           refresh-message-position: true
           message-path: |
