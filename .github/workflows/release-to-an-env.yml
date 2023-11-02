@@ -74,6 +74,8 @@ on:
     secrets:
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
       datadog-api-key:
@@ -209,7 +211,7 @@ jobs:
            sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
           fi
         env:
-          NODE_AUTH_TOKEN:${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: "Fetch all ReleaseNames"
         id: getAllReleaseNames

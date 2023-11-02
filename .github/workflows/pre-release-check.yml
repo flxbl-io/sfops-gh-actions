@@ -54,6 +54,8 @@ on:
          description: The App id of the bot used for this workflow_call
          type: "string"
     secrets:
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       ENV_SFDX_AUTH_URL:
@@ -136,7 +138,7 @@ jobs:
 
            sfpowerscripts orchestrator:release --dryrun -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}  -v prod -g "::group::,::endgroup::"
         env:
-          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create Message Body as File
         id: message_template
