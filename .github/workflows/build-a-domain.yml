@@ -37,6 +37,8 @@ on:
          description: The App id of the bot used for this workflow_call
          type: "string"
     secrets:
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
@@ -54,7 +56,7 @@ jobs:
     name: Fetch Test Environments
     runs-on: ubuntu-latest
     outputs:
-      allEnvsAsJSON: ${{ steps.fetchAllEnvs.outputs.allEnvsAsJSON }}
+      envsAsJSON: ${{ steps.fetchTestEnvs.outputs.allEnvsAsJSON }}
     steps:
 
       - uses: actions/checkout@v3
@@ -69,10 +71,163 @@ jobs:
 
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
-        id: fetchAllEnvs
+        id: fetchTestEnvs
         with:
           gh_token: ${{ steps.app-token.outputs.token }}
           filter: "type:test,branch:${{ inputs.branchname }}"
+
+  fetch-dev-envs:
+    name: Fetch Dev Environments
+    runs-on: ubuntu-latest
+    outputs:
+      envsAsJSON: ${{ steps.fetchDevEnvs.outputs.allEnvsAsJSON }}
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+
+      - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
+        id: fetchDevEnvs
+        with:
+          gh_token: ${{ steps.app-token.outputs.token }}
+          filter: "type:dev,branch:${{ inputs.branchname }}"
+
+  quickbuild:
+    name: "Quick Build packages"
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    needs:
+      - fetch-dev-envs
+    if: ${{ needs.fetch-dev-envs.outputs.envsAsJSON != '[]' && needs.fetch-dev-envs.outputs.envsAsJSON != '' }}
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+      - name: "Authenticate Dev Hub"
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: "Create packages without validation"
+        id: sfpowerscripts-quickbuild
+        run: |
+          sfpowerscripts orchestrator:quickbuild -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
+
+      # Publish artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: quickbuild-artifacts-${{inputs.domain}}
+          path: artifacts
+          if-no-files-found: ignore
+
+      # Publish logs
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: .sfpowerscripts/logs
+
+  deploy-to-dev-orgs:
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    needs:
+      - quickbuild
+      - fetch-dev-envs
+    if: ${{ needs.fetch-dev-envs.outputs.envsAsJSON != '[]' && needs.fetch-dev-envs.outputs.envsAsJSON != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{  fromJSON(needs.fetch-dev-envs.outputs.envsAsJSON) }}
+    environment:
+      name: ${{ matrix.environment }}
+    steps:
+    
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+      - uses: actions/download-artifact@v3
+        id: download_artifacts
+        continue-on-error: true
+        with:
+          name: quickbuild-artifacts-${{inputs.domain}}
+          path: artifacts
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog' && steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+      - name: Lock enviroment
+        uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        with:
+          repo-token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ matrix.environment }}-mutex
+
+      - name: "Authenticate Dev Hub"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: Authenticate to ${{ matrix.environment }}
+        id: handle-auth
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with:
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ matrix.environment }}
+          org-name: ${{ vars.SBXNAME }}
+          environment-profile: ${{ matrix.environment }}
+
+      - name: Install additional plugins if any
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+              IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+              for plugin in "${plugins[@]}"; do
+                  echo "Installing $plugin"
+                  echo 'y' | sfdx plugins:install $plugin
+              done
+          fi
+
+      - name: "Deploy to ${{ matrix.environment }}"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
   build:
     name: "Build packages"
@@ -134,11 +289,11 @@ jobs:
     needs:
       - build
       - fetch-test-envs
-    if: ${{ needs.fetch-test-envs.outputs.allEnvsAsJSON != '[]' && needs.fetch-test-envs.outputs.allEnvsAsJSON != '' }}
+    if: ${{ needs.fetch-test-envs.outputs.envsAsJSON != '[]' && needs.fetch-test-envs.outputs.envsAsJSON != '' }}
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
+        environment: ${{  fromJSON(needs.fetch-test-envs.outputs.envsAsJSON) }}
     environment:
       name: ${{ matrix.environment }}
     steps:
@@ -276,7 +431,7 @@ jobs:
         run: |
           sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
-          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Generate release defn
@@ -284,7 +439,7 @@ jobs:
         run: |
           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
         env:
-          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Generate changelog
@@ -298,7 +453,7 @@ jobs:
           sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
           sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}
         env:
-          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: "Report changelog"
