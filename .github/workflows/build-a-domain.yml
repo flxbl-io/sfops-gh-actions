@@ -171,7 +171,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-          repo-token: ${{ secrets.gh_token }}
+          repo-token:${{ steps.app-token.outputs.token }}
           branch: ${{ matrix.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -320,7 +320,7 @@ jobs:
         with:
           git-user-email: buildbot@flxbl.io
           git-user-name: build-bot
-          gh_token: ${{ secrets.GHA_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           target-branch: "main"
 
       - uses: mshick/add-pr-comment@v2
@@ -348,7 +348,7 @@ jobs:
         continue-on-error: true
         with:
           allow-repeats: false
-          repo-token: ${{ secrets.gh_token }}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
           message-path: |
