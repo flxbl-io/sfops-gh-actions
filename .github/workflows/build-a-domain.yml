@@ -219,7 +219,7 @@ jobs:
   publish:
     name: "publish"
     runs-on: ubuntu-latest
-    container: ghcr.io/flxbl-io/sfops:latest
+    container: ghcr.io/flxbl-io/sfops-lite:latest
     needs:
       - deploy-to-org
     if: |
