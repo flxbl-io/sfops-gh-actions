@@ -432,7 +432,8 @@ jobs:
         run: |
           sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
-          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Generate release defn
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
@@ -440,7 +441,7 @@ jobs:
           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Generate changelog
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
@@ -454,7 +455,7 @@ jobs:
           sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: "Report changelog"
         uses: flxbl-io/sfops-gh-actions/changelogReporter@main
