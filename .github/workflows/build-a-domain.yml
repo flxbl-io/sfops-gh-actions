@@ -406,7 +406,7 @@ jobs:
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           registry-url: "https://npm.pkg.github.com"
-          token: ${{ secrets.NPM_TOKEN }}
+
 
       - name: "Fetch all ReleaseNames"
         id: getAllReleaseNames
