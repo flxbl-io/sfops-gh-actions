@@ -406,7 +406,7 @@ jobs:
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           registry-url: "https://npm.pkg.github.com"
-          scope: @${{ github.repository_owner }}
+          scope: ${{ github.repository_owner }}
 
 
       - name: "Fetch all ReleaseNames"
