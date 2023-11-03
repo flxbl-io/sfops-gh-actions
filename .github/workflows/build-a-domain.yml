@@ -307,6 +307,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -386,6 +387,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
 
       - uses: actions/checkout@v3
@@ -401,11 +403,10 @@ jobs:
           name: build-artifacts-${{inputs.domain}}
           path: artifacts
 
-      # Authenticate to npm
-      - run: |
-          echo "@${{ github.repository_owner }}:registry=https://npm.pkg.github.com" >> .npmrc
-          echo "//npm.pkg.github.com/:_authToken=${{ secrets.NPM_TOKEN }}" >> .npmrc
-
+      - uses: actions/setup-node@v3
+        with:
+         registry-url: 'https://npm.pkg.github.com'
+         scope: '@${{ github.repository_owner }}'
 
       - name: "Fetch all ReleaseNames"
         id: getAllReleaseNames
@@ -429,7 +430,7 @@ jobs:
       - name: Publish
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
-          sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag --npmrcpath .npmrc
+          sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
           GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
