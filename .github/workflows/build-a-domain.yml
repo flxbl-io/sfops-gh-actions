@@ -405,6 +405,7 @@ jobs:
       - uses: actions/setup-node@v3
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
+          scope: ${{ github.repository_owner }}
           registry-url: "https://npm.pkg.github.com"
           token: ${{ secrets.NPM_TOKEN }}
 
