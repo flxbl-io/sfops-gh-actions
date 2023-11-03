@@ -33,43 +33,218 @@ on:
       workitem-filter:
         description: "The filter to be applied to the workitem"
         type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
-      gh_token:
-        description: "GH Token to commit to the target repo"
       datadog-api-key:
         description: "Datadog api key to report metrics"
       datadog-host:
         description: "Datadog host to report metrics"
+      sfopsbot-private-key:
+        description: "Private key of the bot app used"
+
 
 jobs:
   fetch-test-envs:
     name: Fetch Test Environments
     runs-on: ubuntu-latest
     outputs:
-      allEnvsAsJSON: ${{ steps.fetchAllEnvs.outputs.allEnvsAsJSON }}
+      envsAsJSON: ${{ steps.fetchTestEnvs.outputs.allEnvsAsJSON }}
     steps:
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - uses: perfectedclaims/sfops-gh-actions/fetchAllEnvs@main
-        id: fetchAllEnvs
+      - uses: actions/create-github-app-token@v1
+        id: app-token
         with:
-          gh_token: ${{ secrets.gh_token }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+
+      - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
+        id: fetchTestEnvs
+        with:
+          gh_token: ${{ steps.app-token.outputs.token }}
           filter: "type:test,branch:${{ inputs.branchname }}"
+
+  fetch-dev-envs:
+    name: Fetch Dev Environments
+    runs-on: ubuntu-latest
+    outputs:
+      envsAsJSON: ${{ steps.fetchDevEnvs.outputs.allEnvsAsJSON }}
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+
+      - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
+        id: fetchDevEnvs
+        with:
+          gh_token: ${{ steps.app-token.outputs.token }}
+          filter: "type:dev,branch:${{ inputs.branchname }}"
+
+  quickbuild:
+    name: "Quick Build packages"
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    needs:
+      - fetch-dev-envs
+    if: ${{ needs.fetch-dev-envs.outputs.envsAsJSON != '[]' && needs.fetch-dev-envs.outputs.envsAsJSON != '' }}
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+      - name: "Authenticate Dev Hub"
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: "Create packages without validation"
+        id: sfpowerscripts-quickbuild
+        run: |
+          sfpowerscripts orchestrator:quickbuild -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
+
+      # Publish artifacts
+      - uses: actions/upload-artifact@v3
+        with:
+          name: quickbuild-artifacts-${{inputs.domain}}
+          path: artifacts
+          if-no-files-found: ignore
+
+      # Publish logs
+      - uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: .sfpowerscripts/logs
+
+  deploy-to-dev-orgs:
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    needs:
+      - quickbuild
+      - fetch-dev-envs
+    if: ${{ needs.fetch-dev-envs.outputs.envsAsJSON != '[]' && needs.fetch-dev-envs.outputs.envsAsJSON != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{  fromJSON(needs.fetch-dev-envs.outputs.envsAsJSON) }}
+    environment:
+      name: ${{ matrix.environment }}
+    steps:
+    
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+      - uses: actions/download-artifact@v3
+        id: download_artifacts
+        continue-on-error: true
+        with:
+          name: quickbuild-artifacts-${{inputs.domain}}
+          path: artifacts
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog' && steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+
+      - name: Lock enviroment
+        uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        with:
+          repo-token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ matrix.environment }}-mutex
+
+      - name: "Authenticate Dev Hub"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: Authenticate to ${{ matrix.environment }}
+        id: handle-auth
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with:
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ matrix.environment }}
+          org-name: ${{ vars.SBXNAME }}
+          environment-profile: ${{ matrix.environment }}
+
+      - name: Install additional plugins if any
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+              IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+              for plugin in "${plugins[@]}"; do
+                  echo "Installing $plugin"
+                  echo 'y' | sfdx plugins:install $plugin
+              done
+          fi
+
+      - name: "Deploy to ${{ matrix.environment }}"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
   build:
     name: "Build packages"
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     steps:
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
@@ -89,11 +264,11 @@ jobs:
           sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
 
       - name: "Report  Package Info"
-        uses: perfectedclaims/sfops-gh-actions/packageInfoReporter@main
+        uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
-          target-repo: perfectedclaims/${{ inputs.dashboard-repo }}
-          gh_token: ${{ secrets.gh_token}}
+          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          gh_token: ${{ steps.app-token.outputs.token }}
 
       # Publish artifacts
       - uses: actions/upload-artifact@v3
@@ -114,17 +289,24 @@ jobs:
     needs:
       - build
       - fetch-test-envs
-    if: ${{ needs.fetch-test-envs.outputs.allEnvsAsJSON != '[]' && needs.fetch-test-envs.outputs.allEnvsAsJSON != '' }}
+    if: ${{ needs.fetch-test-envs.outputs.envsAsJSON != '[]' && needs.fetch-test-envs.outputs.envsAsJSON != '' }}
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{  fromJSON(needs.fetch-test-envs.outputs.allEnvsAsJSON) }}
+        environment: ${{  fromJSON(needs.fetch-test-envs.outputs.envsAsJSON) }}
     environment:
       name: ${{ matrix.environment }}
     steps:
+    
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -144,7 +326,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-          repo-token: ${{ secrets.gh_token }}
+          repo-token: ${{ steps.app-token.outputs.token }}
           branch: ${{ matrix.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -156,7 +338,7 @@ jobs:
       - name: Authenticate to ${{ matrix.environment }}
         id: handle-auth
         if: ${{ steps.download_artifacts.outcome == 'success'}}
-        uses: perfectedclaims/sfops-gh-actions/authToEnvironment@main
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with:
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
@@ -181,27 +363,36 @@ jobs:
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
       - name: "Run package version reporter"
-        uses: perfectedclaims/sfops-gh-actions/packageversionReporter@main
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           alias: ${{ matrix.environment }}
           env-name: ${{ matrix.environment }}
-          target-repo: perfectedclaims/${{ inputs.dashboard-repo }}
-          gh_token: ${{ secrets.gh_token }}
+          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          gh_token: ${{ steps.app-token.outputs.token }}
 
   publish:
     name: "publish"
     runs-on: ubuntu-latest
-    container: ghcr.io/flxbl-io/sfops:latest
+    container: ghcr.io/flxbl-io/sfops-lite:latest
     needs:
       - deploy-to-org
     if: |
       always() && ( needs.deploy-to-org.result == 'success' || needs.deploy-to-org.result == 'skipped')
     steps:
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.gh_token}}
+
+          
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -215,11 +406,12 @@ jobs:
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           registry-url: "https://npm.pkg.github.com"
+          token: ${{ secrets.NPM_TOKEN }}
 
       - name: "Fetch all ReleaseNames"
         id: getAllReleaseNames
         if: ${{ steps.download_artifacts.outcome == 'success'}}
-        uses: perfectedclaims/sfops-gh-actions/fetchAllReleaseNames@main
+        uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
 
@@ -240,16 +432,16 @@ jobs:
         run: |
           sfp orchestrator:publish -d artifacts --npm --scope @${{ github.repository_owner }}  --gittag --pushgittag
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
-          GH_TOKEN: ${{ secrets.gh_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Generate release defn
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
           sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
-          GH_TOKEN: ${{ secrets.gh_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Generate changelog
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
@@ -262,29 +454,29 @@ jobs:
           sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
           sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh_token}}
-          GH_TOKEN: ${{ secrets.gh_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: "Report changelog"
-        uses: perfectedclaims/sfops-gh-actions/changelogReporter@main
+        uses: flxbl-io/sfops-gh-actions/changelogReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
           source-branch: releasedefns
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
-          target-repo: perfectedclaims/${{ inputs.dashboard-repo }}
+          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
           domain: ${{inputs.domain}}
-          gh_token: ${{ secrets.gh_token}}
+          gh_token: ${{ steps.app-token.outputs.token }}
           source-repo-url: https://github.com/${{github.repository}}
           workitem-url: ${{inputs.workitem-url}}
 
       - name: "Cherry pick the commit and create PR"
-        uses: perfectedclaims/sfops-gh-actions/cherrypickAndCreatePR@main
+        uses: flxbl-io/sfops-gh-actions/cherrypickAndCreatePR@main
         continue-on-error: true
         if: contains(github.ref,'release') || github.ref == 'refs/heads/release/**'
         with:
           git-user-email: buildbot@flxbl.io
           git-user-name: build-bot
-          gh_token: ${{ secrets.GHA_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           target-branch: "main"
 
       - uses: mshick/add-pr-comment@v2
@@ -294,10 +486,10 @@ jobs:
           allow-repeats: false
           message-id: ${{inputs.domain}}
           refresh-message-position: true
-          repo-token: ${{ secrets.gh_token}}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message: |
             This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
-            The link is available at https://perfectedclaims.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+            The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
 
       - name: Create Message Body as File
         id: message_template
@@ -312,7 +504,7 @@ jobs:
         continue-on-error: true
         with:
           allow-repeats: false
-          repo-token: ${{ secrets.gh_token }}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
           message-path: |
@@ -323,12 +515,19 @@ jobs:
     needs: publish
     if: always() && ( needs.publish.result == 'failure' || needs.publish.result == 'cancelled' || needs.publish.result == 'skipped')
     steps:
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+
       - uses: mshick/add-pr-comment@v2
         with:
           allow-repeats: false
           message-id: ${{inputs.domain}}
           refresh-message-position: true
-          repo-token: ${{ secrets.gh_token}}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message: |
             Apologies, it seems we ran into an issue, This would need your manual attention please check the job run
             at the link https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
