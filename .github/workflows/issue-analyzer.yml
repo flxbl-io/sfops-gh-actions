@@ -198,18 +198,19 @@ jobs:
         -  update-releasename
         -  patch-release-branch
         -  artifact-installer
-      if: | 
-          always() &&
-          ( needs.create-an-env.result == 'success' ||
-            needs.deletion-of-component.result == 'success' ||
-            needs.test-deletion-of-component.result == 'success' ||
-            needs.fetch-scratchorg-from-pool.result == 'success' ||
-            needs.freeze-user.result == 'success' ||
-            needs.unfreeze-user.result == 'success' ||
-            needs.update-releasename.result == 'success' ||
-            needs.patch-release-branch.result == 'success' ||
-            needs.artifact-installer.result == 'success' 
-            )
+     if: | 
+         always() &&
+         (
+         needs.create-an-env.result == 'success' ||
+         needs.deletion-of-component.result == 'success' ||
+         needs.test-deletion-of-component.result == 'success' ||
+         needs.fetch-scratchorg-from-pool.result == 'success' ||
+         needs.freeze-user.result == 'success' ||
+         needs.unfreeze-user.result == 'success' ||
+         needs.update-releasename.result == 'success' ||
+         needs.patch-release-branch.result == 'success' ||
+         needs.artifact-installer.result == 'success' 
+         )
      steps:
 
       # gh needs a repo bummer
@@ -243,7 +244,8 @@ jobs:
         -  artifact-installer
       if: | 
           always() &&
-          ( needs.create-an-env.result == 'failure' ||
+          (
+            needs.create-an-env.result == 'failure' ||
             needs.create-a-dev-sandbox.result == 'failure' ||
             needs.deletion-of-component.result == 'failure' ||
             needs.test-deletion-of-component.result == 'failure' ||
@@ -253,7 +255,7 @@ jobs:
             needs.update-releasename.result == 'failure' ||
             needs.patch-release-branch.result == 'failure' ||
             needs.artifact-installer.result == 'failure' 
-            )
+          )
       steps:
 
       - uses: actions/create-github-app-token@v1
