@@ -33,7 +33,6 @@ on:
 jobs:
  
   create-an-env
-   if: contains(  inputs.issue-title , 'Ops - Request a new environment')
    uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-create-env.yml@main
    with:
      issue-title: ${{ inputs.issue-title }}

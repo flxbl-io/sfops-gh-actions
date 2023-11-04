@@ -32,6 +32,7 @@ on:
 
 execute_action:
     runs-on: ubuntu-latest
+    if: contains(  inputs.issue-title , 'Ops - Request a new environment')
     steps:
 
 
