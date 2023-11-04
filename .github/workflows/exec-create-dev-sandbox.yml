@@ -31,6 +31,7 @@ on:
 
 jobs:        
   execute_action:
+    name: 'Create a dev sandbox'
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     if: contains(github.event.issue.title, 'Ops - Request a new Dev Sandbox')
