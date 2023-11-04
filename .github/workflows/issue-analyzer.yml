@@ -15,6 +15,9 @@ on:
         sfopsbot-app-id: 
           description: The App id of the bot used for this workflow_call
           type: "string"
+        dashboard-repo: 
+          description: Dashboard repo where any reports need to be push
+          type: "string"          
      secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"
@@ -167,7 +170,21 @@ jobs:
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-
+  artifact-installer:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-artifact-installer.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+     target-repo: ${{ inputs.dashboard-repo }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
                
   close_issue:
@@ -180,6 +197,7 @@ jobs:
         -  unfreeze-user
         -  update-releasename
         -  patch-release-branch
+        -  artifact-installer
      steps:
 
       # gh needs a repo bummer
@@ -210,6 +228,7 @@ jobs:
         -  unfreeze-user
         -  update-releasename
         -  patch-release-branch
+        -  artifact-installer
       if: always() && ( needs.create-an-env.result == 'failure' ||  needs.create-a-dev-sandbox.result == 'failure')
       steps:
 
