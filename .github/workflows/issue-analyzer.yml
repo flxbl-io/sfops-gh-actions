@@ -32,7 +32,7 @@ on:
 
 jobs:
  
-  create-an-env
+  create-an-env:
    uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-create-env.yml@main
    with:
      issue-title: ${{ inputs.issue-title }}
