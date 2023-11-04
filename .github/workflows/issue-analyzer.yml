@@ -47,6 +47,21 @@ jobs:
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+ create-a-dev-sandbox:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-create-dev-sandbox.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
                
   close_issue:
      runs-on: ubuntu-latest
