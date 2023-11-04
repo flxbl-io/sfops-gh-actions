@@ -95,5 +95,5 @@ jobs:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh variable set  BRANCH  -e ${{ steps.issue-parser.outputs.issueparser_name }}  --repo  ${{ github.repository }} -b ${{ steps.issue-parser.outputs.issueparser_branch }}
-          gh variable set  TYPE  -e ${{ steps.issue-parser.outputs.issueparser_type }}  --repo  ${{ github.repository }} -b  ${{ steps.issue-parser.outputs.issueparser_type}}
+          gh variable set  TYPE  -e ${{ steps.issue-parser.outputs.issueparser_name }}  --repo  ${{ github.repository }} -b  ${{ steps.issue-parser.outputs.issueparser_type}}
           gh variable set  SBX_NAME  -e ${{ steps.issue-parser.outputs.issueparser_name }}  --repo  ${{ github.repository }} -b ${{ steps.issue-parser.outputs.issueparser_name }} 
