@@ -30,8 +30,8 @@ on:
         description: "Private key of the bot app used"
 
 
-
-execute_action:
+jobs: 
+  execute_action:
     runs-on: ubuntu-latest
     if: contains(  inputs.issue-title , 'Ops - Request a new environment')
     steps:
