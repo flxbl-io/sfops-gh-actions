@@ -80,7 +80,7 @@ jobs:
             
             The job run can be tracked at the link at https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
-            [1]: This issue is being processed [sfops 🤖]
+            [1]: This issue is being processed by [sfops 🤖]
 
 
       - name: Create environments

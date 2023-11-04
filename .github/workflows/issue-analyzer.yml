@@ -62,12 +62,124 @@ jobs:
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+  deletion-of-component:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-deletion-of-component.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  test-deletion-of-component:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-test-deletion-of-component.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  fetch-scratchorg-from-pool:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-deletion-of-component.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  freeze-user:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-freeze-user.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  unfreeze-user:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-unfreeze-user.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  update-releasename:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-update-releasename.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  patch-release-branch:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-patch-release-branch.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+
                
   close_issue:
      runs-on: ubuntu-latest
      needs: 
         -  create-an-env
-        -  create-a-dev-sandbox
+        -  deletion-of-component
+        -  test-deletion-of-component
+        -  freeze-user
+        -  unfreeze-user
+        -  update-releasename
+        -  patch-release-branch
      steps:
 
       # gh needs a repo bummer
@@ -82,7 +194,7 @@ jobs:
 
       - name: Close Issue
         run: |
-         gh issue close ${{github.event.issue.number}} -c " Hello @${{ github.event.issue.user.login }} :wave: \n Your request has been sucessfully processed" -r "Completed"
+         gh issue close ${{github.event.issue.number}} -c " Hello @${{ github.event.issue.user.login }} :wave:  Your request has been sucessfully processed" -r "Completed"
         env:
            GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
@@ -91,7 +203,14 @@ jobs:
       needs:  
         -  create-an-env
         -  create-a-dev-sandbox
-      if: always() && needs.execute_action.result == 'failure'
+        -  deletion-of-component
+        -  test-deletion-of-component
+        -  fetch-scratchorg-from-pool
+        -  freeze-user
+        -  unfreeze-user
+        -  update-releasename
+        -  patch-release-branch
+      if: always() && ( needs.create-an-env.result == 'failure' ||  needs.create-a-dev-sandbox.result == 'failure')
       steps:
 
       - uses: actions/create-github-app-token@v1
