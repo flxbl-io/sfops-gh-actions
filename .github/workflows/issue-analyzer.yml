@@ -126,7 +126,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   unfreeze-user:
-   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-unfreeze-user.yml@main
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-unfreeze-users.yml@main
    with:
      issue-title: ${{ inputs.issue-title }}
      issue-body: ${{ inputs.issue-body }}
