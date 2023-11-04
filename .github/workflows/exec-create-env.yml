@@ -45,7 +45,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
 
