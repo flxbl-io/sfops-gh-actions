@@ -31,7 +31,6 @@ on:
 
 jobs:        
   execute_action:
-    needs: issue-analyzer
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     if: contains(github.event.issue.title, 'Ops - Request a new Dev Sandbox')
