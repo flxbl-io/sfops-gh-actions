@@ -2,6 +2,7 @@ name: 'IssueOps - Create-an-env'
 
 on:
   workflow_call:
+    inputs:
      issue-tile: 
         description: "The title of the issue"
         type: "string"
