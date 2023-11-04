@@ -40,7 +40,6 @@ jobs:
      # gh needs a repo bummer
       - uses: actions/checkout@v3
 
-
       - uses: actions/create-github-app-token@v1
         id: app-token
         name: "Get installation token for sfopsbot"
@@ -83,7 +82,7 @@ jobs:
             [1]: This issue is being processed [sfops 🤖]
 
 
-     - name: Create environments
+      - name: Create environments
        uses: thijsvtol/create-environments@main
        with:
           token: ${{ steps.app-token.outputs.token }}
@@ -91,10 +90,10 @@ jobs:
           environments: ${{ steps.issue-parser.outputs.issueparser_name }
           required_reviewers:  ${{ steps.issue-parser.outputs.issueparser_envApprover }
 
-     - name: Setup Environment Variables
-       env:
+      - name: Setup Environment Variables
+        env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-       run: |
+        run: |
           gh variable set  BRANCH  -e ${{ steps.issue-parser.outputs.issueparser_name }}  --repo  ${{ github.repository }} -b ${{ steps.issue-parser.outputs.issueparser_branch }}
           gh variable set  TYPE  -e ${{ steps.issue-parser.outputs.issueparser_type }}  --repo  ${{ github.repository }} -b  ${{ steps.issue-parser.outputs.issueparser_type}}
           gh variable set  SBX_NAME  -e ${{ steps.issue-parser.outputs.issueparser_name }}  --repo  ${{ github.repository }} -b ${{ steps.issue-parser.outputs.issueparser_name }} 
