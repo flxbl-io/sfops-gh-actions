@@ -83,8 +83,8 @@ jobs:
 
 
       - name: Create environments
-       uses: thijsvtol/create-environments@main
-       with:
+        uses: thijsvtol/create-environments@main
+        with:
           token: ${{ steps.app-token.outputs.token }}
           repo: ${{ github.repository }}
           environments: ${{ steps.issue-parser.outputs.issueparser_name }
