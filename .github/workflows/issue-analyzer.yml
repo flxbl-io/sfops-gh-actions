@@ -2,19 +2,20 @@ name: 'IssueOps - Analyze an issue'
 
 on:
   workflow_call:
-     issue-tile: 
-        description: "The title of the issue"
-        type: "string"
-      issue-body: 
-         description: "The body of the issue"
-         type: "string"
-      issue-number:
-         description: "The number of the issue"
-         type: "string"
-      sfopsbot-app-id: 
-         description: The App id of the bot used for this workflow_call
-         type: "string"
-    secrets:
+     inputs:
+      issue-tile: 
+          description: "The title of the issue"
+          type: "string"
+        issue-body: 
+          description: "The body of the issue"
+          type: "string"
+        issue-number:
+          description: "The number of the issue"
+          type: "string"
+        sfopsbot-app-id: 
+          description: The App id of the bot used for this workflow_call
+          type: "string"
+     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
