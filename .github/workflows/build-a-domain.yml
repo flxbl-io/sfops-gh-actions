@@ -65,6 +65,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -90,6 +91,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -118,6 +120,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -174,6 +177,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -246,6 +250,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -266,7 +271,7 @@ jobs:
       - name: "Create packages"
         id: sfpowerscripts-build
         run: |
-          sfpowerscripts orchestrator:quickbuild -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
+          sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
 
       - name: "Report  Package Info"
         uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main
@@ -288,7 +293,7 @@ jobs:
           name: logs
           path: .sfpowerscripts/logs
 
-  deploy-to-org:
+  deploy-to-test-orgs:
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     needs:
@@ -382,9 +387,10 @@ jobs:
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     needs:
-      - deploy-to-org
+      - deploy-to-dev-orgs
+      - deploy-to-test-orgs
     if: |
-      always() && ( needs.deploy-to-org.result == 'success' || needs.deploy-to-org.result == 'skipped')
+      always() && ( needs.deploy-to-test-orgs.result == 'success' || needs.deploy-to-test-orgs.result == 'skipped')  && ( needs.deploy-to-dev-orgs.result == 'success' || needs.deploy-to-dev-orgs.result == 'skipped') 
     steps:
       - uses: actions/checkout@v3
         with:
@@ -457,6 +463,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
@@ -524,6 +531,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
