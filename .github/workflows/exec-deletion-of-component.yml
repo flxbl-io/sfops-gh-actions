@@ -101,7 +101,7 @@ jobs:
             echo "parsedEnvs=$output" >> "$GITHUB_OUTPUT"
   
   execute_action:
-    needs: parse-issue
+    needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/delete-component-job.yml@main
     strategy:
       fail-fast: false
