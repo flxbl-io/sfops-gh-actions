@@ -47,7 +47,7 @@ jobs:
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
- create-a-dev-sandbox:
+  create-a-dev-sandbox:
    uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-create-dev-sandbox.yml@main
    with:
      issue-title: ${{ inputs.issue-title }}
@@ -67,6 +67,7 @@ jobs:
      runs-on: ubuntu-latest
      needs: 
         -  create-an-env
+        -  create-a-dev-sandbox
      steps:
 
       # gh needs a repo bummer
@@ -89,6 +90,7 @@ jobs:
       runs-on: ubuntu-latest
       needs:  
         -  create-an-env
+        -  create-a-dev-sandbox
       if: always() && needs.execute_action.result == 'failure'
       steps:
 
