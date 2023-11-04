@@ -68,6 +68,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
@@ -92,6 +93,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
@@ -119,6 +121,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
@@ -174,6 +177,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -245,6 +249,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
@@ -434,6 +439,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
           GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
       - name: Generate changelog
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
@@ -448,6 +454,14 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
           GH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
+
       - name: "Report changelog"
         uses: flxbl-io/sfops-gh-actions/changelogReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
@@ -456,7 +470,7 @@ jobs:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
           target-repo: flxbl-io/${{ inputs.dashboard-repo }}
           domain: ${{inputs.domain}}
-          gh_token: ${{ secrets.NPM_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           source-repo-url: https://github.com/${{github.repository}}
           workitem-url: ${{inputs.workitem-url}}
 
@@ -467,7 +481,7 @@ jobs:
         with:
           git-user-email: buildbot@flxbl.io
           git-user-name: build-bot
-          gh_token: ${{ secrets.NPM_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           target-branch: "main"
 
       - uses: mshick/add-pr-comment@v2
@@ -477,7 +491,7 @@ jobs:
           allow-repeats: false
           message-id: ${{inputs.domain}}
           refresh-message-position: true
-          repo-token: ${{ secrets.NPM_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           message: |
             This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
             The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
@@ -495,7 +509,7 @@ jobs:
         continue-on-error: true
         with:
           allow-repeats: false
-          repo-token: ${{ secrets.NPM_TOKEN }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
           message-path: |
@@ -513,6 +527,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.sfopsbot-private-key }}
+         owner: ${{ github.repository_owner }}
 
       - uses: mshick/add-pr-comment@v2
         with:
