@@ -187,7 +187,7 @@ jobs:
     secrets:
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
         SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
-        sfopsbot-private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}  
+        SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}  
         datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
         datadog-host: ${{ secrets.DATADOG_HOST }}
         NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
