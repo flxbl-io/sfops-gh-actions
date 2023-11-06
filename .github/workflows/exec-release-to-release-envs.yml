@@ -28,7 +28,7 @@ on:
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"
-      additional-plugins
+      additional-plugins:
          description: Additional plugins used while deploying packages
          type: "string"
     secrets:
