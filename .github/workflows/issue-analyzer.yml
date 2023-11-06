@@ -186,7 +186,23 @@ jobs:
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-               
+  package-installer:
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-package-installer.yml@main
+   with:
+     issue-title: ${{ inputs.issue-title }}
+     issue-body: ${{ inputs.issue-body }}
+     issue-number: ${{ inputs.issue-number }}   
+     sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+     target-repo: ${{ inputs.dashboard-repo }}
+   secrets:
+      DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+      SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}      
+
+# Do not close issues for fetching scratch org from pool or creating dev sandbox            
   close_issue:
      runs-on: ubuntu-latest
      needs: 
@@ -198,6 +214,7 @@ jobs:
         -  update-releasename
         -  patch-release-branch
         -  artifact-installer
+        -  package-installer
      if: | 
          always() &&
          (
@@ -242,6 +259,7 @@ jobs:
         -  update-releasename
         -  patch-release-branch
         -  artifact-installer
+        -  package-installer
       if: | 
           always() &&
           (
