@@ -214,8 +214,18 @@ jobs:
 
   comment_issue_on_error:
       runs-on: ubuntu-latest
-      needs:   execute_action
-      if: always() && needs.execute_action.result == 'failure'
+      needs:  
+          - issue-analyzer
+          - fetch-release-envs
+          - pre_release_check
+          - release-to-orgs
+      if:   always() &&
+          (
+            needs.issue-analyzer == 'failure' ||
+            needs.fetch-release-envs == 'failure' ||
+            needs.pre_release_check == 'failure' ||
+            needs.release-to-orgs.result == 'failure'
+          )
       steps:
 
 
