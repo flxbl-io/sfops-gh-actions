@@ -96,7 +96,7 @@ jobs:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   fetch-scratchorg-from-pool:
-   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-deletion-of-component.yml@main
+   uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-fetch-scratchorg-from-pool.yml@main
    with:
      issue-title: ${{ inputs.issue-title }}
      issue-body: ${{ inputs.issue-body }}
