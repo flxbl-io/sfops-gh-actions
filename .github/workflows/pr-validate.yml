@@ -18,9 +18,9 @@ on:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
-      datadog-api-key:
+      DATADOG_API_KEY:
         description: "Datadog api key to report metrics"
-      datadog-host:
+      DATADOG_HOST:
         description: "Datadog host to report metrics"
       SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
@@ -111,8 +111,8 @@ jobs:
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
           echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.datadog-host }}" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.datadog-api-key }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.DATADOG_HOST }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }}" >> $GITHUB_ENV
   
       # Fetch a sandbox
       - name: 'Fetch CI Sandboxes'
