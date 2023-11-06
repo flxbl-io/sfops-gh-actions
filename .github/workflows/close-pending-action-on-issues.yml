@@ -1,0 +1,69 @@
+name: 'IssueOps - Close any Pending Actions on Issues'
+
+on:
+  workflow_call:
+     inputs:
+        issue-title: 
+          description: "The title of the issue"
+          type: "string"
+        issue-body: 
+          description: "The body of the issue"
+          type: "string"
+        issue-number:
+          description: "The number of the issue"
+          type: "string"
+        sfopsbot-app-id: 
+          description: The App id of the bot used for this workflow_call
+          type: "string"
+        dashboard-repo: 
+          description: Dashboard repo where any reports need to be push
+          type: "string"          
+     secrets:
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
+      DEVHUB_SFDX_AUTH_URL:
+        description: "Devhub Auth URL"
+      SB_SFDX_AUTH_URL:
+        description: "Sandbox Auth URL"
+      DATADOG_API_KEY:
+        description: "Datadog api key to report metrics"
+      DATADOG_HOST:
+        description: "Datadog host to report metrics"
+      SFOPSBOT_APP_PRIVATE_KEY:
+        description: "Private key of the bot app used"
+
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+
+
+    
+      - name: Find Comment with Run Info
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body-includes: "action at this link:"
+          direction: last
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: 'Cancel any actions running or waiting on the comment'	
+        uses: flxbl-io/sfops-gh-actions/cancelActionsOnComments@main
+        with:
+         issue-number: ${{ github.event.issue.number }}
+         repo: flxbl-io/sf-core
+         gh_token: ${{ steps.app-token.outputs.token }}
