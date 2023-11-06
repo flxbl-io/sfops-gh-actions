@@ -85,6 +85,8 @@ jobs:
 
             Please check the logs at https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
+            This issue is being processed by [sfops 🤖]
+
 
       - name: Set Output
         id: issue-analyzer-output
@@ -146,6 +148,8 @@ jobs:
 
               Please check your email for details, on how to reset your password and get access to this org.
               Please note this scratch org would get automatically deleted when the number of days mentioned above expires.
+
+              This issue was processed by [sfops 🤖]
       
   
   

@@ -84,6 +84,8 @@ jobs:
 
             You can follow the action at this link: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
+            This issue is being processed by [sfops 🤖]
+
       - name: Set Output
         id: issue-analyzer-output
         run: |

@@ -80,6 +80,8 @@ jobs:
             Your request has been received and is being processed. The release names will be updated in a moment
             All release definitions from this point will have the new release names prefixed from this stage
 
+            This issue is being processed by [sfops 🤖]
+
       - name: Set Output
         id: issue-analyzer-output
         run: |

@@ -82,6 +82,8 @@ jobs:
             You will be notified when the package installation is complete.
             Please check the logs at https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
+            This issue is being processed by [sfops 🤖]
+
       - name: Set Output
         id: issue-analyzer-output
         run: |

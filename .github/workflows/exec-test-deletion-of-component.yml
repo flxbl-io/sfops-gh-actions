@@ -86,6 +86,8 @@ jobs:
             Please proceed to do this activity on other orgs after you have verified the results of this activity.
             You can follow the action at this link: https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
 
+            This issue is being processed by [sfops 🤖]          
+
       - name: Set Output
         id: issue-analyzer-output
         run: |
