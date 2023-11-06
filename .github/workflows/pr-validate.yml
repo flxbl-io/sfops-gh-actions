@@ -1,4 +1,4 @@
- name: "Build a domain"
+name: "Validate Pull Request"
 on:
   workflow_call:
     inputs:
