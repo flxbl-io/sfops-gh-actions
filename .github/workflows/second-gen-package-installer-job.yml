@@ -34,7 +34,7 @@ on:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
-      sfopsbot-private-key:
+      SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
 
 
@@ -55,7 +55,7 @@ jobs:
         id: app-token
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
 
       - name: Authenticate to ${{ inputs.environment }}
