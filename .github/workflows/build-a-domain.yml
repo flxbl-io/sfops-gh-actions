@@ -47,7 +47,7 @@ on:
         description: "Datadog api key to report metrics"
       datadog-host:
         description: "Datadog host to report metrics"
-      sfopsbot-private-key:
+      SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
 
 
@@ -68,7 +68,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
 
@@ -94,7 +94,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
 
@@ -123,7 +123,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - name: Export Datadog Environment Variables
@@ -180,7 +180,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - uses: actions/download-artifact@v3
@@ -253,7 +253,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - name: Export Datadog Environment Variables
@@ -316,7 +316,7 @@ jobs:
         id: app-token
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - uses: actions/download-artifact@v3
@@ -466,7 +466,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - name: "Report changelog"
@@ -534,7 +534,7 @@ jobs:
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.sfopsbot-private-key }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
       - uses: mshick/add-pr-comment@v2
