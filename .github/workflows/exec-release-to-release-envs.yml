@@ -13,6 +13,18 @@ on:
       issue-number:
          description: "The number of the issue"
          type: "string"
+      source-repo-url: 
+         description: The source repo-url
+         type: "string"
+      workitem-url: 
+         description: The work item tracker url
+         type: "string"
+      issue-notifier: 
+         description: The repo to be notified about the issue
+         type: "string"   
+      metrics-provider:
+        description: "The metrics provider to be used"
+        type: "string"      
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"
@@ -171,19 +183,19 @@ jobs:
         branchname: releasedefns
         additional-plugins: 'skuid-sfdx'
         overrideSkipIfAlreadyInstalled: ${{ needs.issue-analyzer.outputs.forceInstall}}
-        source-repo-url: https://github.com/flxbl-io/sf-core
+        source-repo-url: ${{ inputs.source-repo-url }}
         target-repo: flxbl-io/sfops-dashboard
-        workitem-url: https://wingategroup.atlassian.net/browse
+        workitem-url: ${{ inputs.workitem-url }}
         overridePackageVersions: ${{ needs.issue-analyzer.outputs.overridePackageVersions }}
         excludePackages: ${{ needs.issue-analyzer.outputs.excludePackages }}
         issue-number: ${{github.event.issue.number}}
         issue-author: ${{github.event.issue.user.login}}
         releaselogbranch: releaselogs
-        issue-notifier: 'flxbl-io/sf-core'
-        metrics-provider: 'datadog'
+        issue-notifier: ${{ inputs.issue-notifier }}
+        metrics-provider:  ${{ inputs.metrics-provider }}
         pathToReleaseConfigs: 'config'
         releaseBoard: 'ReleaseBoard'
-        sfopsbot-app-id: ${{ vars.SFOPSBOT_APP_ID }}
+        sfopsbot-app-id: ${{ inputs.SFOPSBOT_APP_ID }}
     secrets:
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
         SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
