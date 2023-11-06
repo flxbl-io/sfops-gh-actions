@@ -16,6 +16,9 @@ on:
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"
+      additional-plugins
+         description: Additional plugins used while deploying packages
+         type: "string"
     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"
@@ -97,7 +100,7 @@ jobs:
         releaseDefn:  ${{ needs.issue-analyzer.outputs.releaseDefn }}
         environment-profile: ${{ needs.issue-analyzer.outputs.envprofile }}
         branchname: releasedefns
-        additional-plugins: 'skuid-sfdx'
+        additional-plugins: ${{ inputs.additional-plugins }}
         overrideSkipIfAlreadyInstalled: ${{ needs.issue-analyzer.outputs.forceInstall}}
         issue-number: ${{github.event.issue.number}}
         issue-author: ${{github.event.issue.user.login}}
