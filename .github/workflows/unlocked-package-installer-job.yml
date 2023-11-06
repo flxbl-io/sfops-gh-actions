@@ -38,6 +38,7 @@ on:
 
 jobs:
   install-unlocked:
+    name: Install second generation package
     runs-on: ubuntu-latest
     container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
     environment: ${{ inputs.environment }}
