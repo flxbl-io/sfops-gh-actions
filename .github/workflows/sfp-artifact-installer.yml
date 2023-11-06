@@ -23,6 +23,8 @@ on:
          description: The App id of the bot used for this workflow_call
          type: "string"
     secrets:
+      NPM_TOKEN:
+        description: 'Token for NPM CLI to fetch from NPM'
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
@@ -39,17 +41,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
           registry-url: "https://npm.pkg.github.com"
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.NPM_TOKEN }}
 
       - name: Authenticate to ${{ inputs.environment }}
         id: handle-auth
@@ -73,7 +69,14 @@ jobs:
           sfp  artifacts:fetch -p release_definition.yaml -d artifacts --npm --scope ${{ github.repository_owner }} 
           find artifacts -type d -or -type f -exec echo {} \;
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.gh-token}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
       - name: Install the artifact to respective org
         run: |
