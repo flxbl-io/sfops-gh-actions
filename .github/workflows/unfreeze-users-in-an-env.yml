@@ -21,6 +21,7 @@ on:
 
 jobs:
   unfreeze-an-org:
+    name: Unfreeze Users in an Org
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}

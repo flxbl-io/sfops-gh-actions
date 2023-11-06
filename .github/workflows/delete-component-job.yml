@@ -24,6 +24,7 @@ on:
 
 jobs:
   delete-components:
+    name: Delete Components
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}

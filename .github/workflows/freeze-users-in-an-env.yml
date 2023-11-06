@@ -21,6 +21,7 @@ on:
 
 jobs:
   freeze-an-org:
+    name: Freeze Users In An Org
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}

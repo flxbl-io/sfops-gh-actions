@@ -35,6 +35,7 @@ on:
 
 jobs:
   install-sfp-artifact:
+    name: Install sfp artifact
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}
