@@ -177,7 +177,7 @@ jobs:
             cat .sfpowerscripts/outputs/org-info.md >> message.md
           fi
           
-          if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; c
+          if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; then
             printf "\n### :eyes: Packages Validated\n" >> message.md
             cat .sfpowerscripts/outputs/deployment-breakdown.md >> message.md
           else
