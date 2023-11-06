@@ -225,7 +225,8 @@ jobs:
          needs.unfreeze-user.result == 'success' ||
          needs.update-releasename.result == 'success' ||
          needs.patch-release-branch.result == 'success' ||
-         needs.artifact-installer.result == 'success' 
+         needs.artifact-installer.result == 'success'  ||
+         needs.package-installer.result == 'success' 
          )
      steps:
 
@@ -271,7 +272,8 @@ jobs:
             needs.unfreeze-user.result == 'failure' ||
             needs.update-releasename.result == 'failure' ||
             needs.patch-release-branch.result == 'failure' ||
-            needs.artifact-installer.result == 'failure' 
+            needs.artifact-installer.result == 'failure' ||
+            needs.package-installer.result == 'failure' 
           )
       steps:
 
