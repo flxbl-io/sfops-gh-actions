@@ -205,7 +205,7 @@ jobs:
         if: always()
         with:
           allow-repeats: false
-          repo-token: ${{ ${{ steps.app-token.outputs.token }}}}
+          repo-token: ${{ steps.app-token.outputs.token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
           message-path: |
