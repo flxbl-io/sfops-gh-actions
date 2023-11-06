@@ -147,7 +147,7 @@ jobs:
             echo "SBX_NAME=${{inputs.org-name}}" >> $GITHUB_OUTPUT   
           fi
 
-      - name: Authenticate to ${{ inputs.environment }}
+      - name: Authenticate to ${{ inputs.environment }} |  ${{ inputs.environment-profile }} |  ${{ steps.handle-sandbox-name.outputs.SBX_NAME }}
         id: handle-auth
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with:
