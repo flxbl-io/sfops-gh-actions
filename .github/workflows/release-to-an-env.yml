@@ -260,7 +260,7 @@ jobs:
           body: |
             Hello @${{inputs.issue-notifier}} :wave:
 
-            The release to ${{inputs.environment}} and is succesfully completed. Please proceeed to the environment to  validate the release.
+            The release to ${{steps.handle-auth.outputs.alias}} is succesfully completed. Please proceeed to the environment to  validate the release.
 
       - name: Create comment on failure of a release
         uses: peter-evans/create-or-update-comment@v3
@@ -269,6 +269,7 @@ jobs:
           issue-number: ${{inputs.issue-number}}
           token: ${{ steps.app-token.outputs.token }}
           body: |
-            Hello @${{inputs.issue-notifier}} :wave:
+            ## ⚠️ Something went wrong !!! ⚠️
 
-            The release to ${{inputs.environment}} has failed. Please check the logs, fix the issue and retrigger the release
+            Hello @${{ github.event.issue.user.login }} :wave: 
+            The release to ${{steps.handle-auth.outputs.alias}} has failed. Please check the logs, fix the issue and retrigger the release
