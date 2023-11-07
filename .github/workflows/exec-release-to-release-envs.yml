@@ -19,6 +19,9 @@ on:
       workitem-url: 
          description: The work item tracker url
          type: "string"
+      dashboard-repo:
+        description: "Target repo to submit package version report as HTML"
+        type: "string"
       issue-notifier: 
          description: The repo to be notified about the issue
          type: "string"   
@@ -187,7 +190,7 @@ jobs:
         additional-plugins: ${{ inputs.additional-plugins }}
         overrideSkipIfAlreadyInstalled: ${{ needs.issue-analyzer.outputs.forceInstall}}
         source-repo-url: ${{ inputs.source-repo-url }}
-        target-repo: flxbl-io/sfops-dashboard
+        dashboard-repo: ${{ inputs.dashboard-repo }}
         workitem-url: ${{ inputs.workitem-url }}
         overridePackageVersions: ${{ needs.issue-analyzer.outputs.overridePackageVersions }}
         excludePackages: ${{ needs.issue-analyzer.outputs.excludePackages }}
