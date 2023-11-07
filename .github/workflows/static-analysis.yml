@@ -5,12 +5,12 @@ on:
       dashboard-repo: 
          description: Repo which contains the dashboard data
          type: "string"      
-      sfopsbot-app-id: 
-         description: The App id of the bot used for this workflow_call
-         type: "string"
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"

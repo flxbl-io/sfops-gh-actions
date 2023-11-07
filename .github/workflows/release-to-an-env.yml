@@ -59,14 +59,14 @@ on:
       issue-notifier:
         description: "Who all need to be need to be notified"
         type: "string"
-      metrics-provider:
-        description: "The metrics provider to be used"
-        type: "string"
       pathToReleaseConfigs:
         description: "The path to release config"
         type: "string"
       releaseBoard:
         description: "The release board to be used"
+        type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
         type: "string"
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
