@@ -125,7 +125,12 @@ jobs:
         dashboard-repo: 'flxbl-io/sfops-dashboard'
         forceInstall: ${{ needs.issue-analyzer.outputs.forceInstall }}
         reportPackageVersion: true
+        sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
     secrets:
         SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+        SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}      
         

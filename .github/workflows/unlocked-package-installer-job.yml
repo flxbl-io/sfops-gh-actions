@@ -33,13 +33,18 @@ on:
          description: The App id of the bot used for this workflow_call
          type: "string"
     secrets: 
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
-        description: 'Devhub Auth URL'
+        description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
-        description: 'Sandbox Auth URL'
+        description: "Sandbox Auth URL"
+      DATADOG_API_KEY:
+        description: "Datadog api key to report metrics"
+      DATADOG_HOST:
+        description: "Datadog host to report metrics"
       SFOPSBOT_APP_PRIVATE_KEY:
-        description: "Private key of the bot app used"
-
+        description: "Private key of the bot app used"  
       
             
 

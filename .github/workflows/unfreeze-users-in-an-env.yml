@@ -13,11 +13,28 @@ on:
         description: "Profiles that need be included to be unfrozen"
         required: true
         type: "string"
+      dashboard-repo:
+        description: "Target repo to submit package version report as HTML"
+        type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
+        type: "string"
+      sfopsbot-app-id: 
+         description: The App id of the bot used for this workflow_call
+         type: "string"
     secrets:
+      NPM_TOKEN:
+        description: "GH TOKEN to publish to NPM"
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
+      DATADOG_API_KEY:
+        description: "Datadog api key to report metrics"
+      DATADOG_HOST:
+        description: "Datadog host to report metrics"
+      SFOPSBOT_APP_PRIVATE_KEY:
+        description: "Private key of the bot app used"  
 
 jobs:
   unfreeze-an-org:
