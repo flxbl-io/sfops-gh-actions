@@ -34,6 +34,7 @@ jobs:
       with:
         app-id: ${{ inputs.sfopsbot-app-id }}
         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
 
     - name: Close ScratchOrg Creation Requests if expired
       uses: actions/github-script@v6
@@ -89,6 +90,7 @@ jobs:
       with:
         app-id: ${{ inputs.sfopsbot-app-id }}
         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
 
 
 

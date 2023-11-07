@@ -70,6 +70,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - uses: stefanbuck/github-issue-parser@v3
         id: issue-parser
@@ -123,6 +124,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
         id: fetchAllEnvs
@@ -252,6 +254,7 @@ jobs:
         with:
           app-id: ${{ inputs.sfopsbot-app-id}}
           private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
 
       - name: Create Comment after failure
         uses: peter-evans/create-or-update-comment@v3

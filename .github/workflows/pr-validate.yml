@@ -43,6 +43,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - uses: pmd/pmd-github-action@v1
         with:
@@ -93,6 +94,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - name: 'Authenticate DevHub'
         run: |

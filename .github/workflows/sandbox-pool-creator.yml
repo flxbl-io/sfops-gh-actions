@@ -45,6 +45,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
 
       #Create a sandbox
@@ -75,6 +76,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
 
       - name: Export Datadog Environment Variables

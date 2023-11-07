@@ -39,9 +39,11 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
-           app-id: ${{ inputs.sfopsbot-app-id }}
-           private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
@@ -67,9 +69,11 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: "Get installation token for sfopsbot"
         with:
-           app-id: ${{ inputs.sfopsbot-app-id }}
-           private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - name: Authenticate to ${{matrix.environment}}
         id: handle-auth

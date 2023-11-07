@@ -62,6 +62,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
         
       - uses: stefanbuck/github-issue-parser@v3
@@ -127,6 +128,7 @@ jobs:
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
 
       - name: Close Issue
