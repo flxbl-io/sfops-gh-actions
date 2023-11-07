@@ -12,15 +12,15 @@ on:
         issue-number:
           description: "The number of the issue"
           type: "string"
-        sfopsbot-app-id: 
-          description: The App id of the bot used for this workflow_call
-          type: "string"
-        metrics-provider:
-          description: "The metrics provider to be used"
-          type: "string"
         dashboard-repo: 
           description: Dashboard repo where any reports need to be push
-          type: "string"          
+          type: "string"
+        sfopsbot-app-id: 
+          description: The App id of the bot used for this workflow_call
+           type: "string"
+        metrics-provider:
+          description: "The metrics provider to be used"
+          type: "string"        
      secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"

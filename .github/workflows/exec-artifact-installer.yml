@@ -13,15 +13,15 @@ on:
       issue-number:
          description: "The number of the issue"
          type: "string"
+      dashboard-repo:
+        description: "Target repo to submit package version report as HTML"
+        type: "string"
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"
-      dashboard-repo:
-        description: "Target repo to submit package version report as HTML"
-        type: "string"
     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"

@@ -11,6 +11,9 @@ on:
       sbxname:
         description: "Name of the sandbox"
         type: "string"
+      dashboard-repo: 
+        description: Dashboard repo where any reports need to be push
+        type: "string"  
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"

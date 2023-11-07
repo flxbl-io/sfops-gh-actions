@@ -8,6 +8,9 @@ on:
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"
+      dashboard-repo:
+        description: "Target repo to submit package version report as HTML"
+        type: "string"
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"

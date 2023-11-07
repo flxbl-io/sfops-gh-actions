@@ -15,11 +15,11 @@ on:
       additional-plugins:
         description: "Additional plugins to be installed"
         type: "string"
-      metrics-provider:
-        description: "The metrics provider to be used"
-        type: "string"
       dashboard-repo:
         description: "The repo to which the package version report is to be committed"
+        type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
         type: "string"
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
