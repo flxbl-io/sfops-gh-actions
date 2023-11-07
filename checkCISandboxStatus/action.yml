@@ -32,21 +32,18 @@ runs:
         sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
 
-
-    - name: Export Datadog Environment Variables
-      if: ${{ inputs.metrics-provider == 'datadog'}}
-      run: |
-          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.DATADOG_HOST }}" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }}" >> $GITHUB_ENV
-
-
-
     - id: checkSandboxStatus
       run: |
         devhubInfo=$(sf org display -o devhub --json)
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
         export GH_TOKEN=${{inputs.gh_token}}
+
+        iif [ '${{ inputs.metrics-provider }}' = 'datadog' ]; then then
+         export "SFPOWERSCRIPTS_DATADOG=true" 
+         export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.DATADOG_HOST }}"
+         export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
+        fi
+
         $GITHUB_ACTION_PATH/checkSandboxStatus.sh  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.usersToBeActivated }}
         node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
       shell: bash
