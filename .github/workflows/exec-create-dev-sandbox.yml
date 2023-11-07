@@ -65,7 +65,7 @@ jobs:
 
       - uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GHA_TOKEN }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             github.rest.issues.addLabels({
               issue_number: context.issue.number,
