@@ -63,6 +63,6 @@ jobs:
          source-dir: pmd
          commit-message: 'updated with pmd results'
          target-dir: pmd
-         target-repo: ${{ inputs.dashboard-repo }}
+         dashboard-repo: ${{ inputs.dashboard-repo }}
          gh_token: ${{ steps.app-token.outputs.token }}
 

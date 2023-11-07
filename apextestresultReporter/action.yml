@@ -6,7 +6,7 @@ inputs:
   alias: # id of input
     description: "alias of the org"
     required: true
-  target-repo: # id of input
+  dashboard-repo: # id of input
     description: "name of the repo to report to, will create a folder apexTestResults in the target repo"
     required: true
   gh_token: # id of input
@@ -66,5 +66,5 @@ runs:
 
         export GH_TOKEN=${{inputs.gh_token}}
            
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.dashboard-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
       shell: bash

@@ -16,7 +16,7 @@ on:
       forceInstall:
         description: "Force Install the package?"
         type: "string"
-      target-repo:
+      dashboard-repo:
         description: "Target repo to submit package version report as HTML"
         type: "string"
       sfopsbot-app-id: 
@@ -112,5 +112,5 @@ jobs:
         with:
           alias: ${{ inputs.environment }}
           env-name: ${{ inputs.environment }}
-          target-repo: ${{inputs.target-repo}}
+          dashboard-repo: ${{inputs.dashboard-repo}}
           gh_token: ${{ steps.app-token.outputs.token }}

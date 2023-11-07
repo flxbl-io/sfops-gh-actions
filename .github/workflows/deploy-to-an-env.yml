@@ -100,5 +100,5 @@ jobs:
         with:
           alias: ${{ inputs.environment-profile }}
           env-name: ${{ inputs.environment }}
-          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          dashboard-repo: flxbl-io/${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}

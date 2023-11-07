@@ -116,7 +116,7 @@ jobs:
         environment:  ${{ matrix.environment }}
         package:  ${{ needs.issue-analyzer.outputs.packageId }}
         installation-key: ${{ needs.issue-analyzer.outputs.installationKey }}
-        target-repo: 'flxbl-io/sfops-dashboard'
+        dashboard-repo: 'flxbl-io/sfops-dashboard'
         forceInstall: ${{ needs.issue-analyzer.outputs.forceInstall }}
         reportPackageVersion: true
     secrets:

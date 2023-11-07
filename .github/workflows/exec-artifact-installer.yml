@@ -16,7 +16,7 @@ on:
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"
-      target-repo:
+      dashboard-repo:
         description: "Target repo to submit package version report as HTML"
         type: "string"
     secrets:
@@ -118,7 +118,7 @@ jobs:
     with:
         environment:  ${{ matrix.environment }}
         packages:  '${{ needs.issue-analyzer.outputs.packageName }}:${{ needs.issue-analyzer.outputs.version }}'
-        target-repo:  ${{ inputs.target-repo }}
+        dashboard-repo:  ${{ inputs.dashboard-repo }}
         forceInstall: ${{ needs.issue-analyzer.outputs.forceInstall }}
         sfopsbot-app-id : ${{ inputs.sfopsbot-app-id }}
     secrets:

@@ -23,7 +23,7 @@ on:
           description: 'Create Html Report of package version from this org along with other orgs'
           type: 'boolean'
           default: false
-      target-repo:
+      dashboard-repo:
           description: 'Target repo to submit package version report as HTML'
           type: 'string'
     secrets: 
@@ -74,7 +74,7 @@ jobs:
         with:
          alias: ${{ inputs.environment }}
          env-name: ${{ inputs.environment }}
-         target-repo: ${{inputs.target-repo}}
+         dashboard-repo: ${{inputs.dashboard-repo}}
          gh_token: ${{ secrets.gh-token }}
 
   

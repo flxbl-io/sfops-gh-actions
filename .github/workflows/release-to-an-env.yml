@@ -236,7 +236,7 @@ jobs:
         with:
           source-branch: ${{inputs.releaselogbranch}}
           domain: ${{ inputs.domain }}
-          target-repo: ${{ inputs.dashboard-repo }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}
           source-repo-url: ${{ inputs.source-repo-url}}
           environments: ${{ steps.getAllEnvs.outputs.allEnvs }}
@@ -248,7 +248,7 @@ jobs:
         with:
           alias: ${{ inputs.environment }}
           env-name: ${{ inputs.environment }}
-          target-repo: ${{inputs.ashboard-repo}}
+          dashboard-repo: ${{inputs.ashboard-repo}}
           gh_token: ${{ steps.app-token.outputs.token }}
 
       - name: Create comment on issue after completion of release

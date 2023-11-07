@@ -10,7 +10,7 @@ inputs:
   domain:
     description: "domain for this particular changelog"
     required: true
-  target-repo:
+  dashboard-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   workitem-url:
@@ -38,5 +38,5 @@ runs:
           mkdir -p _data/releaselogs/$env
           git show origin/${{inputs.source-branch}}-$env:${{inputs.domain}}/releasechangelog.json > _data/releaselogs/$env/${{inputs.domain}}.json
         done
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated  env changelog for domain ${{inputs.domain}}"
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.dashboard-repo}} _data _data "updated  env changelog for domain ${{inputs.domain}}"
       shell: bash

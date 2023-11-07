@@ -277,7 +277,7 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
-          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}
 
       # Publish artifacts
@@ -379,7 +379,7 @@ jobs:
         with:
           alias: ${{ matrix.environment }}
           env-name: ${{ matrix.environment }}
-          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          dashboard-repo: flxbl-io/${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}
 
   publish:
@@ -475,7 +475,7 @@ jobs:
         with:
           source-branch: releasedefns
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
-          target-repo: flxbl-io/${{ inputs.dashboard-repo }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
           domain: ${{inputs.domain}}
           gh_token: ${{ steps.app-token.outputs.token }}
           source-repo-url: https://github.com/${{github.repository}}
@@ -501,7 +501,7 @@ jobs:
           repo-token: ${{ steps.app-token.outputs.token }}
           message: |
             This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
-            The link is available at https://flxbl-io.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+            The link is available at https://${{ github.repository.owner}}.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
 
       - name: Create Message Body as File
         id: message_template
