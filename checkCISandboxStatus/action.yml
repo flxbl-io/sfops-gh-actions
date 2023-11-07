@@ -16,9 +16,9 @@ inputs:
     required: true
   metrics-provider:
     description: "The metrics provider to be used"
-  datadog-api-key:
+  DATADOG_API_KEY:
     description: "Datadog api key to report metrics"
-  datadog-host:
+  DATADOG_HOST:
     description: "Datadog host to report metrics"
 
 runs:
@@ -39,8 +39,8 @@ runs:
         export GH_TOKEN=${{inputs.gh_token}}
         if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
          export "SFPOWERSCRIPTS_DATADOG=true" 
-         export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
-         export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
+         export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.DATADOG_HOST }}"
+         export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
         fi
 
         $GITHUB_ACTION_PATH/checkSandboxStatus.sh  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.usersToBeActivated }}

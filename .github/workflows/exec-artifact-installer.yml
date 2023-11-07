@@ -13,6 +13,9 @@ on:
       issue-number:
          description: "The number of the issue"
          type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
+        type: "string"
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
          type: "string"

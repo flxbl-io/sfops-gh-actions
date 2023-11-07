@@ -22,9 +22,9 @@ inputs:
     required: false
   metrics-provider:
     description: "The metrics provider to be used"
-  datadog-api-key:
+  DATADOG_API_KEY:
     description: "Datadog api key to report metrics"
-  datadog-host:
+  DATADOG_HOST:
     description: "Datadog host to report metrics"
 
 outputs:
@@ -117,8 +117,8 @@ runs:
 
         if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
           export "SFPOWERSCRIPTS_DATADOG=true" 
-          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
-          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
+          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.DATADOG_HOST }}"
+          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
           sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"dev\"}
         fi
 

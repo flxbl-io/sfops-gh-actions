@@ -13,6 +13,9 @@ on:
         description: "Profiles that need be excluded from being frozen"
         required: true
         type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
+        type: "string"
     secrets:
       DEVHUB_SFDX_AUTH_URL:
         description: "Devhub Auth URL"

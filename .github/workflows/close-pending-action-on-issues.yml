@@ -15,6 +15,9 @@ on:
         sfopsbot-app-id: 
           description: The App id of the bot used for this workflow_call
           type: "string"
+        metrics-provider:
+          description: "The metrics provider to be used"
+          type: "string"
         dashboard-repo: 
           description: Dashboard repo where any reports need to be push
           type: "string"          
@@ -47,7 +50,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
 

@@ -68,7 +68,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
       - uses: stefanbuck/github-issue-parser@v3
@@ -121,7 +121,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
       - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
@@ -162,7 +162,7 @@ jobs:
         issue-notifier: 'flxbl-io/sf-core'
         workitem-url: https://wingategroup.atlassian.net/browse
         metrics-provider: 'datadog'
-        sfopsbot-app-id: ${{ vars.SFOPSBOT_APP_ID }}
+        sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
     secrets:
         NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
@@ -206,8 +206,8 @@ jobs:
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
         SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
         SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}  
-        datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
-        datadog-host: ${{ secrets.DATADOG_HOST }}
+        DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+        DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
         NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
   close_issue:
@@ -221,7 +221,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
       - name: Close Issue

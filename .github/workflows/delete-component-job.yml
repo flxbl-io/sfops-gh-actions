@@ -11,6 +11,9 @@ on:
       sbxname:
         description: "Name of the sandbox"
         type: "string"
+      metrics-provider:
+        description: "The metrics provider to be used"
+        type: "string"
       components:
         description: "Type:Component separated by coma  which denotes list of components to be deleted"
         type: "string"

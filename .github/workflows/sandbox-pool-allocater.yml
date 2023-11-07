@@ -42,7 +42,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ vars.SFOPSBOT_APP_ID }}
+         app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
          
