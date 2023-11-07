@@ -47,5 +47,5 @@ runs:
         find temp_checkout/${{inputs.domain}} -name "*.yml" -exec cp  \{} _data/releasedefns/${{inputs.domain}} \;
         cp temp_checkout/${{inputs.domain}}/releasechangelog.json _data/releasechangelog/${{inputs.domain}}.json
         rm -rf temp_checkout
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} ${{steps.getAllReleaseNames.outputs.releaseNames}} _data _data "updated changelog for domain ${{inputs.domain}}"
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{ inputs.dashboard-repo }} ${{steps.getAllReleaseNames.outputs.releaseNames}} _data _data "updated changelog for domain ${{inputs.domain}}"
       shell: bash

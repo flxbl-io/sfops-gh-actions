@@ -50,5 +50,5 @@ runs:
 
 
         export GH_TOKEN=${{inputs.gh_token}}
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} _data _data "updated package and domain info"
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{ inputs.dashboard-repo }} _data _data "updated package and domain info"
       shell: bash

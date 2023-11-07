@@ -66,5 +66,5 @@ runs:
 
         export GH_TOKEN=${{inputs.gh_token}}
            
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{ inputs.dashboard-repo }}  ${{steps.getAllEnvs.outputs.allEnvs}}  testresults apextestResults 'updated test results of ${{inputs.alias}}'
       shell: bash
