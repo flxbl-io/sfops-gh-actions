@@ -125,6 +125,7 @@ jobs:
 
       - name: Parse sandbox information
         id: parse_sandbox_info
+        if: steps.fc.outputs.comment-body != ''
         run: |
          comment=$( cat << 'EOF'
          ${{ steps.fc.outputs.comment-body }} 
@@ -138,6 +139,7 @@ jobs:
          fi
 
       - name: Attempt to Delete Sandbox
+        if: steps.fc.outputs.comment-body != ''
         uses: flxbl-io/sfops-gh-actions/deleteSandbox@main
         id: delete_sandbox
         with: 
@@ -147,6 +149,7 @@ jobs:
       - name: Reopen Issue if Sandbox Deletion Failed
         if: steps.delete_sandbox.outputs.DELETED == 'false' || failure()
         run: |
+          git config --global --add safe.directory $GITHUB_WORKSPACE
           gh issue reopen  ${{ github.event.issue.number }}
           gh issue comment ${{ github.event.issue.number }} -b "Sandbox deletion failed probably due to not reaching the 24 hour limit, hence we are reopening the issue. We will attempt it at the next run, Please check the logs here  Please check the logs at https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}"
         
