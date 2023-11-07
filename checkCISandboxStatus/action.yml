@@ -37,7 +37,7 @@ runs:
         devhubInfo=$(sf org display -o devhub --json)
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
         export GH_TOKEN=${{inputs.gh_token}}
-        if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
+        if [ ${{ inputs.metrics-provider }} == 'datadog' ]; then
          export "SFPOWERSCRIPTS_DATADOG=true" 
          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.DATADOG_HOST }}"
          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
