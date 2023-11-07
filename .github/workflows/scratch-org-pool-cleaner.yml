@@ -55,8 +55,8 @@ jobs:
       - name: 'Drop the pool'
         run: |
           if [ ${{ inputs.drop-all-orgs}} == true ]; then
-            sfp pool:delete -t $ ${{ inputs.pool-name}} -v devhub -a
+            sfp pool:delete -t  ${{ inputs.pool-name}} -v devhub -a
           else
-            sfp pool:delete -t $ ${{ inputs.pool-name}} -v devhub
+            sfp pool:delete -t  ${{ inputs.pool-name}} -v devhub
 
  
