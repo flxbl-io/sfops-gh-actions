@@ -9,7 +9,7 @@ inputs:
   env-name:
     description: "name of the environment when reported"
     required: true
-  dashboard-repo:
+  target-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   gh_token:
@@ -38,5 +38,5 @@ runs:
         mkdir -p _data/packageVersionReports
         export GH_TOKEN=${{inputs.gh_token}}
         sfp artifacts:query -u ${{inputs.alias}} --json > _data/packageVersionReports/${{inputs.env-name}}.json
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.dashboard-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
       shell: bash

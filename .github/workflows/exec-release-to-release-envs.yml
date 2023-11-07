@@ -161,8 +161,8 @@ jobs:
         issue-number: ${{github.event.issue.number}}
         releaselogbranch: releaselogs
         issue-author: ${{github.event.issue.user.login}}
-        issue-notifier: 'flxbl-io/sf-core'
-        workitem-url: https://wingategroup.atlassian.net/browse
+        issue-notifier: ${{ inputs.issue-notifier }}
+        workitem-url: ${{ inputs.workitem-url }}
         metrics-provider: 'datadog'
         sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
     secrets:

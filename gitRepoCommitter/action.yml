@@ -12,7 +12,7 @@ inputs:
   commit-message:
     description: "commit message"
     required: true
-  dashboard-repo:
+  target-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   gh_token:
@@ -25,5 +25,5 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         export GH_TOKEN=${{inputs.gh_token}}
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.dashboard-repo}} ${{inputs.source-dir }} ${{inputs.target-dir}} ${{inputs.commit-message}}
+        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{inputs.target-repo}} ${{inputs.source-dir }} ${{inputs.target-dir}} ${{inputs.commit-message}}
       shell: bash
