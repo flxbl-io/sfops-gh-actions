@@ -63,6 +63,9 @@ jobs:
           usersToBeActivated:  ${{ inputs.users-to-be-activated }}
           pathToPoolConfigFile: ${{ inputs.path-to-config }}
           gh_token:  ${{ steps.app-token.outputs.token }}
+          metrics-provider: ${{ inputs.metrics-provider }}
+          DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
 
 
 
