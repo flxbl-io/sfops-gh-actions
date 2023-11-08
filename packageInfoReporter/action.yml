@@ -6,7 +6,7 @@ inputs:
   devhub_sfdx_auth_url:
     description: "Devhub SFDX Auth URL"
     required: false
-  target-repo:
+  dashboard-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   pathToReleaseConfigs:

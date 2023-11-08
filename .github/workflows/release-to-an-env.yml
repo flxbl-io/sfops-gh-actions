@@ -248,7 +248,7 @@ jobs:
         with:
           alias: ${{ inputs.environment }}
           env-name: ${{ inputs.environment }}
-          dashboard-repo: ${{inputs.ashboard-repo}}
+          dashboard-repo: ${{inputs.dashboard-repo}}
           gh_token: ${{ steps.app-token.outputs.token }}
 
       - name: Create comment on issue after completion of release

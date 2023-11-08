@@ -12,7 +12,7 @@ inputs:
   commit-message:
     description: "commit message"
     required: true
-  target-repo:
+  dashboard-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
   gh_token:
