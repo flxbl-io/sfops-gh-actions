@@ -149,12 +149,12 @@ jobs:
             owner: ${{ github.repository_owner }}
 
         - uses: mshick/add-pr-comment@v2
-          name: Report Comment on originating PR
-          if: ${{ steps.download_artifacts.outcome == 'success'}}
+          name: Create comment after successfull fetching of scratch org
           with:
             allow-repeats: false
             message-id: dev-sandbox
             refresh-message-position: true
+            issue: ${{ github.event.issue.number }}
             repo-token: ${{ steps.app-token.outputs.token }}
             message: |
               Hello @${{ github.event.issue.user.login }} :wave:
