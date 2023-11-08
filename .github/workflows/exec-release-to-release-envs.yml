@@ -203,7 +203,7 @@ jobs:
         metrics-provider:  ${{ inputs.metrics-provider }}
         pathToReleaseConfigs: 'config'
         releaseBoard: 'ReleaseBoard'
-        sfopsbot-app-id: ${{ inputs.SFOPSBOT_APP_ID }}
+        sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
     secrets:
         DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
         SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
