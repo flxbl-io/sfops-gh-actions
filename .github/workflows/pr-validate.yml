@@ -11,6 +11,9 @@ on:
       devhub-username:
         description: "The username of the devhub to be used to fetch ci sandboxes"
         type: "string"
+      additional-plugins:
+         description: Additional plugins used while deploying packages
+         type: "string"
     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"
@@ -148,6 +151,17 @@ jobs:
         run: |
            sf org resume sandbox -n ${{ steps.fetchCISandboxHotfix.outputs.sbxname }} -o devhub
            sf alias set ci=${{ inputs.devhub-username }}.${{ steps.fetchCISandboxHotfix.outputs.sbxname }}
+
+
+      - name: Install additional plugins if any
+        run: |
+          if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+              IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+              for plugin in "${plugins[@]}"; do
+                  echo "Installing $plugin"
+                  echo 'y' | sfdx plugins:install $plugin
+              done
+          fi
 
 
       # Validate source and trigger test
