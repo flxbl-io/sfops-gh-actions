@@ -83,6 +83,10 @@ runs:
 
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
+        #Sleep for 60 seconds before the sandbox need to be propoagated
+        sleep 60s
+
+
         # calculate elapsed time and report
         # do not fail even if the metrics where not able to be send
         end=$(date +%s)
@@ -98,13 +102,23 @@ runs:
           done
           usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
 
-          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name
+          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name 2>/dev/null || true
         else
           # decativate all users excpet the initiating user
-          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name
+          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name   2>/dev/null || true
         fi
 
-        node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name true
+        max_attempts=5
+        attempt_num=1
+        while ! node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name true; do
+            if (( attempt_num == max_attempts )); then
+                echo "Failed to create user after $max_attempts attempts."
+                exit 1
+            fi
+            echo "Attempt $attempt_num failed! Trying again in 5 seconds..."
+            sf org sandbox resume -n $sandbox_name -o $DEVHUB_USERNAME  2>/dev/null || true
+            ((attempt_num++))
+        done
 
         #Reset Source tracking
         sf project reset -o $DEVHUB_USERNAME.$sandbox_name 

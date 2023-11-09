@@ -162,7 +162,7 @@ jobs:
               Your sandbox has been created successfully. Please find the details below:
               - Sandbox Name: ${{ steps.sandbox-creator.outputs.SANDBOX_NAME }}
               - UserName: ${{ steps.sandbox-creator.outputs.SANDBOX_USERNAME }}
-              - Expiry In: ${{ steps.issue-analyzer-output.outputs.daysToKeep }} days
+              - Expiry In: ${{ steps.issue-analyzer.outputs.daysToKeep }} days
 
               Please check your email for details, on how to reset your password and get access to this org.
               Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
