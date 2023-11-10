@@ -24,6 +24,13 @@ on:
         description: "Datadog host to report metrics"
       SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
+      STAGING_SFDX_AUTH_URL:
+        description: "Staging Sandbox Auth URL..workaround for now"
+      PREPROD_SFDX_AUTH_URL:
+        description: "Preprod Sandbox Auth URL..workaround for now"
+      UAT_SFDX_AUTH_URL:
+        description: "Uat Sandbox Auth URL..workaround for now"
+  
 
 
 jobs:
@@ -80,6 +87,7 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
         with: 
           DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          ENV_SFDX_AUTH_URL: ${{ secrets[format('{0}_SFDX_AUTH_URL',  matrix.environment )] }}
           org-name: ${{matrix.environment}}
           environment-profile: ${{matrix.environment}}
 
