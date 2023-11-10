@@ -1,0 +1,22 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: "Report github metric"
+description: "Report package version of an org to a folder in repo and create an html report"
+inputs:
+  gh_token:
+    description: "github token to use for commiting to repo"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+          node $GITHUB_ACTION_PATH/ghmetrics.js $(date "+%Y-%m-%d")
+      shell: bash

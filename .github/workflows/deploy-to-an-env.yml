@@ -100,7 +100,7 @@ jobs:
           sfpowerscripts orchestrator:deploy -u ${{ inputs.environment-profile }} -g "::group::,::endgroup::"
 
       - name: "Run package version reporter"
-        uses: flxbl-io//sfops-gh-actions/packageversionReporter@main
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
         with:
           alias: ${{ inputs.environment-profile }}
           env-name: ${{ inputs.environment }}
