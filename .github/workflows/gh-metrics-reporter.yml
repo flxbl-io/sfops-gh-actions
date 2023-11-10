@@ -23,7 +23,7 @@ on:
 
 jobs:
 
-  fetch-all-envs:
+  report-gh-metrics:
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops-lite:latest
     steps:
