@@ -3,11 +3,17 @@ const { execSync } = require('child_process');
 const date = process.argv[2];  // get the date from the command line
 
 function  computeElapsedTime(date) {
+    console.log(`Computing Elapsed Time`);
     const command = `gh pr list -s merged -S closed:${date} --json createdAt,mergedAt,changedFiles`;
     try {
         const stdout = execSync(command).toString();
 
         const prs = JSON.parse(stdout);
+        if(prs.length==0)
+        {
+            console.log(`No PRs merged on ${date}`);
+            return;
+        }
         prs.forEach((pr, index) => {
             const createdAt = new Date(pr.createdAt);
             const mergedAt = new Date(pr.mergedAt);
