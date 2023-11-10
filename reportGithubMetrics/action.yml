@@ -6,6 +6,13 @@ inputs:
   gh_token:
     description: "github token to use for commiting to repo"
     required: true
+  metrics-provider:
+    description: "The metrics provider to be used"
+  DATADOG_API_KEY:
+    description: "Datadog api key to report metrics"
+  DATADOG_HOST:
+    description: "Datadog host to report metrics"
+
 
 runs:
   using: "composite"
@@ -18,5 +25,10 @@ runs:
       shell: bash
 
     - run: |
+         if [ '${{ inputs.metrics-provider }}' = 'datadog' ]; then
+           export "SFPOWERSCRIPTS_DATADOG=true" 
+           export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.DATADOG_HOST }}"
+           export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
+          fi
           node $GITHUB_ACTION_PATH/ghmetrics.js $(date "+%Y-%m-%d")
       shell: bash
