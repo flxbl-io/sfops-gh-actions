@@ -86,20 +86,9 @@ jobs:
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
           echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
-          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.DATADOG_HOSTt }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.DATADOG_HOST }}" >> $GITHUB_ENV
           echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }}" >> $GITHUB_ENV
 
-
-
-      # - name: Check time and exit if not within time range
-      #   if: ${{ github.event_name == 'schedule' }}
-      #   run: |
-      #     # Get current hour in AEST
-      #     HOUR=$(TZ=":Australia/Melbourne" date +"%H")
-      #     if (( HOUR < 6 || HOUR > 20 )); then
-      #       echo "Outside of 6 AM - 8 PM AEST, exiting"
-      #       exit 1
-      #     fi
 
       - name: 'Authenticate DevHub'
         run: |
