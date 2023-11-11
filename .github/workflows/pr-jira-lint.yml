@@ -4,6 +4,7 @@ on:
     inputs:
       sfopsbot-app-id: 
          description: The App id of the bot used for this workflow_call
+         required: true
          type: "string"
       metrics-provider:
         description: "The metrics provider to be used"
@@ -11,9 +12,11 @@ on:
       jira-user:
         description: 'JIRA username. Can be passed in using {{ vars.JIRA_USER }}'
         required: true
+        type: "string"
       jira-base-url:
         description: 'The subdomain of JIRA cloud that you use to access it. {{ vars.SFOPS_ISSUETRACKER_URL_BASE }}"'
         required: true
+        type: "string"
     secrets:
       DATADOG_API_KEY:
         description: "Datadog api key to report metrics"
