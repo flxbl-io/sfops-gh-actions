@@ -12,7 +12,7 @@ on:
         description: 'JIRA username. Can be passed in using {{ vars.JIRA_USER }}'
         required: true
       jira-base-url:
-        description: 'The subdomain of JIRA cloud that you use to access it. ${{ vars.SFOPS_ISSUETRACKER_URL_BASE }}"'
+        description: 'The subdomain of JIRA cloud that you use to access it. {{ vars.SFOPS_ISSUETRACKER_URL_BASE }}"'
         required: true
     secrets:
       DATADOG_API_KEY:
@@ -33,7 +33,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-           app-id: ${{ vars.SFOPSBOT_APP_ID }}
+           app-id: ${{ inputs.sfopsbot-app-id }}
            private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
 
 
