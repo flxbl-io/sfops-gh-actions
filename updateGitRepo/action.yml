@@ -38,7 +38,7 @@ runs:
       shell: bash
 
     - run: |
-        node $GITHUB_ACTION_PATH/updateGitRepo.js ${{ inputs.target-repo }}  _data _data "${{inputs.commit-message }}"  ${{inputs.update-release-names }} ${{inputs.path-to-all-release-name-file }} 
+        node $GITHUB_ACTION_PATH/updateGitRepo.js ${{ inputs.gh_token }} ${{ inputs.target-repo }}  _data _data "${{inputs.commit-message }}"  ${{inputs.update-release-names }} ${{inputs.path-to-all-release-name-file }} 
       shell: bash
       id: updateAllReleaseNames
 
