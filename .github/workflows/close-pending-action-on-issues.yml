@@ -69,5 +69,5 @@ jobs:
         uses: flxbl-io/sfops-gh-actions/cancelActionsOnComments@main
         with:
          issue-number: ${{ github.event.issue.number }}
-         repo: flxbl-io/sf-core
+         repo: ${{github.repository}}
          gh_token: ${{ steps.app-token.outputs.token }}
