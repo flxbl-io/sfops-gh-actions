@@ -1,0 +1,11 @@
+{
+  "name": "updategitrepo",
+  "version": "1.0.0",
+  "description": "Update a directory in a target repo",
+  "main": "updateReleaseName.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "azlam-abdulsalam",
+  "license": "MIT"
+}

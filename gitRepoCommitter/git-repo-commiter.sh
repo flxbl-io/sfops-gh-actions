@@ -37,8 +37,8 @@ fi
 cd $temp_dir
 
 # Configure git 
-git config --global user.email "buildbot@adiza.dev"
-git config --global user.name "buildbot"
+git config --global user.email "sfopsbot@flxbl.io"
+git config --global user.name "sfopsbot"
 
 # Add the copied files to git tracking
 git add .

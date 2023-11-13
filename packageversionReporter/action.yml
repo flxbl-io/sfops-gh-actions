@@ -38,5 +38,15 @@ runs:
         mkdir -p _data/packageVersionReports
         export GH_TOKEN=${{inputs.gh_token}}
         sfp artifacts:query -u ${{inputs.alias}} --json > _data/packageVersionReports/${{inputs.env-name}}.json
-        $GITHUB_ACTION_PATH/git-repo-commiter.sh ${{ inputs.dashboard-repo }}  ${{steps.getAllEnvs.outputs.allEnvs}} _data _data "updated packages for env ${{inputs.alias}}"
       shell: bash
+
+    - name: "Push changes to dashboard-repo"
+      id: updateGitRepo
+      uses: flxbl-io/sfops-gh-actions/updateGitRepo@main
+      with:
+        target-repo: ${{ inputs.dashboard-repo }}
+        source-dir: _data
+        target-dir: _data
+        commit-message: "Updated package version reports"
+        update-release-names: false
+        gh_token: ${{ inputs.gh_token }}
