@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Command line arguments
-const [github_repo_url, dir_to_copy, target_dir, commit_message,isToUpdateReleaseNames,allReleaseJSONPath] = process.argv.slice(2);
+const [gh_token, github_repo_url, dir_to_copy, target_dir, commit_message,isToUpdateReleaseNames,allReleaseJSONPath] = process.argv.slice(2);
 const retries = 3;
 
 async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
@@ -53,6 +53,7 @@ async function gitOperations(tempDir, commitMessage) {
         process.chdir(tempDir);
         execSync(`git config --global user.email sfopsbot@flxbl.io`);
         execSync(`git config --global user.name sfopsbot`);
+        execSync(`git remote add remote_origin https://sfops:${gh_token}@github.com/${github_repo_url}.git`);
         execSync(`git add . && git commit -m "${commitMessage}"`);
     } catch (error) {
         console.error(`Error in gitOperations: ${error}`);
@@ -66,7 +67,7 @@ async function pushChanges(tempDir, maxRetries) {
     let attempt = 0;
     while (attempt < maxRetries) {
         try {
-            execSync(`git pull --rebase origin main && git push origin main`);
+            execSync(`git pull --rebase remote_origin main && git push remote_origin main`);
             console.log("Successfully pushed the changes.");
             return;
         } catch (error) {
