@@ -279,6 +279,7 @@ jobs:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ inputs.branchname }} 
 
       # Publish artifacts
       - uses: actions/upload-artifact@v3

@@ -35,7 +35,7 @@ runs:
       uses: flxbl-io/sfops-gh-actions/fetchAllReleaseNames@main
       with:
         pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs}}
-        pathReleaseConfigsCopiedTo: _data/releaseconfigs
+        pathReleaseConfigsCopiedTo: _data/releaseconfigs/${{ inputs.branch }}
 
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
