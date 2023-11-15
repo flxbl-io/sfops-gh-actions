@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Command line arguments
-const [gh_token, github_repo_url, dir_to_copy, target_dir, commit_message,isToUpdateReleaseNames,allReleaseJSONPath] = process.argv.slice(2);
+const [gh_token, source_repo_url, current_branch, github_repo_url, dir_to_copy, target_dir, commit_message,isToUpdateReleaseNames,allReleaseJSONPath] = process.argv.slice(2);
 const retries = 3;
 
 async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
@@ -37,7 +37,7 @@ async function getRepoVariable(repo, variable) {
       return output.trim();
     } catch (error) {
       console.error('Error occurred:', error.message);
-      return null;
+      return current_branch;
     }
   }
 
@@ -109,7 +109,7 @@ async function main() {
     const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
     //We provide an option to update release names whenver there is a git operation
     //This is to reduce build costs
-    const branches=await getRepoVariable(github_repo_url,'BRANCHES');
+    const branches=await getRepoVariable(source_repo_url,'BRANCHES');
     if(branches)
         await updateBranches(tempDir, allReleaseJSONPath);
     if(isToUpdateReleaseNames=='true')
