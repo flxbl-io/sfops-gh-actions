@@ -104,9 +104,6 @@ jobs:
       - name: Fetch Release Defn
         id: fetch-release-defn
         run: |
-      - name: Fetch Release Defn
-        id: fetch-release-defn
-        run: |
             # Define the base file name without the extension
             fileName="${{ inputs.releaseDefn }}"
             fileNameWithoutExtension="${fileName%.*}"
