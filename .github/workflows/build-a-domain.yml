@@ -476,6 +476,7 @@ jobs:
           source-branch: releasedefns
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
+          branch: ${{ github.ref_name }}
           domain: ${{inputs.domain}}
           gh_token: ${{ steps.app-token.outputs.token }}
           source-repo-url: https://github.com/${{github.repository}}
