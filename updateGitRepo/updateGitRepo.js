@@ -107,10 +107,13 @@ async function pushChanges(tempDir, maxRetries) {
 }
 
 async function main() {
-    const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
+
     //We provide an option to update release names whenver there is a git operation
     //This is to reduce build costs
     const branches=await getRepoVariable(source_repo_url,'BRANCHES');
+
+
+    const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
     if(branches)
         await updateBranches(tempDir, allReleaseJSONPath);
     if(isToUpdateReleaseNames=='true')
