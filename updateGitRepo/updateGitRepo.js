@@ -83,7 +83,7 @@ async function gitOperations(tempDir,target_dir, commitMessage) {
         execSync(`git commit -m  "${commitMessage}"`, {stdio: 'inherit'})
     } catch (error) {
         console.error(`Error in gitOperations: ${error}`);
-        process.exit(1);
+        process.exit(0);
     }
 }
 
