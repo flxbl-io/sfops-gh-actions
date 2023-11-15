@@ -73,13 +73,14 @@ async function updateBranches(tempDir, branches) {
 }
 
 
-async function gitOperations(tempDir, commitMessage) {
+async function gitOperations(tempDir,target_dir, commitMessage) {
     try {
         process.chdir(tempDir);
         execSync(`git config --global user.email sfopsbot@flxbl.io`);
         execSync(`git config --global user.name sfopsbot`);
         execSync(`git remote add remote_origin https://sfops:${gh_token}@github.com/${github_repo_url}.git`);
-        execSync(`git add . && git commit -m "${commitMessage}"`);
+        execSync(`git add ${target_dir} `);
+        execSync(`git commit -m  "${commitMessage}"`)
     } catch (error) {
         console.error(`Error in gitOperations: ${error}`);
         process.exit(1);
@@ -114,7 +115,7 @@ async function main() {
         await updateBranches(tempDir, allReleaseJSONPath);
     if(isToUpdateReleaseNames=='true')
        await updateDomains(tempDir, allReleaseJSONPath);
-    await gitOperations(tempDir, commit_message);
+    await gitOperations(tempDir, target_dir,commit_message);
     await pushChanges(tempDir, retries);
 
     // Cleanup
