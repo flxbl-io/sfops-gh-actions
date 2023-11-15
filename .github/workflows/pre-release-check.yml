@@ -122,8 +122,8 @@ jobs:
             if [[ ! -z "$foundFilePath" ]]; then
                 # Assuming you want the first match if there are multiple
                 firstMatch=$(echo "$foundFilePath" | head -n 1)
-                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileNameWithoutExtension${firstMatch##*.}"
-                echo "releaseDefn=$GITHUB_WORKSPACE/$fileNameWithoutExtension${firstMatch##*.}" >> "$GITHUB_OUTPUT"
+                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileNameWithoutExtension.yml"
+                echo "releaseDefn=$GITHUB_WORKSPACE/$fileNameWithoutExtension.yml" >> "$GITHUB_OUTPUT"
             else
                 echo "Release definition file not found."
             fi
