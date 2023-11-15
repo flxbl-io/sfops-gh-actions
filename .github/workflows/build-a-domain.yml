@@ -440,7 +440,7 @@ jobs:
       - name: Generate release defn
         if: ${{ !cancelled() && steps.download_artifacts.outcome == 'success' }}
         run: |
-          sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
+          sfp releasedefinition:generate -b releasedefns  -c  HEAD  -d ${{inputs.branchname}}/${{inputs.domain}} -f  ${{inputs.releaseconfig}} -n ${{env.RELEASE_NAME}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
           GH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -453,9 +453,9 @@ jobs:
           git config --global --add safe.directory '*'
           git fetch --all
           # do a fetch again for accuracy
-          git show origin/releasedefns:${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
+          git show origin/releasedefns:${{inputs.branchname}}/${{ inputs.domain }}/${{env.RELEASE_NAME}}.yml > releasedefn.yml
           sfp artifacts:fetch -p releasedefn.yml -d artifacts --npm --scope ${{ github.repository_owner }}
-          sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.domain}}
+          sfp changelog:generate -b releasedefns  -d artifacts -w "${{inputs.workitem-filter}}" -r "${{inputs.workitem-url}}" -n ${{env.RELEASE_NAME}} --directory ${{inputs.branchname}}/${{inputs.domain}}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
           GH_TOKEN: ${{ secrets.NPM_TOKEN }}

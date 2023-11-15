@@ -173,18 +173,34 @@ jobs:
       - name: Fetch Release Defn
         id: fetch-release-defn
         run: |
-          # Get the latest release defn from releasedefns branch
-          pathToReleaseDef="${{ inputs.releaseDefn }}"
-          extension="${pathToReleaseDef##*.}"
-          if [[ "$extension" == "yaml" || "$extension" == "yml" ]]; then
-              pathWithoutExtension="${pathToReleaseDef%.*}"
-          else
-              pathWithoutExtension="$pathToReleaseDef"
-          fi
-          git config --global --add safe.directory  $GITHUB_WORKSPACE
-          git show origin/${{inputs.branchname}}:${{ inputs.domain }}/$pathWithoutExtension.yml > $pathToReleaseDef.yml
+            # Define the base file name without the extension
+            fileName="${{ inputs.releaseDefn }}"
+            fileNameWithoutExtension="${fileName%.*}"
 
-          echo "releaseDefn=$pathToReleaseDef.yml" >> "$GITHUB_OUTPUT"
+            # Create a temporary directory for the worktree
+            tempDir=$(mktemp -d)
+
+            # Add a new worktree for the specific branch
+            git worktree add --detach $tempDir origin/${{inputs.branchname}}
+
+            # Search for the file in the new worktree
+            pushd $tempDir
+            foundFilePath=$(find . -type f -name "$fileNameWithoutExtension.*")
+
+            if [[ ! -z "$foundFilePath" ]]; then
+                # Assuming you want the first match if there are multiple
+                firstMatch=$(echo "$foundFilePath" | head -n 1)
+                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileNameWithoutExtension${firstMatch##*.}"
+                echo "releaseDefn=$GITHUB_WORKSPACE/$fileNameWithoutExtension${firstMatch##*.}" >> "$GITHUB_OUTPUT"
+            else
+                echo "Release definition file not found."
+            fi
+            popd
+
+            # Remove the worktree and delete the temporary directory
+            git worktree remove $tempDir
+            rm -rf $tempDir
+
 
       - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
@@ -273,3 +289,4 @@ jobs:
 
             Hello @${{ github.event.issue.user.login }} :wave: 
             The release to ${{steps.handle-auth.outputs.alias}} has failed. Please check the logs, fix the issue and retrigger the release
+    

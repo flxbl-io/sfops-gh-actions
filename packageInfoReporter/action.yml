@@ -9,6 +9,9 @@ inputs:
   dashboard-repo:
     description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
     required: true
+  branch:
+    description: "the branch from which the package info was created"
+    required: true
   pathToReleaseConfigs:
     description: "The path to the directory that contains release defns"
     required: true
@@ -37,8 +40,8 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
-        mkdir -p _data
-        cp sfdx-project.json _data/sfdx-project.json
+        mkdir -p _data/manifest/${{ inputs.branch }}
+        cp sfdx-project.json _data/manifest/${{ inputs.branch }}/sfdx-project.json
       shell: bash
 
     - name: "Push changes to dashboard-repo"

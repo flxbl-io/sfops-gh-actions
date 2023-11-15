@@ -247,7 +247,7 @@ jobs:
         uses:  flxbl-io/sfops-gh-actions/releaseCISandbox@main
         if: always() && steps.getTypeOfPool.outputs.type == 'sandbox'
         with:
-          domain: ${{ matrix.pool }}
+          pool: ${{ matrix.pool }}
           sbxname: ${{ steps.fetchCISandbox.outputs.sbxname }}
           gh_token: ${{ steps.app-token.outputs.token }}
 

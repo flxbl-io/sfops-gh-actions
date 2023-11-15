@@ -28,6 +28,19 @@ async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
     }
 }
 
+async function getRepoVariable(repo, variable) {
+    try {
+      // Constructing the gh CLI command
+      const command = `gh api repos/${repo}/actions/variables/${variable} --jq '.value'`;
+      // Executing the command and capturing the output
+      const output = execSync(command).toString();
+      return output.trim();
+    } catch (error) {
+      console.error('Error occurred:', error.message);
+      return null;
+    }
+  }
+
 async function updateDomains(tempDir, allReleasesJSONPath) {
     try {
         // Read and update domains.json
@@ -47,6 +60,18 @@ async function updateDomains(tempDir, allReleasesJSONPath) {
         process.exit(1);
     }
 }
+
+
+async function updateBranches(tempDir, branches) {
+    try {
+        // Read and update domains.json
+        const branchesJSONPath = path.join(tempDir, '_data', 'branches.json');
+        fs.writeFileSync(branchesJSONPath, JSON.stringify(branches, null, 2));
+    } catch (error) {
+        console.error(`Error in updateBranches: ${error}`);
+    }
+}
+
 
 async function gitOperations(tempDir, commitMessage) {
     try {
@@ -84,6 +109,9 @@ async function main() {
     const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
     //We provide an option to update release names whenver there is a git operation
     //This is to reduce build costs
+    const branches=await getRepoVariable(github_repo_url,'BRANCHES');
+    if(branches)
+        await updateBranches(tempDir, allReleaseJSONPath);
     if(isToUpdateReleaseNames=='true')
        await updateDomains(tempDir, allReleaseJSONPath);
     await gitOperations(tempDir, commit_message);
