@@ -115,7 +115,7 @@ async function main() {
 
     const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
     if(branches)
-        await updateBranches(tempDir, allReleaseJSONPath);
+        await updateBranches(tempDir, branches);
     if(isToUpdateReleaseNames=='true')
        await updateDomains(tempDir, allReleaseJSONPath);
     await gitOperations(tempDir, target_dir,commit_message);
