@@ -10,7 +10,6 @@ const runCommand = (command) => {
   try {
     return execSync(command).toString();
   } catch (err) {
-    console.error(`Error executing command: ${command}`, err.stderr.toString());
     throw Error(err.stderr.toString());
   }
 };
@@ -36,7 +35,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
         `sf org sandbox resume -n ${sandboxName} -o ${DEVHUB_USERNAME} --json`
       );
     } catch (error) {
-      console.log(`Check the status of this sandbox, Check org please `);
+      console.log(`Check the status of this sandbox ${sandboxName} in DevHub,Probably its still in progress`);
       sandboxStatus=null;
     }
 
@@ -73,12 +72,13 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       runCommand(
         `gh variable set ${variableName} -b '${value}' --repo ${GITHUB_REPO}`
       );
+      console.log(`Sandbox ${sandboxName} is  marked as available at ${variableName}`)
       try {
         runCommand(
           'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {\"type\":\"ci\"}'
         );
       } catch (error) {
-        console.log(`Skipping posting metric`);
+        console.log(`Skipping posting metric.. Check whether datadog env variable is properly configued`);
       }
     }
   } catch (err) {
