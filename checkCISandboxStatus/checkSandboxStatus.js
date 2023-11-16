@@ -3,7 +3,7 @@ const { execSync } = require('child_process');
 const path = require('path');
 
 
-const [SCRIPT_PATH, GITHUB_REPO, DEVHUB_USERNAME, PATH_TO_POOL_CONFIG] = process.argv.slice(1);
+const [SCRIPT_PATH, GITHUB_REPO, DEVHUB_USERNAME, PATH_TO_POOL_CONFIG] = process.argv.slice(2);
 
 // Function to run shell commands synchronously
 const runCommand = (command) => {
@@ -75,8 +75,6 @@ const processSandbox = async (variableName,sandboxName, poolConfig) => {
     for (const variableValue of githubSandboxVariableValues) {
         
         const sandboxName = JSON.parse(variableValue).name;
-        console.log(`Sand`,sandboxName);
-        console.log(`Processing ${sandboxName}`)
         const poolConfig = findPoolConfig(sandboxName, configJson);
         if (poolConfig) {
             const sandboxJson = JSON.parse(execSync(`gh api "/repos/${GITHUB_REPO}/actions/variables/${sandboxName}?per_page=100" --jq ".value | fromjson"`));
