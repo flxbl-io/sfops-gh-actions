@@ -34,7 +34,8 @@ async function getRepoVariable(repo, variable) {
       const command = `gh api repos/${repo}/actions/variables/${variable} --jq '.value'`;
       // Executing the command and capturing the output
       const output = execSync(command).toString();
-      return output.trim();
+      output.trim();
+      return JSON.parse(output);
     } catch (error) {
       console.error('Error occurred:', error.message);
       return current_branch;
