@@ -105,9 +105,15 @@ jobs:
         id: fetch-release-defn
         run: |
             git config --global --add safe.directory $GITHUB_WORKSPACE
-            # Define the base file name without the extension
+
             fileName="${{ inputs.releaseDefn }}"
-            fileNameWithoutExtension="${fileName%.*}"
+
+            # Reverse the file name
+            reversedFileName=$(echo $fileName | rev)
+
+            # Extract the part before the first (now last) '.'
+            # then reverse it back to get the base file name
+            fileNameWithoutExtension=$(echo ${reversedFileName#*.} | rev)
 
             # Create a temporary directory for the worktree
             tempDir=$(mktemp -d)
@@ -122,8 +128,8 @@ jobs:
             if [[ ! -z "$foundFilePath" ]]; then
                 # Assuming you want the first match if there are multiple
                 firstMatch=$(echo "$foundFilePath" | head -n 1)
-                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileNameWithoutExtension.yml"
-                echo "releaseDefn=$GITHUB_WORKSPACE/$fileNameWithoutExtension.yml" >> "$GITHUB_OUTPUT"
+                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileName"
+                echo "releaseDefn=$GITHUB_WORKSPACE/$fileName" >> "$GITHUB_OUTPUT"
             else
                 echo "Release definition file not found."
             fi
@@ -132,6 +138,8 @@ jobs:
             # Remove the worktree and delete the temporary directory
             git worktree remove $tempDir
             rm -rf $tempDir
+           
+
 
       - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
