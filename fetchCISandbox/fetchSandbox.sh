@@ -6,15 +6,18 @@
 
 GITHUB_REPO=$1
 DOMAIN=$2
-TIMEOUT_MINUTES=$3
-EXIT_ON_TIMEOUT=$4
+BRANCH=$3
+TIMEOUT_MINUTES=$4
+EXIT_ON_TIMEOUT=$5
 
 DOMAIN=$(echo $DOMAIN | tr 'a-z' 'A-Z')
+BRANCH=$(echo $BRANCH | tr 'a-z' 'A-Z')
+
 end=$(expr $(date +%s) + $((TIMEOUT_MINUTES * 60)))
 
 while true; do
   tempfile=$(mktemp)
-  gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_[^_]*_SBX$\").name" > "$tempfile"
+  gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_${BRANCH}_[^_]*_SBX$\").name" > "$tempfile"
 
 
   # No Sandbox Pools Found, try looking for scratch org pools

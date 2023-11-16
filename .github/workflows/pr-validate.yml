@@ -121,11 +121,12 @@ jobs:
   
       # Fetch a sandbox
       - name: 'Fetch CI Sandboxes'
-        if: github.base_ref == 'main' && steps.getTypeOfPool.outputs.type == 'sandbox'
+        if: contains(github.base_ref,'release') == false  && steps.getTypeOfPool.outputs.type == 'sandbox'
         uses: flxbl-io/sfops-gh-actions/fetchCISandbox@main
         id: fetchCISandbox
         with:
           pool: ${{ matrix.pool }}
+          branch: ${{ github.ref_name }}
           gh_token: ${{ steps.app-token.outputs.token }}
 
 
@@ -136,6 +137,7 @@ jobs:
         id: fetchCISandboxHotfix
         with:
           pool: HOTFIX
+          branch: release
           gh_token: ${{ steps.app-token.outputs.token }}
 
 

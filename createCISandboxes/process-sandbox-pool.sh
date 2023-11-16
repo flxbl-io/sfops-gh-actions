@@ -15,6 +15,12 @@ USERSTOBEACTIVATED=$(echo "$entry" | jq -r '.usersToBeActivated')
 BRANCH=$(echo "$entry" | jq -r '.branch')
 
 
+#if branch is not available, setting it to main
+if [ -z "$BRANCH" ]; then
+    BRANCH="main"
+fi
+
+
 echo "POOL: $POOL"
 echo "COUNT: $COUNT"
 
