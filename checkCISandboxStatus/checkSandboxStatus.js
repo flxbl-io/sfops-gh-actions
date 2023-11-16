@@ -75,7 +75,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {"type":"ci"}'
+          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {\"type\":\"ci\"}'
         );
       } catch (error) {
         console.log(`Skipping posting metric`);
