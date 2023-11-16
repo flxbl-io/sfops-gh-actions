@@ -107,13 +107,22 @@ jobs:
             git config --global --add safe.directory $GITHUB_WORKSPACE
 
             fileName="${{ inputs.releaseDefn }}"
-
             # Reverse the file name
+            
             reversedFileName=$(echo $fileName | rev)
 
-            # Extract the part before the first (now last) '.'
-            # then reverse it back to get the base file name
-            fileNameWithoutExtension=$(echo ${reversedFileName#*.} | rev)
+            # Check for .yml or .yaml extension in the reversed file name
+            
+            if [[ $reversedFileName == *"lmy."* ]]; then
+                # Remove the reversed extension and then reverse the string back
+                fileNameWithoutExtension=$(echo ${reversedFileName#*.lmy} | rev)
+            elif [[ $reversedFileName == *"lmay."* ]]; then
+                # Remove the reversed extension and then reverse the string back
+                fileNameWithoutExtension=$(echo ${reversedFileName#*.lmay} | rev)
+            else
+                # If there is no .yml or .yaml extension, use the full string
+                fileNameWithoutExtension="$fileName"
+            fi
 
             # Create a temporary directory for the worktree
             tempDir=$(mktemp -d)
