@@ -33,7 +33,7 @@ runs:
 
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
-        sbx_name=$($GITHUB_ACTION_PATH/fetchSandbox.sh  ${{github.repository}}  ${{inputs.branch}} ${{inputs.pool}} 20 )
+        sbx_name=$($GITHUB_ACTION_PATH/fetchSandbox.sh  ${{github.repository}} ${{inputs.pool}}  ${{inputs.branch}} ${{inputs.pool}} 20 )
         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash
       id: fetchSandbox
