@@ -126,7 +126,7 @@ jobs:
         id: fetchCISandbox
         with:
           pool: ${{ matrix.pool }}
-          branch: ${{ github.ref_name }}
+          branch: ${{ github.base_ref }}
           gh_token: ${{ steps.app-token.outputs.token }}
 
 

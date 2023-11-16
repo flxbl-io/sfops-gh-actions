@@ -17,7 +17,7 @@ end=$(expr $(date +%s) + $((TIMEOUT_MINUTES * 60)))
 
 while true; do
   tempfile=$(mktemp)
-  gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_${BRANCH}_[^_]*_SBX$\").name" > "$tempfile"
+  gh api /repos/$GITHUB_REPO/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\"^${DOMAIN}_${BRANCH}_[^_]*_SBX$\")).name" > "$tempfile"
 
 
   # No Sandbox Pools Found, try looking for scratch org pools
