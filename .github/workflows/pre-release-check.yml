@@ -136,6 +136,7 @@ jobs:
 
             if [[ ! -z "$foundFilePath" ]]; then
                 # Assuming you want the first match if there are multiple
+                echo "Found ReleaseDefn" $GITHUB_WORKSPACE/$fileName
                 firstMatch=$(echo "$foundFilePath" | head -n 1)
                 cp "$firstMatch" "$GITHUB_WORKSPACE/$fileName"
                 echo "releaseDefn=$GITHUB_WORKSPACE/$fileName" >> "$GITHUB_OUTPUT"

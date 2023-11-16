@@ -12,6 +12,7 @@ COUNT=$(echo "$entry" | jq -r '.count')
 APEXCLASSID=$(echo "$entry" | jq -r '.apexClassId')
 SOURCESB=$(echo "$entry" | jq -r '.sourceSB')
 USERSTOBEACTIVATED=$(echo "$entry" | jq -r '.usersToBeActivated')
+BRANCH=$(echo "$entry" | jq -r '.branch')
 
 
 echo "POOL: $POOL"
@@ -35,5 +36,5 @@ do
   value="{\"name\":\"$sandbox_name\",\"status\":\"InProgress\",\"isActive\":\"true\"}"
 
   # Set the GitHub Action variable
-  gh variable set "${POOL}_${sandbox_name}_SBX" -b "$value" --repo $GITHUB_REPO
+  gh variable set "${POOL}_${BRANCH}_+${sandbox_name}_SBX" -b "$value" --repo $GITHUB_REPO
 done

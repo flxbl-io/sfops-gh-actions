@@ -4,6 +4,9 @@ inputs:
   pool:
     description: "Fetch a sandbox from the pool"
     required: true
+  branch:
+    description: "The branch of the sandbox pool"
+    required: true
   gh_token: # id of input
     description: "github token to use for commiting to repo"
     required: true
