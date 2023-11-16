@@ -48,14 +48,14 @@ while true; do
 
   if [ -n "$availableSandbox" ]; then
     >&2 echo "Found available sandbox: $availableSandbox"
-    sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${availableSandbox}_SBX --jq ".value" )
+    sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${BRANCH}_${availableSandbox}_SBX --jq ".value" )
     updatedSandboxDetails=$(echo $sandboxDetails | jq '.status = "InUse"')
     >&2 echo "Fetched SBX: $updatedSandboxDetails"
-    >&2 gh variable set "${DOMAIN}_${availableSandbox}_sbx" -b "$updatedSandboxDetails" --repo $GITHUB_REPO
+    >&2 gh variable set "${DOMAIN}_${BRANCH}_${availableSandbox}_sbx" -b "$updatedSandboxDetails" --repo $GITHUB_REPO
     >&2 echo "Fetched SBX: $availableSandbox"
     echo $availableSandbox
     exit 0
-  else
+  else)
     current=$(date +%s)
     if [ $current -ge $end ]; then
      if [ "$EXIT_ON_TIMEOUT" = "--exit-on-timeout" ]; then
