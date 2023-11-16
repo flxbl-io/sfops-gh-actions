@@ -14,8 +14,8 @@ const VARIABLES = JSON.parse(
 // Read the domains and counts from the config file
 const POOLS_AND_COUNTS = JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
 
-for (const { pool: POOL_NAME, count: COUNT } of POOLS_AND_COUNTS) {
-  const pattern = new RegExp(`${POOL_NAME}_[0-9]+_SBX`);
+for (const { pool: POOL_NAME, count: COUNT, branch:BRANCH } of POOLS_AND_COUNTS) {
+  const pattern = new RegExp(`${POOL_NAME}_${BRANCH}_[0-9]+_SBX`);
   const MATCHING_VARIABLES = VARIABLES.variables
     .filter((v) => pattern.test(v.name))
     .filter((v) => {
@@ -26,6 +26,7 @@ for (const { pool: POOL_NAME, count: COUNT } of POOLS_AND_COUNTS) {
   const CURRENT_COUNT = MATCHING_VARIABLES.length;
 
   console.log(`Pool: ${POOL_NAME}`);
+  console.log(`Branch: ${BRANCH}`);
   console.log(`Desired available count: ${COUNT}`);
   console.log(`Current count of available sandboxes: ${CURRENT_COUNT}`);
 
