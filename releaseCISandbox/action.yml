@@ -4,6 +4,9 @@ inputs:
   pool:
     description: "Domain the sandbox belongs to"
     required: true
+  branch:
+    description: "Domain the sandbox belongs to"
+    required: true
   gh_token: # id of input
     description: "github token to use for commiting to repo"
     required: true
@@ -16,6 +19,6 @@ runs:
   steps:
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
-        sbx_name=$($GITHUB_ACTION_PATH/releaseSandbox.sh  ${{ github.repository }} ${{inputs.pool}}  ${{inputs.sbxname}})
+        sbx_name=$($GITHUB_ACTION_PATH/releaseSandbox.sh  ${{ github.repository }} ${{inputs.pool}} ${{inputs.branch}}  ${{inputs.sbxname}})
       shell: bash
       id: fetchSandbox

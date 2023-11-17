@@ -6,7 +6,8 @@
 
 GITHUB_REPO=$1
 DOMAIN=$2
-SANDBOX_NAME=$3
+BRANCH=$3
+SANDBOX_NAME=$4
 
 
 # Check if SANDBOX_NAME is empty, exit if true
@@ -20,12 +21,19 @@ if [ -z "$DOMAIN" ]; then
   exit 0
 fi
 
+# Check if SANDBOX_NAME is empty, exit if true
+if [ -z "$BRANCH" ]; then
+  echo "BRANCH is empty. Exiting without failing."
+  exit 0
+fi
+
+
 
 # Convert DOMAIN to uppercase
 DOMAIN=$(echo $DOMAIN | tr 'a-z' 'A-Z')
 
 # Fetch current sandbox details
-sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${SANDBOX_NAME}_SBX?per_page=100  --jq ".value")
+sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${BRANCH}_${SANDBOX_NAME}_SBX?per_page=100  --jq ".value")
 
 # Update sandbox status to "Available"
 updatedSandboxDetails=$(echo $sandboxDetails | jq '.status = "Available"')
