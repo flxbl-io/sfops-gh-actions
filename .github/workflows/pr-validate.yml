@@ -70,7 +70,7 @@ jobs:
       with:
        pathToReleaseDefns: 'config'
        from-commit: ${{ github.event.pull_request.base.sha }}
-       to-commit: ${{ github.event.number }}
+       to-commit: ${{ github.event.pull_request.head.sha }}   
        
     - name: Set matrix data
       id: set-matrix
@@ -128,7 +128,7 @@ jobs:
           pool: ${{ matrix.pool }}
           branch: ${{ github.base_ref }}
           gh_token: ${{ steps.app-token.outputs.token }}
-          issue-number: ${{ github.event.pull_request.}}
+          issue-number: ${{ github.event.number }}
 
 
 
@@ -140,6 +140,7 @@ jobs:
           pool: HOTFIX
           branch: release
           gh_token: ${{ steps.app-token.outputs.token }}
+          issue-number: ${{ github.event.number }}
 
 
 
