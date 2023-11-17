@@ -42,11 +42,13 @@ for (const { pool: POOL_NAME, count: COUNT, branch:BRANCH } of POOLS_AND_COUNTS)
     const variable = VARIABLES.variables.find((v) => v.name === variable_name);
     const sandbox_name = JSON.parse(variable.value).name;
     const sandbox_status = JSON.parse(variable.value).status;
+    const issue = JSON.parse(variable.value).issue;
     console.log(sandbox_name, sandbox_status);
     const value = JSON.stringify({
       name: sandbox_name,
       status: "Expired",
       isActive: "false",
+      issue: issue
     });
 
     console.log(`Expiring ${variable_name}`);

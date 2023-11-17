@@ -5,7 +5,7 @@ inputs:
     description: "Domain the sandbox belongs to"
     required: true
   branch:
-    description: "Domain the sandbox belongs to"
+    description: "Branch the pool belongs to"
     required: true
   gh_token: # id of input
     description: "github token to use for commiting to repo"
