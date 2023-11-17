@@ -254,6 +254,8 @@ jobs:
           pool: ${{ matrix.pool }}
           sbxname: ${{ steps.fetchCISandbox.outputs.sbxname }}
           gh_token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ github.base_ref }}
+
 
 
  results:
