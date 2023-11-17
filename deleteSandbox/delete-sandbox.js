@@ -9,7 +9,6 @@ function deleteSandbox(devHubUserName, sandboxName) {
     let stdOut = execSync(
       `sf org logout -o ${devHubUserName}.${sandboxName} -p 2>/dev/null`,
     ).toString();
-    console.log(stdOut);
   } catch (err) {
     console.log(`Sandbox not available for logout: ${sandboxName}`);
   }
@@ -18,8 +17,8 @@ function deleteSandbox(devHubUserName, sandboxName) {
   console.log(`Attempting to authenticate to the sandbox`);
   try {
     orgResumeJSONString = execSync(
-      `sf org resume sandbox -n ${sandboxName} -o ${devHubUserName}`,
-    ).toString();
+      `sf org resume sandbox -n ${sandboxName} -o ${devHubUserName} --json`,
+    );
   } catch (error) {
     if (error.message.includes(`No record found`)) {
       console.log(
