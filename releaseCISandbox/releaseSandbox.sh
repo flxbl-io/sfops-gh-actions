@@ -39,7 +39,7 @@ sandboxDetails=$(gh api /repos/$GITHUB_REPO/actions/variables/${DOMAIN}_${BRANCH
 updatedSandboxDetails=$(echo $sandboxDetails | jq '.status = "Available"')
 
 # Update the variable in GitHub repository
-gh variable set "${DOMAIN}_${SANDBOX_NAME}_SBX" -b "$updatedSandboxDetails" --repo $GITHUB_REPO
+gh variable set "${DOMAIN}__${BRANCH}_${SANDBOX_NAME}_SBX" -b "$updatedSandboxDetails" --repo $GITHUB_REPO
 
 # Print a success message
 echo "Sandbox $SANDBOX_NAME has been set to Available in the repository $GITHUB_REPO for domain $DOMAIN."

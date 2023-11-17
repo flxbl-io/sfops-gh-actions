@@ -20,5 +20,7 @@ runs:
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
         sbx_name=$($GITHUB_ACTION_PATH/releaseSandbox.sh  ${{ github.repository }} ${{inputs.pool}} ${{inputs.branch}}  ${{inputs.sbxname}})
+        # Print a success message
+        echo "Sandbox ${{inputs.sbxname}} has been set to Available for pool] ${{inputs.pool}_${{inputs.branch}}."
       shell: bash
       id: fetchSandbox
