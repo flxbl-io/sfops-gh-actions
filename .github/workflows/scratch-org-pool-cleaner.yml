@@ -58,5 +58,6 @@ jobs:
             sfp pool:delete -t  ${{ inputs.pool-name}} -v devhub -a
           else
             sfp pool:delete -t  ${{ inputs.pool-name}} -v devhub
+          fi
 
  
