@@ -182,6 +182,8 @@ export async function run() {
         return 'failure'
       }
 
+      core.info(`Environment`,environment);
+
       // rollup all the inputs into a single object
       const inputs = {
         trigger: trigger,
@@ -432,7 +434,7 @@ export async function run() {
 
     // If the environment targets are not valid, then exit
     if (!environment) {
-      core.debug('No valid environment targets found')
+      core.info('No valid environment targets found')
       return 'safe-exit'
     }
 

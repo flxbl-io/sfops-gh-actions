@@ -16,10 +16,11 @@ inputs:
   environment:
     description: 'The name of the default environment to deploy to. Example: by default, if you type `.deploy`, it will assume "production" as the default environment'
     required: false
-    default: "qa"
+    default: "test"
   environment_targets:
     description: 'Optional (or additional) target environments to select for use with deployments. Example, "production,development,staging". Example  usage: `.deploy to development`, `.deploy to production`, `.deploy to staging`'
     required: false
+    default: "test"
   draft_permitted_targets:
     description: 'Optional environments which can allow "draft" pull requests to be deployed. By default, this input option is empty and no environments allow deployments sourced from a pull request in a "draft" state. Examples: "development,staging"'
     required: false
@@ -43,7 +44,7 @@ inputs:
   trigger:
     description: 'The string to look for in comments as an IssueOps trigger. Example: ".deploy"'
     required: false
-    default: "/sfops commit"
+    default: "sfops commit"
   noop_trigger:
     description: 'The string to look for in comments as an IssueOps noop trigger. Example: ".noop"'
     required: false
@@ -51,11 +52,11 @@ inputs:
   lock_trigger:
     description: 'The string to look for in comments as an IssueOps lock trigger. Used for locking branch deployments on a specific branch. Example: ".lock"'
     required: false
-    default: "/sfops lock"
+    default: "sfops lock"
   unlock_trigger:
     description: 'The string to look for in comments as an IssueOps unlock trigger. Used for unlocking branch deployments. Example: ".unlock"'
     required: false
-    default: "/sfops unlock"
+    default: "sfops unlock"
   help_trigger:
     description: 'The string to look for in comments as an IssueOps help trigger. Example: ".help"'
     required: false
@@ -63,7 +64,7 @@ inputs:
   lock_info_alias:
     description: 'An alias or shortcut to get details about the current lock (if it exists) Example: ".info"'
     required: false
-    default: "/sfops info"
+    default: "sfops info"
   permissions:
     description: 'The allowed GitHub permissions an actor can have to invoke IssueOps commands - Example: "write,maintain,admin"'
     required: true
