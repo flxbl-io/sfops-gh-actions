@@ -539,13 +539,17 @@ export async function run() {
     }
     const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
     const commentBody = dedent(`
-      ### Deployment Triggered 🚀
-
-      __${
+      ### Deployment In Progress 🚀
+    
+      Hi @__${
         context.actor
-      }__, started a __${deploymentType.toLowerCase()}__ deployment to __${environment}__
+      },
+      
+      Your request to deploy workitem __${context.eventName}__ to __test__ environments is in progress
 
       You can watch the progress [here](${log_url}) 🔗
+
+      This issue is being processed by [sfops 🤖]
 
       > __${deploymentType}__: \`${precheckResults.ref}\`
     `)

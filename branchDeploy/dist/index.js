@@ -42193,13 +42193,17 @@ async function run() {
     }
     const log_url = `${process.env.GITHUB_SERVER_URL}/${github.context.repo.owner}/${github.context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
     const commentBody = lib_default()(`
-      ### Deployment Triggered 🚀
-
-      __${
+      ### Deployment In Progress 🚀
+    
+      Hi @__${
         github.context.actor
-      }__, started a __${deploymentType.toLowerCase()}__ deployment to __${environment}__
+      },
+      
+      Your request to deploy workitem __${github.context.eventName}__ to __test__ environments is in progress
 
       You can watch the progress [here](${log_url}) 🔗
+
+      This issue is being processed by [sfops 🤖]
 
       > __${deploymentType}__: \`${precheckResults.ref}\`
     `)
