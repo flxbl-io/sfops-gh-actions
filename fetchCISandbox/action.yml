@@ -4,9 +4,6 @@ inputs:
   pool:
     description: "Fetch a sandbox from the pool"
     required: true
-  releaseName:
-    description: "Fetch a sandbox from the pool"
-    required: true
   branch:
     description: "The branch of the sandbox pool"
     required: true
@@ -34,7 +31,7 @@ runs:
       uses: flxbl-io/sfops-gh-actions/lockResource@main
       id: lockResource
       with:
-        branch: pool-${{inputs.pool}}-${{inputs.branch}}-${{inputs.releaseName}}-${{inputs.issue-number}}
+        branch: pool-${{inputs.pool}}-${{inputs.branch}}
         repo-token: ${{ inputs.gh_token }}
 
     - run: |
@@ -48,6 +45,6 @@ runs:
       uses: flxbl-io/sfops-gh-actions/unlockResource@main
       if: always()
       with:
-        branch: pool-${{inputs.pool}}-${{inputs.branch}}-${{inputs.releaseName}}-${{inputs.issue-number}}
+        branch: pool-${{inputs.pool}}-${{inputs.branch}}
         repo-token: ${{ inputs.gh_token }}
         ticket_id: ${{ steps.lockResource.outputs.ticket_id }}
