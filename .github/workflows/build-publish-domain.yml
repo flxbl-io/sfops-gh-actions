@@ -115,9 +115,8 @@ jobs:
     name: "publish"
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
-    needs:
-      - deploy-to-dev-orgs
-      - deploy-to-test-orgs
+    needs: 
+     - build
     if: |
       always() && ( needs.deploy-to-test-orgs.result == 'success' || needs.deploy-to-test-orgs.result == 'skipped')  && ( needs.deploy-to-dev-orgs.result == 'success' || needs.deploy-to-dev-orgs.result == 'skipped') 
     steps:
