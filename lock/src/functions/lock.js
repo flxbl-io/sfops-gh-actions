@@ -59,7 +59,8 @@ async function createLock(
     environment: environment,
     global: global,
     unlock_command: await constructUnlockCommand(environment, global),
-    link: link
+    link: link,
+    issue_number: context.issue.number
   }
 
   // Create the lock file

@@ -54,7 +54,19 @@ export async function run() {
         true // headless
       )
       return 'success - headless'
-    } else if (lock_mode === 'check') {
+    } else if (lock_mode === 'unlock-on-comment')
+    {
+      await unlock(
+        octokit, // octokit client
+        context, // context object
+        environment, // environment
+        null, // reactionId
+        true, // headless
+        true  // issueCheck
+      )
+      return 'success - headless'
+    }
+    else if (lock_mode === 'check') {
       await check(octokit, context, environment)
       return 'success - headless'
     }

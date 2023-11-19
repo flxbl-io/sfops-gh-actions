@@ -18,7 +18,8 @@ export async function unlock(
   context,
   environment,
   reactionId,
-  headless = false
+  headless = false,
+  issueCheck = false
 ) {
   try {
     if (headless) {
@@ -30,6 +31,38 @@ export async function unlock(
     var global = false
     if (environment === 'global') {
       global = true
+    }
+
+     // Get the lock file contents
+     if(issueCheck)
+     {
+        const response = await octokit.rest.repos.getContent({
+          ...context.repo,
+          path: LOCK_METADATA.lockFile,
+          ref: `heads/${environment}-${LOCK_BRANCH}`
+        })
+
+        var lockData
+        try {
+          lockData = JSON.parse(
+            Buffer.from(response.data.content, 'base64').toString()
+          )
+        } catch (error) {
+          core.warning(error.toString())
+          core.warning(
+            'lock file exists, but cannot be decoded - setting locked to false'
+          )
+          return false
+        }
+
+        if(lockData.issue_number!==context.issue.number)
+        {
+          core.info(`Issue Number does not match, please unlock on the correct issue`);
+          core.setOutput('issue-match', 'false')
+          return 'no deployment lock currently set - headless'
+
+        }
+
     }
 
     // Delete the lock branch

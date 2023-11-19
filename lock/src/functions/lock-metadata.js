@@ -1,7 +1,7 @@
 export const LOCK_METADATA = {
   lockInfoFlags: ['--info', '--i', '-i', '--details', '--d', '-d'],
-  lockBranchSuffix: 'branch-deploy-lock',
-  globalLockBranch: 'global-branch-deploy-lock',
+  lockBranchSuffix: 'sfops-lock',
+  globalLockBranch: 'sfops-lock',
   lockCommitMsg: 'lock',
   lockFile: 'lock.json'
 }
