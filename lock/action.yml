@@ -78,6 +78,8 @@ outputs:
     description: 'The string "true" if the global lock was released'
   issue-match:
     description: 'Whether the issue number matched'
+  issue-number:
+    description: 'Whether the issue number matched'
 runs:
   using: "node20"
   main: "dist/index.js"

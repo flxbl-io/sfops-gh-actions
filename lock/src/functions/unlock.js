@@ -58,7 +58,8 @@ export async function unlock(
         if(lockData.issue_number!==context.issue.number)
         {
           core.info(`Issue Number does not match, please unlock on the correct issue`);
-          core.setOutput('issue-match', 'false')
+          core.setOutput('issue-match', 'false');
+          core.setOutput('issue-number',lockData.issue_number);
           return 'no deployment lock currently set - headless'
 
         }
