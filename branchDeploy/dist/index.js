@@ -42199,7 +42199,7 @@ async function run() {
         github.context.actor
       },
       
-      Your request to deploy __workitem__ to __test__ environments is in progress
+      Your request to deploy __${github.context.issue.number}__ to __test__ environments is in progress
 
       You can watch the progress [here](${log_url}) 🔗
 
