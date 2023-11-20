@@ -117,6 +117,7 @@ export async function unlock(
 
       // If headless, exit here
       if (headless) {
+        core.setOutput('unlocked','false');
         throw new Error(comment)
       }
 
@@ -129,6 +130,7 @@ export async function unlock(
     if (error.status === 422 && error.message === 'Reference does not exist') {
       // If headless, exit here
       if (headless) {
+        core.setOutput('unlocked','true');
         core.info('no deployment lock currently set - headless')
         return 'no deployment lock currently set - headless'
       }
@@ -151,6 +153,7 @@ export async function unlock(
 
     // If headless, exit here
     if (headless) {
+      core.setOutput('unlocked','false');
       throw new Error(error)
     }
 
