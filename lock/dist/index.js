@@ -31123,12 +31123,13 @@ async function unlock(
           return false
         }
 
-        if(lockData.issue_number!==context.issue.number)
+        if(lockData.issue_number && lockData.issue_number!==context.issue.number)
         {
           core.info(`Issue Number does not match, please unlock on the correct issue`);
+          core.setOutput('unlocked','false');
           core.setOutput('issue-match', 'false');
           core.setOutput('issue-number',lockData.issue_number);
-          return 'no deployment lock currently set - headless'
+          return 'unable to unlock as issue doesnt match'
 
         }
 
@@ -31174,6 +31175,7 @@ async function unlock(
       // Set the action status with the comment
       await actionStatus(context, octokit, reactionId, comment, true, true)
 
+      core.setOutput('unlocked','true');
       // Return true
       return true
     } else {
@@ -31186,6 +31188,7 @@ async function unlock(
         throw new Error(comment)
       }
 
+      core.setOutput('unlocked','false');
       await actionStatus(context, octokit, reactionId, comment, false)
       throw new Error(comment)
     }
@@ -31206,6 +31209,7 @@ async function unlock(
         noLockMsg = `🔓 There is currently no \`${environment}\` deployment lock set`
       }
 
+      core.setOutput('unlocked','true');
       // Leave a comment letting the user know there is no lock to release
       await actionStatus(context, octokit, reactionId, noLockMsg, true, true)
 
@@ -31218,6 +31222,7 @@ async function unlock(
       throw new Error(error)
     }
 
+    core.setOutput('unlocked','false');
     // Update the PR with the error
     await actionStatus(context, octokit, reactionId, error.message, false)
 
