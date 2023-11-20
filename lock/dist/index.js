@@ -31168,6 +31168,7 @@ async function unlock(
 
       // If headless, exit here
       if (headless) {
+        core.setOutput('unlocked',true);
         core.info(`removed lock: ${branchName}`)
         return 'removed lock - headless'
       }
