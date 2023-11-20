@@ -15,6 +15,9 @@ on:
       branch-ref:
         description: "The branch ref from which packages should be built"
         type: "string"
+      base-branch:
+        description: "The name of the base branch where the build is triggrered"
+        type: "string"
       branchname:
         description: "The name of the branch where the build is triggrered"
         type: "string"
@@ -80,7 +83,7 @@ jobs:
         id: fetchTestEnvs
         with:
           gh_token: ${{ steps.app-token.outputs.token }}
-          filter: "type:test,branch:${{ inputs.branchname }}"
+          filter: "type:test,branch:${{ inputs.base-branch }}"
 
  
   build:
