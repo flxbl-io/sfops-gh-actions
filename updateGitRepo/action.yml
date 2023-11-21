@@ -39,6 +39,6 @@ runs:
       shell: bash
 
     - run: |
-        node $GITHUB_ACTION_PATH/updateGitRepo.js --gh_token ${{ inputs.gh_token }} --source_repo_url ${{ github.repository }} --current_branch ${{ github.ref_name }} --github_repo_url ${{ inputs.target-repo }} --dir_to_copy ${{ inputs.source-dir }} --target_dir ${{ inputs.target-dir }} --commit_message "${{ inputs.commit-message }}" --isToUpdateReleaseNames ${{ inputs.update-release-names }} --allReleaseJSONPath ${{ inputs.path-to-all-release-name-file }} --fileNameToDelete ${{ inputs.file-name-to-delete }}
+        node $GITHUB_ACTION_PATH/dist/index.js --gh_token ${{ inputs.gh_token }} --source_repo_url ${{ github.repository }} --current_branch ${{ github.ref_name }} --github_repo_url ${{ inputs.target-repo }} --dir_to_copy ${{ inputs.source-dir }} --target_dir ${{ inputs.target-dir }} --commit_message "${{ inputs.commit-message }}" --isToUpdateReleaseNames ${{ inputs.update-release-names }} --allReleaseJSONPath ${{ inputs.path-to-all-release-name-file }} --fileNameToDelete ${{ inputs.file-name-to-delete }}
       shell: bash
       id: updateGitRepo
