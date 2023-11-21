@@ -106,6 +106,19 @@ async function setDeploymentFailure(
   );
 }
 
+function sleep(ms: number | undefined) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function processInBatches(items:any, batchSize:any, actionFn:any, client:any, context:any) {
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    await Promise.all(batch.map((item: any) => actionFn(client, { ...context.repo, deploymentId: item })));
+    await sleep(1000); // Sleep for 1 second (1000 ms)
+  }
+}
+
+
 async function deleteDeploymentById(
   client: Octokit,
   { owner, repo, deploymentId }: Deployment
@@ -264,42 +277,23 @@ export async function main(): Promise<void> {
       );
     }
 
+    let count=0;
     if (markDeploymentAsFailure) {
-      await Promise.all(
-        deploymentIds.map((deploymentId) =>
-          setDeploymentFailure(client, { ...context.repo, deploymentId })
-        )
-      );
+      await processInBatches(deploymentIds, 30, setDeploymentFailure, client, context);
     }
     else if(markDeploymentAsSuccess)
     {
-      await Promise.all(
-        deploymentIds.map((deploymentId) =>
-          setDeploymentFailure(client, { ...context.repo, deploymentId })
-        )
-      );
+      await processInBatches(deploymentIds, 30, setDeploymentSucess, client, context);
     }
     
     if (deleteDeployment) {
-      await Promise.all(
-        deploymentIds.map((deploymentId) =>
-          setDeploymentInactive(client, { ...context.repo, deploymentId })
-        )
-      );
-      await Promise.all(
-        deploymentIds.map((deploymentId) =>
-          deleteDeploymentById(client, { ...context.repo, deploymentId })
-        )
-      );
+      await processInBatches(deploymentIds, 30, setDeploymentInactive, client, context);
+      await processInBatches(deploymentIds, 30, deleteDeploymentById, client, context);
       core.info(`Deleted deployments`);
     }
 
     if (deleteEnvironment) {
-      await Promise.all(
-        deploymentIds.map((deploymentId) =>
-          setDeploymentInactive(client, { ...context.repo, deploymentId })
-        )
-      );
+      await processInBatches(deploymentIds, 30, setDeploymentInactive, client, context);
       await deleteTheEnvironment(client, environment, context.repo);
     }
 

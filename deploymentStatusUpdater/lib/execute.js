@@ -87,6 +87,18 @@ function setDeploymentFailure(client, { owner, repo, deploymentId }) {
         });
     });
 }
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function processInBatches(items, batchSize, actionFn, client, context) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < items.length; i += batchSize) {
+            const batch = items.slice(i, i + batchSize);
+            yield Promise.all(batch.map((item) => actionFn(client, Object.assign(Object.assign({}, context.repo), { deploymentId: item }))));
+            yield sleep(1000); // Sleep for 1 second (1000 ms)
+        }
+    });
+}
 function deleteDeploymentById(client, { owner, repo, deploymentId }) {
     return __awaiter(this, void 0, void 0, function* () {
         yield client.request("DELETE /repos/{owner}/{repo}/deployments/{deployment_id}", {
@@ -212,19 +224,20 @@ function main() {
             else {
                 deploymentIds = deploymentRefs.map((deployment) => deployment.deploymentId);
             }
+            let count = 0;
             if (markDeploymentAsFailure) {
-                yield Promise.all(deploymentIds.map((deploymentId) => setDeploymentFailure(client, Object.assign(Object.assign({}, context.repo), { deploymentId }))));
+                yield processInBatches(deploymentIds, 30, setDeploymentFailure, client, context);
             }
             else if (markDeploymentAsSuccess) {
-                yield Promise.all(deploymentIds.map((deploymentId) => setDeploymentFailure(client, Object.assign(Object.assign({}, context.repo), { deploymentId }))));
+                yield processInBatches(deploymentIds, 30, setDeploymentSucess, client, context);
             }
             if (deleteDeployment) {
-                yield Promise.all(deploymentIds.map((deploymentId) => setDeploymentInactive(client, Object.assign(Object.assign({}, context.repo), { deploymentId }))));
-                yield Promise.all(deploymentIds.map((deploymentId) => deleteDeploymentById(client, Object.assign(Object.assign({}, context.repo), { deploymentId }))));
+                yield processInBatches(deploymentIds, 30, setDeploymentInactive, client, context);
+                yield processInBatches(deploymentIds, 30, deleteDeploymentById, client, context);
                 core.info(`Deleted deployments`);
             }
             if (deleteEnvironment) {
-                yield Promise.all(deploymentIds.map((deploymentId) => setDeploymentInactive(client, Object.assign(Object.assign({}, context.repo), { deploymentId }))));
+                yield processInBatches(deploymentIds, 30, setDeploymentInactive, client, context);
                 yield deleteTheEnvironment(client, environment, context.repo);
             }
             core.info("done");
