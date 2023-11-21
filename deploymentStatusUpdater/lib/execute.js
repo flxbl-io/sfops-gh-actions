@@ -187,6 +187,7 @@ function main() {
             deleteEnvironment = false;
         }
         else if (onlyRemoveDeployments === "true") {
+            deleteDeployment = true;
             deleteEnvironment = false;
         }
         else if (setDeploymentAsSuccess === "true") {

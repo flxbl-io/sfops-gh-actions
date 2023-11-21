@@ -237,6 +237,7 @@ export async function main(): Promise<void> {
     deleteDeployment = false;
     deleteEnvironment = false;
   } else if (onlyRemoveDeployments === "true") {
+    deleteDeployment = true;
     deleteEnvironment = false;
   } else if (setDeploymentAsSuccess === "true") {
     deleteEnvironment = false;
