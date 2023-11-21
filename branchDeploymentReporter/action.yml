@@ -47,7 +47,6 @@ runs:
         '{status: $status, issue_number: $issue_number, branch: $branch, issue_details: $issue_details}' \
         > _data/issueStatus/${{inputs.issue-number}}.json
 
-        cp issue-number.json _data/issueStatus/${{inputs.issue-number}}.json
       shell: bash
 
     - name: "Push changes to dashboard-repo"
