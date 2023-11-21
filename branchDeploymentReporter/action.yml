@@ -57,5 +57,5 @@ runs:
         source-dir: _data
         target-dir: _data
         commit-message: "Updated information about a branch"
-        update-release-names: true
+        update-release-names: false
         gh_token: ${{ inputs.gh_token }}
