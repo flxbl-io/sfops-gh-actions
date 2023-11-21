@@ -40,7 +40,7 @@ runs:
 
         issue_details=$(gh api repos/${{ github.repository }}/issues/${{inputs.issue-number}})   
         jq -n \
-        --arg sfops_status "${{inputs.status}}" \
+        --arg status "${{inputs.status}}" \
         --arg issue_number "${{inputs.issue-number}}" \
         --arg branch "${{inputs.branch}}" \
         --argjson issue_details "$issue_details" \
