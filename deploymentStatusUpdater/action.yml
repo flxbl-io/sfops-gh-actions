@@ -20,12 +20,6 @@ inputs:
   onlyDeactivateDeployments:
     description: Only inactive deployments, keep the environment and deployments. Defaults to false
     required: false
-  onlySucceedDeployments:
-    description: Update status to success for a deployment on given ref
-    required: false
-  onlyfailDeployment:
-    description: Update status to success for a deployment on given ref
-    required: false
   setDeploymentAsSuccess:
     description: Sets a deployment as sucess on given ref
     required: false

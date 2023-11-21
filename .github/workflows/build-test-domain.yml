@@ -170,6 +170,17 @@ jobs:
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
+      - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
+        id: delete_deployment_status
+        name: Delete Github created deployment status
+        if: ${{ inputs.branch-ref != inputs.base-branch }}
+        with:
+            ref: ${{ inputs.base-branch }}
+            token: ${{steps.app-token.outputs.token}}
+            environment: ${{ matrix.environment }}
+
+
+
       - uses: actions/download-artifact@v3
         id: download_artifacts
         continue-on-error: true
@@ -221,6 +232,7 @@ jobs:
 
       - name: "Deploy to ${{ matrix.environment }}"
         if: ${{ steps.download_artifacts.outcome == 'success'}}
+        id: deploy
         run: |
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
@@ -243,6 +255,28 @@ jobs:
           repo-token: ${{ steps.app-token.outputs.token }}
           message: |
             This work item for issue ${{inputs.branch-ref}} with ${{ github.event.issue.number }}  is now deployed to ${{ matrix.environment}}
+
+      - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
+        id: set_deployment_status_sucess
+        name: Update deployment status to sucess
+        with:
+            ref: ${{ inputs.base-branch }}
+            token: ${{steps.app-token.outputs.token}}
+            environment: ${{ matrix.environment }}
+            setDeploymentAsSuccess: "true"
+            descriptionFilter: ${{ inputs.releasename }}
+
+      - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
+        if: ${{ always() && steps.deploy.outcome == "failure" }}
+        id: set_deployment_status_failure
+        name: Update deployment status to failure
+        with:
+            ref: ${{ inputs.base-branch }}
+            token: ${{steps.app-token.outputs.token}}
+            environment: ${{ matrix.environment }}
+            setDeploymentAsFailure: "true"
+            descriptionFilter: ${{ inputs.releasename }}
+
          
 
 
