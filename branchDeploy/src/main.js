@@ -31,6 +31,8 @@ export async function run() {
     // Get the inputs for the branch-deploy Action
     const token = core.getInput('github_token', {required: true})
     var environment = core.getInput('environment', {required: true})
+    const testEnvironments = core.getInput('test-envs',{required:true}).split(`,`);
+    const releaseName = core.getInput('release-name',{required:true});
     const trigger = core.getInput('trigger', {required: true})
     const reaction = core.getInput('reaction')
     const stable_branch = core.getInput('stable_branch')
@@ -603,6 +605,26 @@ export async function run() {
         : true
 
     // Create a new deployment
+    let deploymentIdsMappedToTestEnvs=new Map();
+    for (const testEnvironment of testEnvironments) {
+      
+      const {data: createDeploy} = await octokit.rest.repos.createDeployment({
+        owner: owner,
+        repo: repo,
+        ref: precheckResults.ref,
+        auto_merge: auto_merge,
+        required_contexts: requiredContexts,
+        environment: testEnvironment,
+         description: `Deploying ${releaseName}`,
+        production_environment: false,
+             payload: {
+          type: 'sfops'
+        }
+      });
+      deploymentIdsMappedToTestEnvs.set(testEnvironment,createDeploy.id)
+    }
+
+
     const {data: createDeploy} = await octokit.rest.repos.createDeployment({
       owner: owner,
       repo: repo,
@@ -617,7 +639,7 @@ export async function run() {
       payload: {
         type: 'branch-deploy'
       }
-    })
+    });
     core.setOutput('deployment_id', createDeploy.id)
     core.saveState('deployment_id', createDeploy.id)
 
@@ -652,6 +674,17 @@ export async function run() {
       environmentObj.environmentUrl // environment_url (can be null)
     )
 
+    for (const testEnvironment of testEnvironments) {
+      await createDeploymentStatus(
+        octokit,
+        context,
+        precheckResults.ref,
+        'in_progress',
+        deploymentIdsMappedToTestEnvs.get(testEnvironment),
+        testEnvironment,
+        environmentObj.environmentUrl // environment_url (can be null)
+      )
+    }
     core.info(`🚀 ${COLORS.success}deployment started!`)
     core.setOutput('continue', 'true')
     return 'success'
