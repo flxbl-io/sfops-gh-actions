@@ -1,0 +1,57 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: "Report status of branch deployments"
+description: "Report status of branch deployments or open pr"
+inputs:
+  status:
+    description: "Current status of the branch"
+    required: true
+  issue-number:
+    description: "The issue of the PR"
+    required: true
+  dashboard-repo:
+    description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
+    required: true
+  branch:
+    description: "the branch of which the status should be reported"
+    required: true
+  gh_token:
+    description: "github token to use for commiting to repo"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git fetch --all
+        mkdir -p _data/issueStatus
+        issue_details=$(gh api repos/${{ github.repository }}/issues/${{inputs.issue-number}})   
+        jq -n \
+        --arg sfops_status "${{inputs.status}}" \
+        --arg issue_number "${{inputs.issue-number}}" \
+        --arg branch "${{inputs.branch}}" \
+        --argjson issue_details "$issue_details" \
+        '{status: $status, issue_number: $issue_number, branch: $branch, issue_details: $issue_details}' \
+        > _data/issueStatus/${{inputs.issue-number}}.json
+
+        cp issue-number.json _data/issueStatus/${{inputs.issue-number}}.json
+      shell: bash
+
+    - name: "Push changes to dashboard-repo"
+      id: updateGitRepo
+      uses: flxbl-io/sfops-gh-actions/updateGitRepo@main
+      with:
+        target-repo: ${{ inputs.dashboard-repo }}
+        source-dir: _data
+        target-dir: _data
+        commit-message: "Updated information about a branch"
+        update-release-names: true
+        gh_token: ${{ inputs.gh_token }}

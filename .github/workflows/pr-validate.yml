@@ -250,7 +250,7 @@ jobs:
           path: .testresults
 
 
-      # Fetch a sandbox
+      # Release a sandbox
       - name: 'Release CI Sandboxes'
         uses:  flxbl-io/sfops-gh-actions/releaseCISandbox@main
         if: always() && steps.getTypeOfPool.outputs.type == 'sandbox'

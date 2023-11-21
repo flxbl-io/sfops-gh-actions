@@ -118,7 +118,7 @@ jobs:
     needs: 
      - build
     if: |
-      always() && ( needs.deploy-to-test-orgs.result == 'success' || needs.deploy-to-test-orgs.result == 'skipped')  && ( needs.deploy-to-dev-orgs.result == 'success' || needs.deploy-to-dev-orgs.result == 'skipped') 
+      always()
     steps:
       - uses: actions/checkout@v3
         with:
@@ -241,7 +241,7 @@ jobs:
           fi
 
       - uses: mshick/add-pr-comment@v2
-        name: Print Any Deployment errors
+        name: Print Publish Status
         continue-on-error: true
         with:
           allow-repeats: false
@@ -250,6 +250,15 @@ jobs:
           refresh-message-position: true
           message-path: |
             message.md
+
+
+      - uses: flxbl-io/sfops-gh-actions/lock@main
+        id: unlock
+        with:
+         mode: 'unlock'
+         environment: 'test-${{ matrix.releaseName }}'
+         environment_targets: 'test-${{ matrix.releaseName }}'
+         github_token: ${{steps.app-token.outputs.token}}
 
 
   comment_issue_on_error:

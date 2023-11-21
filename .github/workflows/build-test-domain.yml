@@ -175,9 +175,10 @@ jobs:
         name: Delete Github created deployment status
         if: ${{ inputs.branch-ref != inputs.base-branch }}
         with:
-            ref: ${{ inputs.base-branch }}
-            token: ${{steps.app-token.outputs.token}}
-            environment: ${{ matrix.environment }}
+          ref: ${{ inputs.base-branch }}
+          token: ${{steps.app-token.outputs.token}}
+          environment: ${{ matrix.environment }}
+          onlyRemoveDeployments: true
 
 
 

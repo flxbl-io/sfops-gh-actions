@@ -42,7 +42,7 @@ inputs:
     required: false
     default: "true"
   mode:
-    description: 'The mode to use "lock", "unlock", or "check". If not provided, the default mode assumes the workflow is not headless and triggered by a comment on a pull request - Example: .lock / .unlock'
+    description: 'The mode to use "lock", "unlock", "unlock-on-comment" or "check". If not provided, the default mode assumes the workflow is not headless and triggered by a comment on a pull request - Example: .lock / .unlock'
     required: false
   reason:
     description: Reason for claiming the deployment lock for this repository
