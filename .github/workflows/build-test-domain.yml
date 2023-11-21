@@ -267,7 +267,7 @@ jobs:
             descriptionFilter: ${{ inputs.releasename }}
 
       - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
-        if: ${{ always() && steps.deploy.outcome == "failure" }}
+        if: ${{ always() && steps.deploy.outcome == 'failure' }}
         id: set_deployment_status_failure
         name: Update deployment status to failure
         with:
