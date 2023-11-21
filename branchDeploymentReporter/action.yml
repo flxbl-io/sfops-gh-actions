@@ -33,6 +33,11 @@ runs:
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
         mkdir -p _data/issueStatus
+
+        if [ ${{ inputs.status }} = 'locked' ]; then
+           echo '{"issue_number": "${{inputs.issue-number}}"}' > _data/issueStatus/locked.json
+        fi
+
         issue_details=$(gh api repos/${{ github.repository }}/issues/${{inputs.issue-number}})   
         jq -n \
         --arg sfops_status "${{inputs.status}}" \
