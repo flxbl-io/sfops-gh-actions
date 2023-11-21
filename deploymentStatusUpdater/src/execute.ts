@@ -114,7 +114,7 @@ async function processInBatches(items:any, batchSize:any, actionFn:any, client:a
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     await Promise.all(batch.map((item: any) => actionFn(client, { ...context.repo, deploymentId: item })));
-    await sleep(1000); // Sleep for 1 second (1000 ms)
+    await sleep(2000); // Sleep for 1 second (1000 ms)
   }
 }
 
@@ -257,7 +257,8 @@ export async function main(): Promise<void> {
       ref,
     });
     core.info(`Found ${deploymentRefs.length} deployments`);
-    let deploymentIds: number[];
+
+    let deploymentIds: number[]=[];
     if (ref.length > 0 && descriptionFilter.length > 0) {
       deploymentIds = deploymentRefs
         .filter(
@@ -266,15 +267,20 @@ export async function main(): Promise<void> {
             deployment.description?.includes(descriptionFilter)
         )
         .map((deployment) => deployment.deploymentId);
+        core.info(`Filtered  ${deploymentIds.length} deployments after applying ref ${ref} & ${descriptionFilter}`);
     }
-    if (ref.length > 0) {
+    else if (ref.length > 0) {
       deploymentIds = deploymentRefs
         .filter((deployment) => deployment.ref === ref)
         .map((deployment) => deployment.deploymentId);
+
+        core.info(`Filtered  ${deploymentIds.length} deployments after applying ref ${ref}`);
     } else {
       deploymentIds = deploymentRefs.map(
         (deployment) => deployment.deploymentId
       );
+
+      core.info(`No Filter applied`);
     }
 
     let count=0;

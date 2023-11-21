@@ -95,7 +95,7 @@ function processInBatches(items, batchSize, actionFn, client, context) {
         for (let i = 0; i < items.length; i += batchSize) {
             const batch = items.slice(i, i + batchSize);
             yield Promise.all(batch.map((item) => actionFn(client, Object.assign(Object.assign({}, context.repo), { deploymentId: item }))));
-            yield sleep(1000); // Sleep for 1 second (1000 ms)
+            yield sleep(2000); // Sleep for 1 second (1000 ms)
         }
     });
 }
@@ -206,7 +206,7 @@ function main() {
             const deploymentRefs = yield listDeployments(client, Object.assign(Object.assign({}, context.repo), { environment,
                 ref }));
             core.info(`Found ${deploymentRefs.length} deployments`);
-            let deploymentIds;
+            let deploymentIds = [];
             if (ref.length > 0 && descriptionFilter.length > 0) {
                 deploymentIds = deploymentRefs
                     .filter((deployment) => {
@@ -215,14 +215,17 @@ function main() {
                         ((_a = deployment.description) === null || _a === void 0 ? void 0 : _a.includes(descriptionFilter));
                 })
                     .map((deployment) => deployment.deploymentId);
+                core.info(`Filtered  ${deploymentIds.length} deployments after applying ref ${ref} & ${descriptionFilter}`);
             }
-            if (ref.length > 0) {
+            else if (ref.length > 0) {
                 deploymentIds = deploymentRefs
                     .filter((deployment) => deployment.ref === ref)
                     .map((deployment) => deployment.deploymentId);
+                core.info(`Filtered  ${deploymentIds.length} deployments after applying ref ${ref}`);
             }
             else {
                 deploymentIds = deploymentRefs.map((deployment) => deployment.deploymentId);
+                core.info(`No Filter applied`);
             }
             let count = 0;
             if (markDeploymentAsFailure) {
