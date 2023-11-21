@@ -1,9 +1,23 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
 
-// Command line arguments
-const [gh_token, source_repo_url, current_branch, github_repo_url, dir_to_copy, target_dir, commit_message,isToUpdateReleaseNames,allReleaseJSONPath] = process.argv.slice(2);
+// Parse command line arguments using yargs
+const argv = yargs(hideBin(process.argv))
+  .option('gh_token', { type: 'string', demandOption: true })
+  .option('source_repo_url', { type: 'string', demandOption: true })
+  .option('current_branch', { type: 'string', demandOption: true })
+  .option('github_repo_url', { type: 'string', demandOption: true })
+  .option('dir_to_copy', { type: 'string', demandOption: true })
+  .option('target_dir', { type: 'string', demandOption: true })
+  .option('commit_message', { type: 'string', demandOption: true })
+  .option('isToUpdateReleaseNames', { type: 'string', default: 'false' })
+  .option('allReleaseJSONPath', { type: 'string', default: '' })
+  .option('fileNameToDelete', { type: 'string', default: '' })
+  .argv;
+
 const retries = 3;
 
 async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
@@ -107,26 +121,32 @@ async function pushChanges(tempDir, maxRetries) {
     process.exit(1);
 }
 
+
 async function main() {
+    const branches = await getRepoVariable(argv.source_repo_url, 'BRANCHES');
+    const tempDir = await cloneAndPrepareRepository(argv.github_repo_url, argv.dir_to_copy, argv.target_dir);
 
-    //We provide an option to update release names whenver there is a git operation
-    //This is to reduce build costs
-    const branches=await getRepoVariable(source_repo_url,'BRANCHES');
-
-
-    const tempDir = await cloneAndPrepareRepository(github_repo_url, dir_to_copy, target_dir);
-    if(branches)
+    if (argv.fileNameToDelete) {
+        await deleteFileFromRepo(tempDir, argv.fileNameToDelete);
+    }
+    if (branches)
         await updateBranches(tempDir, branches);
-    if(isToUpdateReleaseNames=='true')
-       await updateDomains(tempDir, allReleaseJSONPath);
-    await gitOperations(tempDir, target_dir,commit_message);
+    if (argv.isToUpdateReleaseNames == 'true')
+        await updateDomains(tempDir, argv.allReleaseJSONPath);
+
+    await gitOperations(tempDir, argv.target_dir, argv.commit_message);
     await pushChanges(tempDir, retries);
 
     // Cleanup
-    process.chdir('..'); // Move out of tempDir
+    process.chdir('..');
     fs.rmSync(tempDir, { recursive: true, force: true });
     console.log("Cleanup completed.");
 }
+
+main().catch(error => {
+    console.error(`An error occurred: ${error}`);
+    process.exit(1);
+});
 
 main().catch(error => {
     console.error(`An error occurred: ${error}`);

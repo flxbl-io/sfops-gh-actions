@@ -65,6 +65,17 @@ jobs:
       with:
         fetch-depth: 0
 
+    - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
+      name: Report Branch Deployments
+      id: report
+      with:
+        status: 'validation'
+        branch: ${{ steps.branch-deploy.outputs.ref }}
+        dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
+        gh_token: ${{steps.app-token.outputs.token}}
+        issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
+
+
     - name: 'Figure Impacted Release Defns'
       uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnDetector@main
       with:
