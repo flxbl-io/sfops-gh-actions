@@ -93,7 +93,7 @@ async function gitOperations(tempDir,target_dir, commitMessage) {
         process.chdir(tempDir);
         execSync(`git config --global user.email sfopsbot@flxbl.io`);
         execSync(`git config --global user.name sfopsbot`);
-        execSync(`git remote add remote_origin https://sfops:${gh_token}@github.com/${github_repo_url}.git`);
+        execSync(`git remote add remote_origin https://sfops:${argv.gh_token}@github.com/${argv.github_repo_url}.git`);
         execSync(`git add ${target_dir} `, {stdio: 'inherit'} );
         execSync(`git commit -m  "${commitMessage}"`, {stdio: 'inherit'})
     } catch (error) {
