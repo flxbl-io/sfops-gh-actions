@@ -154,10 +154,6 @@ main().catch(error => {
     process.exit(1);
 });
 
-main().catch(error => {
-    console.error(`An error occurred: ${error}`);
-    process.exit(1);
-});
 
 
 /***/ }),
