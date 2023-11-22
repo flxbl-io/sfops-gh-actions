@@ -1,7 +1,7 @@
 #always assume it needs sfpowerscripts docker image as the run time
 
-name: "Report status of branch deployments"
-description: "Report status of branch deployments or open pr"
+name: "Report status of issues"
+description: "Report status of issues"
 inputs:
   status:
     description: "Current status of the branch"
@@ -14,7 +14,7 @@ inputs:
     required: true
   branch:
     description: "the branch of which the status should be reported"
-    required: true
+    required: false
   gh_token:
     description: "github token to use for commiting to repo"
     required: true
