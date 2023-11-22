@@ -6,9 +6,6 @@ on:
       pathToReleaseConfigs:
         description: "The path to the directory that has all release config"
         type: "string"
-      domain:
-        description: "The name of the domain to be built"
-        type: "string"
       additional-plugins:
         description: "Additional plugins to be installed"
         type: "string"
@@ -286,3 +283,4 @@ jobs:
       DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
       NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
