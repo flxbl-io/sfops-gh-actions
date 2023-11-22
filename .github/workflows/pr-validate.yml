@@ -74,8 +74,17 @@ jobs:
        to-commit: ${{ github.event.pull_request.head.sha }}   
 
   
+    - uses: actions/create-github-app-token@v1
+      id: app-token
+      name: Fetch App Token
+      with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+  
     - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
-      name: Report Branch Deployments
+      name: Report Branch Status
       id: report
       with:
         status: 'validation'
