@@ -91,7 +91,7 @@ jobs:
         branch: ${{ github.event.pull_request.head.ref }}   
         dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
         gh_token: ${{steps.app-token.outputs.token}}
-        issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
+        issue-number: ${{ github.event.issue.number }}
   
        
     - name: Set matrix data
