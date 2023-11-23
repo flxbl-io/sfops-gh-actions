@@ -134,6 +134,7 @@ jobs:
        workitem-url: ${{ inputs.workitem-url }}
        workitem-filter:  ${{ inputs.workitem-filter }}
        sfopsbot-app-id: ${{ inputs.sfopsbot-app-id}}
+       additional-plugins: ${{ inputs.additional-plugins }}
     secrets:
       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
       SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}

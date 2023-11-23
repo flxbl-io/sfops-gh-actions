@@ -53,6 +53,33 @@ on:
 
 jobs:
 
+
+  fetch-snapshot-envs:
+    name: Fetch Snapshot Environments
+    runs-on: ubuntu-latest
+    outputs:
+      envsAsJSON: ${{ steps.fetchTestEnvs.outputs.allEnvsAsJSON }}
+    steps:
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        name: "Get installation token for sfopsbot"
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+
+      - uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
+        id: fetchSnapshotEnvs
+        with:
+          gh_token: ${{ steps.app-token.outputs.token }}
+          filter: "type:snapshot,branch:${{ inputs.branchname }}"
+
   build:
     name: "Build packages"
     runs-on: ubuntu-latest
@@ -110,6 +137,94 @@ jobs:
           name: logs
           path: .sfpowerscripts/logs
 
+  deploy-to-snapshot-orgs:
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    needs:
+      - build
+      - fetch-snapshot-envs
+    if: ${{ needs.fetch-test-envs.outputs.envsAsJSON != '[]' && needs.fetch-test-envs.outputs.envsAsJSON != '' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{  fromJSON(needs.fetch-snapshot-envs.outputs.envsAsJSON) }}
+    environment:
+      name: ${{ matrix.environment }}
+    steps:
+    
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+      - uses: actions/download-artifact@v3
+        id: download_artifacts
+        continue-on-error: true
+        with:
+          name: build-artifacts-${{inputs.domain}}
+          path: artifacts
+
+      - name: Export Datadog Environment Variables
+        if: ${{ inputs.metrics-provider == 'datadog' && steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "SFPOWERSCRIPTS_DATADOG=true" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_HOST=${{ secrets.DATADOG_HOST }}" >> $GITHUB_ENV
+          echo "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ secrets.DATADOG_API_KEY }}" >> $GITHUB_ENV
+
+      - name: Lock enviroment
+        uses: ben-z/gh-action-mutex@v1.0-alpha-7
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        with:
+          repo-token: ${{ steps.app-token.outputs.token }}
+          branch: ${{ matrix.environment }}-mutex
+
+      - name: "Authenticate Dev Hub"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
+
+      - name: Authenticate to ${{ matrix.environment }}
+        id: handle-auth
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        uses: flxbl-io/sfops-gh-actions/authToEnvironment@main
+        with:
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+          SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+          environment: ${{ matrix.environment }}
+          org-name: ${{ vars.SBXNAME }}
+          environment-profile: ${{ matrix.environment }}
+
+      - name: Install additional plugins if any
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          if [[ -n "${{ inputs.additional-plugins }}" ]]; then
+              IFS=',' read -ra plugins <<< "${{ inputs.additional-plugins }}"
+              for plugin in "${plugins[@]}"; do
+                  echo "Installing $plugin"
+                  echo 'y' | sfdx plugins:install $plugin
+              done
+          fi
+
+      - name: "Deploy to ${{ matrix.environment }}"
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        run: |
+          sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
+
+      - name: "Run package version reporter"
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        with:
+          alias: ${{ matrix.environment }}
+          env-name: ${{ matrix.environment }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token: ${{ steps.app-token.outputs.token }}
 
   publish:
     name: "publish"
@@ -117,6 +232,7 @@ jobs:
     container: ghcr.io/flxbl-io/sfops:latest
     needs: 
      - build
+     - deploy-to-snapshot-orgs
     if: |
       always()
     steps:
