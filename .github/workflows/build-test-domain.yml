@@ -242,7 +242,7 @@ jobs:
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
       - uses: actions/create-github-app-token@v1
-        if: $always()
+        if: always()
         name: Refresh Github App Token
         id: app-token-refreshed
         with:
