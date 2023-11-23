@@ -158,6 +158,28 @@ jobs:
           skip_reviews: test-${{ matrix.releaseName }}
           skip_completing: "true"
 
+      - name: Create Message Body as File
+        id: message_template
+        if: ${{ steps.branch-deploy.outputs.continue }}
+        run: |
+          printf " ### Deployment In Progress 🚀 " " > message.md
+          printf "\nHello  @${{ github.event.pull_request.user.login }}, " >> message.md
+          printf "\n Your request to deploy __${{ github.event.issue.number }}__ for release __${{ matrix.releaseName }}__ to __test__ environments is in progress"
+          printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
+          printf "\nTest Environment is now locked for this particular __${{ matrix.releaseName }}__, If you want to push another work item, you need to unlock by typing in ```sfops unlock```" >> message.md
+          
+        
+      - uses: mshick/add-pr-comment@v2
+        name: Print Validation Breakdown
+        if: ${{ steps.branch-deploy.outputs.continue }}
+        with:
+          allow-repeats: false
+          repo-token: ${{ steps.app-token.outputs.token }}
+          message-id: deployment-${{ matrix.releaseName }}
+          refresh-message-position: true
+          message-path: |
+             message.md 
+
       - uses: flxbl-io/sfops-gh-actions/lock@main
         name: Claim Deployment Lock to Test Environments
         id: lock

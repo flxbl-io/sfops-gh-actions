@@ -539,29 +539,29 @@ export async function run() {
       deploymentType =
         environmentObj.environmentObj.sha !== null ? 'sha' : 'Branch'
     }
-    const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
-    const commentBody = dedent(`
-      ### Deployment In Progress 🚀
+    //const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    // const commentBody = dedent(`
+    //   ### Deployment In Progress 🚀
     
-      Hi @${
-        context.actor
-      },
+    //   Hi @${
+    //     context.actor
+    //   },
       
-      Your request to deploy __${context.issue.number}__ to __test__ environments is in progress
+    //   Your request to deploy __${context.issue.number}__ for release __${releaseName}__ to __test__ environments is in progress
 
-      You can watch the progress [here](${log_url}) 🔗
+    //   You can watch the progress [here](${log_url}) 🔗
 
-      This issue is being processed by [sfops 🤖]
+    //   This issue is being processed by [sfops 🤖]
 
-      > __${deploymentType}__: \`${precheckResults.ref}\`
-    `)
+    //   > __${deploymentType}__: \`${precheckResults.ref}\`
+    // `)
 
-    // Make a comment on the PR
-    await octokit.rest.issues.createComment({
-      ...context.repo,
-      issue_number: context.issue.number,
-      body: commentBody
-    })
+    // // Make a comment on the PR
+    // await octokit.rest.issues.createComment({
+    //   ...context.repo,
+    //   issue_number: context.issue.number,
+    //   body: commentBody
+    // })
 
     // Set outputs for noopMode
     if (precheckResults.noopMode) {
@@ -625,21 +625,21 @@ export async function run() {
     }
 
 
-    const {data: createDeploy} = await octokit.rest.repos.createDeployment({
-      owner: owner,
-      repo: repo,
-      ref: precheckResults.ref,
-      auto_merge: auto_merge,
-      required_contexts: requiredContexts,
-      environment: environment,
-      // description: "",
-      // :description note: Short description of the deployment.
-      production_environment: isProductionEnvironment,
-      // :production_environment note: specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
-      payload: {
-        type: 'branch-deploy'
-      }
-    });
+    // const {data: createDeploy} = await octokit.rest.repos.createDeployment({
+    //   owner: owner,
+    //   repo: repo,
+    //   ref: precheckResults.ref,
+    //   auto_merge: auto_merge,
+    //   required_contexts: requiredContexts,
+    //   environment: environment,
+    //   // description: "",
+    //   // :description note: Short description of the deployment.
+    //   production_environment: isProductionEnvironment,
+    //   // :production_environment note: specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
+    //   payload: {
+    //     type: 'branch-deploy'
+    //   }
+    // });
     core.setOutput('deployment_id', createDeploy.id)
     core.saveState('deployment_id', createDeploy.id)
 
@@ -663,16 +663,16 @@ export async function run() {
       return 'safe-exit'
     }
 
-    // Set the deployment status to in_progress
-    await createDeploymentStatus(
-      octokit,
-      context,
-      precheckResults.ref,
-      'in_progress',
-      createDeploy.id,
-      environment,
-      environmentObj.environmentUrl // environment_url (can be null)
-    )
+    // // Set the deployment status to in_progress
+    // await createDeploymentStatus(
+    //   octokit,
+    //   context,
+    //   precheckResults.ref,
+    //   'in_progress',
+    //   createDeploy.id,
+    //   environment,
+    //   environmentObj.environmentUrl // environment_url (can be null)
+    // )
 
     for (const testEnvironment of testEnvironments) {
       await createDeploymentStatus(
