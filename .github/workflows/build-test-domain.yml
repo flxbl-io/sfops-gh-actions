@@ -273,7 +273,7 @@ jobs:
         id: set_deployment_status_sucess
         name: Update deployment status to sucess
         with:
-            ref: ${{ inputs.branchname }}
+            ref: ${{ inputs.branch-ref }}
             token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsSuccess: "true"
@@ -284,7 +284,7 @@ jobs:
         id: set_deployment_status_failure
         name: Update deployment status to failure
         with:
-            ref: ${{ inputs.branchname }}
+            ref: ${{ inputs.branch-ref }}
             token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsFailure: "true"

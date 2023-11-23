@@ -48849,6 +48849,7 @@ async function run() {
 
     // Create a new deployment
     let deploymentIdsMappedToTestEnvs=new Map();
+    let deploymentDataMappedToTestEnvs = new Map();
     for (const testEnvironment of testEnvironments) {
       
       const {data: createDeploy} = await octokit.rest.repos.createDeployment({
@@ -48865,6 +48866,7 @@ async function run() {
         }
       });
       deploymentIdsMappedToTestEnvs.set(testEnvironment,createDeploy.id)
+      deploymentDataMappedToTestEnvs.set(testEnvironment,data);
     }
 
 
@@ -48883,13 +48885,16 @@ async function run() {
     //     type: 'branch-deploy'
     //   }
     // });
-    core.setOutput('deployment_id', createDeploy.id)
-    core.saveState('deployment_id', createDeploy.id)
+    // core.setOutput('deployment_id', createDeploy.id)
+    // core.saveState('deployment_id', createDeploy.id)
 
     // If a merge to the base branch is required, let the user know and exit
+    for (const testEnvironment of testEnvironments) {
+    let id = deploymentIdsMappedToTestEnvs.get(testEnvironment);
+    let message = deploymentDataMappedToTestEnvs.get(testEnvironment).message;
     if (
-      typeof createDeploy.id === 'undefined' &&
-      createDeploy.message.includes('Auto-merged')
+      typeof id === 'undefined' &&
+      message.includes('Auto-merged')
     ) {
       const mergeMessage = lib_default()(`
         ### ⚠️ Deployment Warning
@@ -48905,6 +48910,7 @@ async function run() {
       core.saveState('bypass', 'true')
       return 'safe-exit'
     }
+   }
 
     // // Set the deployment status to in_progress
     // await createDeploymentStatus(
