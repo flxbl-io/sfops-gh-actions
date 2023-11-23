@@ -117,10 +117,12 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token
+        name: Fetch sfops App Token
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
+         skip-token-revoke: true
 
       - name: 'Authenticate DevHub'
         run: |
@@ -208,6 +210,14 @@ jobs:
           sfp orchestrator:validate -p ${{steps.getTypeOfPool.outputs.pool }} -v devhub   --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
 
 
+      #App Token has an expriy of an hour, do a refresh again
+      - uses: actions/create-github-app-token@v1
+        id: app-token-refreshed
+        name: Refresh sfops App Token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
 
       - name: Create Message Body as File
         id: message_template
@@ -251,7 +261,7 @@ jobs:
         if: always()
         with:
           allow-repeats: false
-          repo-token: ${{ steps.app-token.outputs.token }}
+          repo-token: ${{ steps.app-token-refreshed.outputs.token }}
           message-id: ${{matrix.filePath}}
           refresh-message-position: true
           message-path: |
@@ -279,7 +289,7 @@ jobs:
         with:
           pool: ${{ matrix.pool }}
           sbxname: ${{ steps.fetchCISandbox.outputs.sbxname }}
-          gh_token: ${{ steps.app-token.outputs.token }}
+          gh_token: ${{ steps.app-token-refreshed.outputs.token }}
           branch: ${{ github.base_ref }}
 
 

@@ -90,15 +90,6 @@ jobs:
         with:
           fetch-depth: 0
 
-
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        name: "Get installation token for sfopsbot"
-        with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-         owner: ${{ github.repository_owner }}
-
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
@@ -115,6 +106,16 @@ jobs:
         id: sfpowerscripts-build
         run: |
           sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        name: "Get installation token for sfopsbot"
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
 
       - name: "Report  Package Info"
         uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main
@@ -162,6 +163,7 @@ jobs:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
+         skip-token-revoke: true
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -217,6 +219,13 @@ jobs:
         run: |
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token-refreshed
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
       - name: "Run package version reporter"
         uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
@@ -224,7 +233,7 @@ jobs:
           alias: ${{ matrix.environment }}
           env-name: ${{ matrix.environment }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
-          gh_token: ${{ steps.app-token.outputs.token }}
+          gh_token: ${{ steps.app-token-refreshed.outputs.token }}
 
   publish:
     name: "publish"

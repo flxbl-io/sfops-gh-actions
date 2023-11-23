@@ -97,14 +97,6 @@ jobs:
           ref: ${{ inputs.branch-ref }}
           fetch-depth: 0
 
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        name: "Get installation token for sfopsbot"
-        with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-         owner: ${{ github.repository_owner }}
-
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
@@ -121,6 +113,16 @@ jobs:
         id: sfpowerscripts-build
         run: |
           sfpowerscripts orchestrator:build -v devhub --diffcheck --branch  ${{ inputs.branchname }} --buildnumber ${GITHUB_RUN_ID} --releaseconfig=${{inputs.releaseconfig}}
+
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        name: "Get installation token for sfopsbot"
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
 
       - name: "Report  Package Info"
         uses: flxbl-io/sfops-gh-actions/packageInfoReporter@main
@@ -169,6 +171,7 @@ jobs:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
+         skip-token-revoke: true
 
       - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
         id: delete_deployment_status
@@ -238,6 +241,14 @@ jobs:
         run: |
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
+      - uses: actions/create-github-app-token@v1
+        id: app-token-refreshed
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+
       - name: "Run package version reporter"
         uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
         if: ${{ steps.download_artifacts.outcome == 'success'}}
@@ -245,7 +256,7 @@ jobs:
           alias: ${{ matrix.environment }}
           env-name: ${{ matrix.environment }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
-          gh_token: ${{ steps.app-token.outputs.token }}
+          gh_token: ${{ steps.app-token-refreshed.outputs.token }}
 
       - uses: mshick/add-pr-comment@v2
         name: Report Comment on originating PR
@@ -254,7 +265,7 @@ jobs:
           allow-repeats: false
           message-id: ${{inputs.domain}}
           refresh-message-position: true
-          repo-token: ${{ steps.app-token.outputs.token }}
+          repo-token: ${{ steps.app-token-refreshed.outputs.token }}
           message: |
             This work item for issue ${{inputs.branch-ref}} with ${{ github.event.issue.number }}  is now deployed to ${{ matrix.environment}}
 
@@ -263,7 +274,7 @@ jobs:
         name: Update deployment status to sucess
         with:
             ref: ${{ inputs.branchname }}
-            token: ${{steps.app-token.outputs.token}}
+            token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsSuccess: "true"
             descriptionFilter: ${{ inputs.releasename }}
@@ -274,7 +285,7 @@ jobs:
         name: Update deployment status to failure
         with:
             ref: ${{ inputs.branchname }}
-            token: ${{steps.app-token.outputs.token}}
+            token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsFailure: "true"
             descriptionFilter: ${{ inputs.releasename }}
