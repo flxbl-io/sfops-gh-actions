@@ -38,11 +38,14 @@ runs:
            echo '{"issue_number": "${{inputs.issue-number}}"}' > _data/locked.json
         fi
 
-        issue_details=$(gh api repos/${{ github.repository }}/issues/${{inputs.issue-number}})   
+        issue_details=$(gh api repos/${{ github.repository }}/pulls/${{inputs.issue-number}}) 
+        head_ref=$(echo $issue_details| jq -r '.head.ref') 
+
+
         jq -n \
         --arg status "${{inputs.status}}" \
         --arg issue_number "${{inputs.issue-number}}" \
-        --arg branch "${{inputs.branch}}" \
+        --arg branch "$head_ref" \
         --argjson issue_details "$issue_details" \
         '{status: $status, issue_number: $issue_number, branch: $branch, issue_details: $issue_details}' \
         > _data/issueStatus/${{inputs.issue-number}}.json
