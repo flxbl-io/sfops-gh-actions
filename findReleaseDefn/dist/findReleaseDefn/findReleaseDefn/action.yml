@@ -13,7 +13,6 @@ inputs:
     description: "the branch where release defns are stored"
     required: false
 
-
 runs:
   using: "composite"
   steps:

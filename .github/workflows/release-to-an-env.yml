@@ -172,64 +172,25 @@ jobs:
 
       - name: Fetch Release Defn
         id: fetch-release-defn
-        run: |
-            git config --global --add safe.directory $GITHUB_WORKSPACE
-
-            fileName="${{ inputs.releaseDefn }}"
-
-            # Reverse the file name
-            reversedFileName=$(echo $fileName | rev)
-
-            # Check for .yml or .yaml extension in the reversed file name
-            if [[ $reversedFileName == *"lmy."* ]]; then
-                # Remove the reversed extension and then reverse the string back
-                fileNameWithoutExtension=$(echo ${reversedFileName#*.lmy} | rev)
-            elif [[ $reversedFileName == *"lmay."* ]]; then
-                # Remove the reversed extension and then reverse the string back
-                fileNameWithoutExtension=$(echo ${reversedFileName#*.lmay} | rev)
-            else
-                # If there is no .yml or .yaml extension, use the full string
-                fileNameWithoutExtension="$fileName"
-            fi
-
-
-            # Create a temporary directory for the worktree
-            tempDir=$(mktemp -d)
-
-            # Add a new worktree for the specific branch
-            git worktree add --detach $tempDir origin/${{inputs.branchname}}
-
-            # Search for the file in the new worktree
-            pushd $tempDir
-            foundFilePath=$(find . -type f -name "$fileNameWithoutExtension.*")
-
-            if [[ ! -z "$foundFilePath" ]]; then
-                # Assuming you want the first match if there are multiple
-                firstMatch=$(echo "$foundFilePath" | head -n 1)
-                cp "$firstMatch" "$GITHUB_WORKSPACE/$fileName"
-                echo "Found ReleaseDefn" $GITHUB_WORKSPACE/$fileName
-                echo "releaseDefn=$GITHUB_WORKSPACE/$fileName" >> "$GITHUB_OUTPUT"
-            else
-                echo "Release definition file not found."
-            fi
-            popd
-
-            # Remove the worktree and delete the temporary directory
-            git worktree remove $tempDir
-            rm -rf $tempDir
+        uses:  flxbl-io/sfops-gh-actions/findReleaseDefn@main
+        with: 
+          releaseDefn: ${{ inputs.releaseDefn }}
+          domain: ${{ inputs.domain }}
+          branch: ${{ inputs.branchname }}
+           
 
 
 
       - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
         with:
-          changelog: ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          changelog:  ${{inputs.releaseDefn}}.yml
           excludePackages: ${{ inputs.excludePackages }}
 
       - name: "Run Override package version if any"
         uses: flxbl-io/sfops-gh-actions/overridePackageVersionInReleaseDefns@main
         with:
-          changelog: ${{steps.fetch-release-defn.outputs.releaseDefn}}
+          changelog:  ${{inputs.releaseDefn}}.yml
           overridePackageVersions: ${{ inputs.overridePackageVersions }}
 
       # Release to environment
@@ -237,13 +198,13 @@ jobs:
         id: release
         run: |
           if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
-            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.outputs.releaseDefn}}
+            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'   ${{inputs.releaseDefn}}.yml
           fi
 
           if [ -z "${{ inputs.environment }}" ]; then
-           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{inputs.releaseDefn}}.yml --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
           else
-           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p  ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{inputs.releaseDefn}}.yml --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

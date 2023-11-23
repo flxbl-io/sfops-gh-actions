@@ -68,6 +68,7 @@ const foundFiles = searchDomainDirectories(tempDir, argv.domain, fileNameWithout
 
 if (foundFiles.length === 0) {
   console.log(`Release definition file not found in any '${argv.domain}' directories.`);
+  process.exit(1);
 } else {
  
     console.log(`Found ReleaseDefn: ${foundFiles[0]}`);
