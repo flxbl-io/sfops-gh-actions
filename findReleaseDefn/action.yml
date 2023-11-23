@@ -1,0 +1,26 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: "Find a release defn of a given branch"
+description: "Find release defn when multiple branches are included"
+inputs:
+  releaseDefn:
+    description: "The release defn that need to be searched for"
+    required: true
+  domain:
+    description: "Name of the domain where the release defn should be searched for"
+    required: true
+  branch:
+    description: "the branch where release defns are stored"
+    required: false
+
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        git fetch --all
+        node dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}}
+      shell: bash
+
+
