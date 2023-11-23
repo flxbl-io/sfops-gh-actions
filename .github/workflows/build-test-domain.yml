@@ -242,6 +242,8 @@ jobs:
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
 
       - uses: actions/create-github-app-token@v1
+        if: $always()
+        name: Refresh Github App Token
         id: app-token-refreshed
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
@@ -277,7 +279,7 @@ jobs:
             token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsSuccess: "true"
-            descriptionFilter: ${{ inputs.releasename }}
+            descriptionFilter: ${{ inputs.domain }}
 
       - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
         if: ${{ always() && steps.deploy.outcome == 'failure' }}
@@ -288,8 +290,7 @@ jobs:
             token: ${{steps.app-token-refreshed.outputs.token}}
             environment: ${{ matrix.environment }}
             setDeploymentAsFailure: "true"
-            descriptionFilter: ${{ inputs.releasename }}
-
+            descriptionFilter: ${{ inputs.domain }}
          
 
 

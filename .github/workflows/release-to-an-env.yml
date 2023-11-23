@@ -214,6 +214,7 @@ jobs:
 
       - uses: actions/create-github-app-token@v1
         id: app-token-refreshed
+        if: always()
         name: Refresh Github App Token
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}

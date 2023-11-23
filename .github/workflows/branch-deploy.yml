@@ -86,7 +86,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.analyze.outputs.matrix) }}
-      fail-fast: false
+      fail-fast: true
     needs:
       - analyze
     outputs:
@@ -163,11 +163,11 @@ jobs:
         if: ${{ steps.branch-deploy.outputs.continue }}
         run: |
           printf " ### Deployment In Progress 🚀 " > message.md
-          printf "\nHello @${{ github.event.issue.user.login }} :wave:" >> message.md
-          printf "\n Your request to deploy __${{ github.event.issue.number }}__ for release __${{ matrix.releaseName }}__ to __test__ environments is in progress" >> message.md
+          printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
+          printf "\n Your request to deploy __${{ github.event.issue.number }}__ for domain/releaseconfig  __${{ matrix.releaseName }}__ to __test__ environments is in progress" >> message.md
           printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
-          printf "\nTest Environment is now locked for this particular __${{ matrix.releaseName }}__, If you want to push another work item, you need to unlock by typing in ```sfops unlock```" >> message.md
-                    
+          printf "\nTest Environment is now locked for the domain/releaseconfig __${{ matrix.releaseName }}__, If you want to push another work item, you need to unlock by typing in sfops unlock" >> message.md
+          
         
       - uses: mshick/add-pr-comment@v2
         name: Print Validation Breakdown
