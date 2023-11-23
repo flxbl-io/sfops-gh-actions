@@ -128,7 +128,7 @@ jobs:
           refresh-message-position: true
           repo-token: ${{ steps.app-token.outputs.token }}
           message: |
-            ### Deployment In Progress 🚀
+            ### An Existing issue is already queued __${{steps.unlock.outputs.issue-number}}__  🚀
 
             Hello @${{ github.event.issue.user.login }} :wave:
 
@@ -231,10 +231,9 @@ jobs:
           message: |
             Hello @${{ github.event.issue.user.login }} :wave:
 
-            Alright, you have succesfully removed the lock on the issue  https://github.com/${{github.repository}}/pull/${{steps.unlock.outputs.issue-number}}
+            Alright, you have succesfully removed the lock on the issue  https://github.com/${{github.repository}}/pull/${{ github.event.issue.number }}
 
-            Please note this is not side effect free, your earlier deployments still persist on environment, You would need to do  a manual cleanup
-            on the environment to remove the feature
+            Please note this is not free of *side effects*, your earlier deployments still persist on environment, You would need to do  a manual cleanup on the environment to remove the feature
 
       - name: Checkout
         uses: actions/checkout@v4
