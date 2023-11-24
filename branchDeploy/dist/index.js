@@ -45139,7 +45139,96 @@ async function checkInput(input) {
   return input
 }
 
+;// CONCATENATED MODULE: ./src/functions/update-comments.js
+async function getExistingComment(
+    octokit,
+    owner,
+    repo,
+    issueNumber,
+    messageContent
+  ) {
+    const parameters = {
+      owner,
+      repo,
+      issue_number: issueNumber,
+      per_page: 100,
+    };
+  
+    let found;
+  
+    for await (const comments of octokit.paginate.iterator(
+      octokit.rest.issues.listComments,
+      parameters,
+    )) {
+      found = comments.data.find(({ body }) => {
+        return (body?.search(messageContent) ?? -1) > -1;
+      });
+  
+      if (found) {
+        break;
+      }
+    }
+  
+    if (found) {
+      const { id, body } = found;
+      return { id, body };
+    }
+  
+    return;
+  }
+  
+  async function updateComment(
+    octokit,
+    owner,
+    repo,
+    existingCommentId,
+    body
+  ) {
+    const updatedComment = await octokit.rest.issues.updateComment({
+      comment_id: existingCommentId,
+      owner,
+      repo,
+      body,
+    });
+  
+    return updatedComment.data;
+  }
+  
+  async function deleteComment(
+    octokit,
+    owner,
+    repo,
+    existingCommentId,
+  ) {
+    const deletedComment = await octokit.rest.issues.deleteComment({
+      comment_id: existingCommentId,
+      owner,
+      repo,
+    });
+  
+    return deletedComment.data;
+  }
+  
+  async function createComment(
+    octokit,
+    owner,
+    repo,
+    issueNumber,
+    body
+  ) {
+    const createdComment = await octokit.rest.issues.createComment({
+      issue_number: issueNumber,
+      owner,
+      repo,
+      body,
+    });
+  
+    return createdComment.data;
+  }
+  
 ;// CONCATENATED MODULE: ./src/functions/action-status.js
+
+
 // Default failure reaction
 const action_status_thumbsDown = '-1'
 // Default success reaction
@@ -45168,6 +45257,23 @@ async function actionStatus(
   if (!message || message.length === 0) {
     const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
     message = 'Unknown error, [check logs](' + log_url + ') for more details.'
+  }
+
+  //Delete existing comment
+  try
+  {
+    let existingCommentData = getExistingComment(octokit,context.owner, context.repo,context.issue.number,`⚠️ Cannot proceed` );
+    if(existingCommentData)
+    {
+      await octokit.rest.issues.deleteComment({
+        comment_id: existingCommentData.id,
+        owner:context.owner,
+        repo: context.repo
+      });
+    }
+  }catch(error)
+  {
+    console.log(`Skipping delete due to ${error}`)
   }
 
   // add a comment to the issue with the message

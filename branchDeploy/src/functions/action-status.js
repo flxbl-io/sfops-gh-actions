@@ -1,3 +1,5 @@
+import { getExistingComment } from "./update-comments"
+
 // Default failure reaction
 const thumbsDown = '-1'
 // Default success reaction
@@ -26,6 +28,23 @@ export async function actionStatus(
   if (!message || message.length === 0) {
     const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
     message = 'Unknown error, [check logs](' + log_url + ') for more details.'
+  }
+
+  //Delete existing comment
+  try
+  {
+    let existingCommentData = getExistingComment(octokit,context.owner, context.repo,context.issue.number,`⚠️ Cannot proceed` );
+    if(existingCommentData)
+    {
+      await octokit.rest.issues.deleteComment({
+        comment_id: existingCommentData.id,
+        owner:context.owner,
+        repo: context.repo
+      });
+    }
+  }catch(error)
+  {
+    console.log(`Skipping delete due to ${error}`)
   }
 
   // add a comment to the issue with the message
