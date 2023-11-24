@@ -197,6 +197,7 @@ jobs:
         with:
           status: "locked"
           branch: ${{ steps.branch-deploy.outputs.ref }}
+          domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{steps.app-token.outputs.token}}
           issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
@@ -269,6 +270,7 @@ jobs:
         if: ${{ steps.unlock.outputs.unlocked == 'true'}}
         with:
           status: "unlocked"
+          domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{steps.app-token.outputs.token}}
           issue-number: ${{ github.event.issue.number }}

@@ -6,6 +6,9 @@ inputs:
   status:
     description: "Current status of the branch"
     required: true
+  domain: 
+   description: "Name of the releaseconfig/domain"
+   required: false
   issue-number:
     description: "The issue of the PR"
     required: true
@@ -45,8 +48,9 @@ runs:
         --arg status "${{inputs.status}}" \
         --arg issue_number "${{inputs.issue-number}}" \
         --arg branch "$head_ref" \
+        --arg domain "${{inputs.domain}}" \
         --argjson issue_details "$issue_details" \
-        '{status: $status, issue_number: $issue_number, branch: $branch, issue_details: $issue_details}' \
+        '{status: $status, issue_number: $issue_number, branch: $branch,domain:$domain, issue_details: $issue_details}' \
         > _data/issueStatus/${{inputs.issue-number}}.json
 
       shell: bash
