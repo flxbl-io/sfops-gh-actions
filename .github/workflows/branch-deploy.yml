@@ -156,7 +156,6 @@ jobs:
           github_token: ${{steps.app-token.outputs.token}}
           environment: test-${{ matrix.releaseName }}
           skip_ci: test-${{ matrix.releaseName }}
-          skip_reviews: test-${{ matrix.releaseName }}
           skip_completing: "true"
 
       - name: Create Message Body as File
