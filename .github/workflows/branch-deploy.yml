@@ -67,6 +67,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ steps.comment-branch.outputs.head_sha }}
+          fetch-depth: 0
 
       - name: "Figure Impacted Release Defns"
         uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnDetector@main
