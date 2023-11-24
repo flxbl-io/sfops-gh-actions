@@ -24,7 +24,7 @@ const argv = yargs(hideBin(process.argv))
   .option('fileNameToDelete', { type: 'string', default: '' })
   .argv;
 
-const retries = 3;
+const retries = 10;
 
 async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
     try {
