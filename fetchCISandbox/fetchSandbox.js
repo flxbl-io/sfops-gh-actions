@@ -28,6 +28,7 @@ async function findAvailableSandbox(
     let isIssueAssigned = false;
     let assignedSandboxInfo;
 
+    // Figure out earlier used sandboxes
     for (const sandboxName of sandboxes) {
       if (sandboxName.trim() === "") continue;
 
@@ -41,14 +42,15 @@ async function findAvailableSandbox(
 
       // Check if the sandbox is associated with the issue
       if (issue === issueNumber) {
-        isIssueAssigned = true;
-        if (status === "InUse") {
+        if (status === "InUse" && isActive) {
+          isIssueAssigned = true;
           console.error(
             `Sandbox ${name} is in use for issue ${issueNumber}, waiting...`
           );
           firstInUseSandbox = name;
           break;
         } else if (status === "Available" && isActive) {
+          isIssueAssigned = true;
           console.error(
             `Found available sandbox assigned to issue ${issueNumber}: ${name}`
           );
@@ -57,18 +59,34 @@ async function findAvailableSandbox(
           break;
         }
       }
+    }
 
-      if (!firstInUseSandbox && status === 'InUse') {
-        firstInUseSandbox = name;
-        assignedSandboxInfo = sandbox
-      } else if (!isIssueAssigned && status === 'Available' && isActive) {
-        // If no sandbox is yet assigned to the issue, use the first available one
-        availableSandbox = name;
-        isIssueAssigned = true;
-        assignedSandboxInfo = sandbox
-        console.error(`No sandbox assigned to issue ${issueNumber}. Assigning sandbox: ${name}`);
+    //Issue is not assigned to any sandbox
+    //Get first available one
+    if(!isIssueAssigned)
+    {
+      for (const sandboxName of sandboxes) {
+        if (sandboxName.trim() === "") continue;
+  
+        const sandbox = JSON.parse(
+          execSync(
+            `gh api /repos/${githubRepo}/actions/variables/${sandboxName.trim()} --jq ".value"`
+          ).toString()
+        );
+        const { status, isActive, name, issue } = sandbox;
+        console.error(`Checking Name:${name}..Status:${status}...IsActive:${isActive}...Issue:${issue?issue:'N/A'}.`);
+        if (status === "Available" && isActive) {
+          console.error(
+            `Found an available sandbox at ${sandbox.name} `
+          );
+          assignedSandboxInfo = sandbox
+          availableSandbox = name;
+          break;
+        }
+
       }
     }
+
 
     if (availableSandbox) {
       // Update the sandbox status to 'InUse' and assign the issue number
