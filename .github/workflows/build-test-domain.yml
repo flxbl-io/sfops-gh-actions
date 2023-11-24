@@ -274,6 +274,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
         id: set_deployment_status_sucess
         name: Update deployment status to sucess
+        if: ${{ steps.deploy.outcome == 'success'  || steps.deploy.outcome == 'skipped'  }}
         with:
             ref: ${{ inputs.branch-ref }}
             token: ${{steps.app-token-refreshed.outputs.token}}
@@ -282,7 +283,7 @@ jobs:
             descriptionFilter: ${{ inputs.domain }}
 
       - uses: flxbl-io/sfops-gh-actions/deploymentStatusUpdater@main
-        if: ${{ always() && steps.deploy.outcome == 'failure' }}
+        if: ${{ always() && ( steps.deploy.outcome == 'failure'  || steps.deploy.outcome == 'cancelled')}}
         id: set_deployment_status_failure
         name: Update deployment status to failure
         with:
