@@ -83,7 +83,7 @@ jobs:
           echo "matrix=$(jq -c . < ./impacted-release-configs.json)" >> $GITHUB_OUTPUT
 
   deploy-lock:
-    if: ${{ needs.analyze.outputs.matrix != '[]' && ( github.event.issue.pull_request &&  (startsWith(github.event.comment.body, 'sfops test') || startsWith(github.event.comment.body, 'sfops forcetest')) }}
+    if: ${{ needs.analyze.outputs.matrix != '[]' && ( github.event.issue.pull_request &&  (startsWith(github.event.comment.body, 'sfops test') || startsWith(github.event.comment.body, 'sfops forcetest'))) }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.analyze.outputs.matrix) }}
