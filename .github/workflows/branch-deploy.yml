@@ -145,9 +145,9 @@ jobs:
           gh_token: ${{ steps.app-token.outputs.token }}
           filter: "type:test,branch:${{ needs.analyze.outputs.base-ref }}"
 
-      - name: Check for status
+      - name: Check for deployment gates
         id: branch-deploy
-        if: ${{ startsWith(github.event.comment.body, 'sfops test') && ( steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true') }}
+        if: ${{ startsWith(github.event.comment.body, 'sfops forcetest') || (  startsWith(github.event.comment.body, 'sfops test') && ( steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true'))}}
         uses: flxbl-io/sfops-gh-actions/branchDeploy@main
         with:
           reaction: "eyes"
@@ -161,7 +161,7 @@ jobs:
 
       - name: Create Message Body as File
         id: message_template
-        if: ${{ steps.branch-deploy.outputs.continue }}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') && steps.branch-deploy.outputs.continue }}
         run: |
           printf " ### Deployment In Progress 🚀 " > message.md
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md

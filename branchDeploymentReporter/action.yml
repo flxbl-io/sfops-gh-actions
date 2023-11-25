@@ -36,7 +36,7 @@ runs:
         git config --global --add safe.directory $GITHUB_WORKSPACE
         mkdir -p _data/issueStatus
 
-        if [ ${{ inputs.status }} = 'locked' ]; then
+        if [ ${{ inputs.status }} = 'locked']; then
            echo '{"issue_number": "${{inputs.issue-number}}"}' > _data/locked.json
         fi
 
