@@ -46,7 +46,7 @@ jobs:
     name: "Analyze Impacted Domains"
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops-lite:latest
-    if: ${{ github.event.issue.pull_request && ( startsWith(github.event.comment.body, 'sfops test') || (startsWith(github.event.comment.body, 'sfops unlock'))) }}
+    if: ${{ github.event.issue.pull_request && ( startsWith(github.event.comment.body, 'sfops forcetest') ||  startsWith(github.event.comment.body, 'sfops test') || (startsWith(github.event.comment.body, 'sfops unlock'))) }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       base-ref: ${{ steps.comment-branch.outputs.base_ref}}
@@ -147,7 +147,7 @@ jobs:
 
       - name: Check for status
         id: branch-deploy
-        if: ${{ startsWith(github.event.comment.body, 'sfops test') && steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true' }}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') && ( steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true') }}
         uses: flxbl-io/sfops-gh-actions/branchDeploy@main
         with:
           reaction: "eyes"
@@ -195,7 +195,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/lock@main
         name: Claim Deployment Lock to Test Environments
         id: lock
-        if: ${{ startsWith(github.event.comment.body, 'sfops test') && (steps.unlock.outcome == 'failure' || steps.unlock.outputs.unlocked == 'true')}}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') && ((steps.unlock.outcome == 'failure' || steps.unlock.outputs.unlocked == 'true'))}}
         with:
           mode: "lock"
           environment: "test-${{ matrix.releaseName }}"
