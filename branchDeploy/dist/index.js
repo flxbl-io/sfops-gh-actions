@@ -48478,7 +48478,8 @@ async function run() {
     core.setOutput('issue_number', issue_number)
 
     // check if the comment is a trigger and what type of trigger it is
-    const isDeploy = await triggerCheck(body, trigger)
+    let isDeploy = await triggerCheck(body, `sfops test`);
+    isDeploy = await triggerCheck(body, `sfops forcetest`);
     const isNoopDeploy = await triggerCheck(body, noop_trigger)
     const isLock = await triggerCheck(body, lock_trigger)
     const isUnlock = await triggerCheck(body, unlock_trigger)
