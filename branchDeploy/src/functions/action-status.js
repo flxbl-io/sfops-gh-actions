@@ -33,7 +33,7 @@ export async function actionStatus(
   //Delete existing comment
   try
   {
-    let existingCommentData = getExistingComment(octokit,context.owner, context.repo,context.issue.number,`⚠️ Cannot proceed` );
+    let existingCommentData = await getExistingComment(octokit,context.owner, context.repo,context.issue.number,`⚠️ Cannot proceed` );
     if(existingCommentData)
     {
       await octokit.rest.issues.deleteComment({
