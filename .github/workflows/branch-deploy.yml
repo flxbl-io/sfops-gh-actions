@@ -83,7 +83,7 @@ jobs:
           echo "matrix=$(jq -c . < ./impacted-release-configs.json)" >> $GITHUB_OUTPUT
 
   deploy-lock:
-    if: ${{ needs.analyze.outputs.matrix != '[]' &&  github.event.issue.pull_request &&  startsWith(github.event.comment.body, 'sfops test') }}
+    if: ${{ needs.analyze.outputs.matrix != '[]' && ( github.event.issue.pull_request &&  startsWith(github.event.comment.body, 'sfops test') || ( github.event.issue.pull_request &&  startsWith(github.event.comment.body, 'sfops forcetest')) }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.analyze.outputs.matrix) }}
@@ -113,6 +113,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/lock@main
         id: unlock
         name: Test whether a lock exists
+        if: startsWith(github.event.comment.body, 'sfops test')
         continue-on-error: true
         with:
           mode: "unlock-on-comment"
@@ -122,7 +123,7 @@ jobs:
 
       - uses: mshick/add-pr-comment@v2
         name: If a lock already exists
-        if: ${{ steps.unlock.outputs.issue-match == 'false' }}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') &&  steps.unlock.outputs.issue-match == 'false' }}
         with:
           allow-repeats: false
           message-id: issue-${{ github.event.issue.number }}
@@ -146,7 +147,7 @@ jobs:
 
       - name: Check for status
         id: branch-deploy
-        if: ${{ steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true' }}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') && steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true' }}
         uses: flxbl-io/sfops-gh-actions/branchDeploy@main
         with:
           reaction: "eyes"
@@ -168,10 +169,21 @@ jobs:
           printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
           printf "\nTest Environment is now locked for the domain/releaseconfig __${{ matrix.releaseName }}__, If you want to push another work item, you need to unlock by typing in sfops unlock" >> message.md
           
-        
+
+      - name: Create Message Body as File
+        id: message_template_forcetest
+        if: ${{ startsWith(github.event.comment.body, 'sfops forcetest')  }}
+        run: |
+          printf " ### Deployment In Progress 🚀 " > message.md
+          printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
+          printf "\n Your request to deploy __${{ github.event.issue.number }}__ for domain/releaseconfig  __${{ matrix.releaseName }}__ to __test__ environments is in progress" >> message.md
+          printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
+          printf "\nYou have force pushed your feature branch to test environments, this may overrwrite exiting workitems already in flight or have other unintended issues. Hope you know what you are doing!" >> message.md
+                
+  
       - uses: mshick/add-pr-comment@v2
         name: Print Validation Breakdown
-        if: ${{ steps.branch-deploy.outputs.continue }}
+        if: ${{ steps.branch-deploy.outputs.continue  || startsWith(github.event.comment.body, 'sfops forcetest') }}
         with:
           allow-repeats: false
           repo-token: ${{ steps.app-token.outputs.token }}
@@ -183,7 +195,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/lock@main
         name: Claim Deployment Lock to Test Environments
         id: lock
-        if: ${{ steps.unlock.outcome == 'failure' || steps.unlock.outputs.unlocked == 'true'}}
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') && (steps.unlock.outcome == 'failure' || steps.unlock.outputs.unlocked == 'true')}}
         with:
           mode: "lock"
           environment: "test-${{ matrix.releaseName }}"
@@ -192,9 +204,22 @@ jobs:
 
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
         name: Report Branch Deployments
+        if: startsWith(github.event.comment.body, 'sfops test')
         id: report
         with:
           status: "locked"
+          branch: ${{ steps.branch-deploy.outputs.ref }}
+          domain: ${{ matrix.releaseName }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token: ${{steps.app-token.outputs.token}}
+          issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
+
+      - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
+        name: Report Branch Deployments
+        if: startsWith(github.event.comment.body, 'sfops forcetest')
+        id: report
+        with:
+          status: "forced"
           branch: ${{ steps.branch-deploy.outputs.ref }}
           domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
