@@ -30,6 +30,41 @@ on:
 
 
 jobs:
+
+ instructions:
+    name: 'Display instructions on every PR'
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+      - uses: mshick/add-pr-comment@v2
+        with:
+          allow-repeats: false
+          message-id: intro
+          refresh-message-position: true
+          repo-token: ${{ steps.app-token.outputs.token }}
+          message: |
+              Hello @${{ github.event.issue.user.login }} :wave:
+
+              If you are a new contributor to this repository, read on!
+
+              This is a sfops powered Salesforce repository.  Your PR will now be validated against a scratch org or sandbox depending on the configuration
+
+              You can type in the following as a comment for further actions
+
+              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful
+              💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
+              🔓  ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another story
+            
+
+
+
  static:
     name: 'static-analysis-of-Apex-classes-using-PMD'
     runs-on: ubuntu-latest
