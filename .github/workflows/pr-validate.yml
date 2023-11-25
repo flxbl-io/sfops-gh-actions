@@ -60,9 +60,9 @@ jobs:
 
               🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful
               💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
-              🔓  ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another story
+              🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another story
+              ♻️ ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
             
-
 
 
  static:
