@@ -174,7 +174,7 @@ jobs:
         id: message_template_forcetest
         if: ${{ startsWith(github.event.comment.body, 'sfops forcetest')  }}
         run: |
-          printf " ### Deployment In Progress 🚀 " > message.md
+          printf " ### Deployment In Progress ( Force Pushed ) :warn: " > message.md
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
           printf "\n Your request to deploy __${{ github.event.issue.number }}__ for domain/releaseconfig  __${{ matrix.releaseName }}__ to __test__ environments is in progress" >> message.md
           printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
