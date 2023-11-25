@@ -33,7 +33,7 @@ export async function run() {
     var environment = core.getInput('environment', {required: true})
     const testEnvironments = core.getInput('test-envs',{required:true}).split(`,`);
     const releaseName = core.getInput('release-name',{required:true});
-    const trigger = core.getInput('trigger', {required: true})
+    let trigger = core.getInput('trigger', {required: true})
     const reaction = core.getInput('reaction')
     const stable_branch = core.getInput('stable_branch')
     const noop_trigger = core.getInput('noop_trigger')
@@ -130,7 +130,11 @@ export async function run() {
 
     // check if the comment is a trigger and what type of trigger it is
     let isDeploy = await triggerCheck(body, `sfops test`);
-    isDeploy = await triggerCheck(body, `sfops forcetest`);
+    if(await triggerCheck(body, `sfops forcetest`))
+    {
+    isDeploy = true;
+    trigger='sfops forcetest';
+    }
     const isNoopDeploy = await triggerCheck(body, noop_trigger)
     const isLock = await triggerCheck(body, lock_trigger)
     const isUnlock = await triggerCheck(body, unlock_trigger)
