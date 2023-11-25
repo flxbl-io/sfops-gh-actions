@@ -205,7 +205,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
         name: Report Branch Deployments
         if: startsWith(github.event.comment.body, 'sfops test')
-        id: report
+        id: report-test
         with:
           status: "locked"
           branch: ${{ steps.branch-deploy.outputs.ref }}
@@ -217,7 +217,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
         name: Report Branch Deployments
         if: startsWith(github.event.comment.body, 'sfops forcetest')
-        id: report
+        id: report-forcetest
         with:
           status: "forced"
           branch: ${{ steps.branch-deploy.outputs.ref }}
