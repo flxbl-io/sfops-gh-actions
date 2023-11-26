@@ -40,9 +40,7 @@ on:
 jobs:
   renew-sandbox:
     runs-on: ubuntu-latest
-    outputs:
     steps:
-
       - name: Add a reaction
         uses: GrantBirki/comment@e6bf4bc177996c9572b4ddb98b25eb1a80f9abc9 # pin@v2.0.7
         with:
