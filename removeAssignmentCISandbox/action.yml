@@ -1,12 +1,6 @@
 name: "Remove an existing assignment on pool"
 description: "Expire an exiting issue assigned sandbox, so user can fetch a new one"
 inputs:
-  pool:
-    description: "The pool name"
-    required: true
-  branch:
-    description: "The branch of the sandbox pool"
-    required: true
   issue-number:
      description: "The issue number where this sandbox will be used"
      required: true
@@ -31,12 +25,12 @@ runs:
       uses: flxbl-io/sfops-gh-actions/lockResource@main
       id: lockResource
       with:
-        branch: pool-${{inputs.pool}}-${{inputs.branch}}
+        branch: pool
         repo-token: ${{ inputs.gh_token }}
 
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
-        sbx_name=$(node $GITHUB_ACTION_PATH/removeAsssignment.js  ${{github.repository}} ${{inputs.pool}}  ${{inputs.branch}} ${{ inputs.issue-number }} 20 )
+        sbx_name=$(node $GITHUB_ACTION_PATH/removeAsssignment.js  ${{github.repository}} ${{ inputs.issue-number }} 20 )
         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash
       id: removeAsssignment
@@ -45,6 +39,6 @@ runs:
       uses: flxbl-io/sfops-gh-actions/unlockResource@main
       if: always()
       with:
-        branch: pool-${{inputs.pool}}-${{inputs.branch}}
+        branch: pool
         repo-token: ${{ inputs.gh_token }}
         ticket_id: ${{ steps.lockResource.outputs.ticket_id }}

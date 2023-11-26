@@ -1,8 +1,6 @@
 const { execSync } = require("child_process");
 
-function markSandboxAsExpired(githubRepo, domain, branch, issueNumber) {
-  domain = domain.toUpperCase();
-  branch = branch.toUpperCase();
+function markSandboxAsExpired(githubRepo, issueNumber) {
 
   // Function to update sandbox status to 'Expired'
   function updateSandboxStatus(sandboxVariableName, sandboxName) {
@@ -35,14 +33,13 @@ function markSandboxAsExpired(githubRepo, domain, branch, issueNumber) {
   }
 
   // Filter for sandboxes assigned to the specified issue
-  const sandboxPattern = new RegExp(`^${domain}_${branch}_[^_]*_SBX$`);
+  const sandboxPattern = new RegExp(`^_[^_]*_SBX$`);
   for (const variable of variables) {
     if (sandboxPattern.test(variable.name)) {
       const sandboxData = JSON.parse(variable.value);
       if (sandboxData.issue === issueNumber && (sandboxData.status!='Expired')) {
         // Mark the sandbox as expired
         updateSandboxStatus(variable.name, sandboxData.name);
-        return;
       }
     }
   }
@@ -50,6 +47,6 @@ function markSandboxAsExpired(githubRepo, domain, branch, issueNumber) {
   console.error(`No sandbox currently assigned to issue ${issueNumber}.`);
 }
 
-const [githubRepo, domain, branch, issueNumber] = process.argv.slice(2);
+const [githubRepo, issueNumber] = process.argv.slice(2);
 
-markSandboxAsExpired(githubRepo, domain, branch, issueNumber);
+markSandboxAsExpired(githubRepo,issueNumber);

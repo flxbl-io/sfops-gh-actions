@@ -55,7 +55,7 @@ enqueue() {
 	fi
 
 	if [ ! $__has_error -eq 0 ]; then
-		sleep 1
+		sleep $((1 + RANDOM % 5))
 		enqueue $@
 	fi
 }
@@ -76,7 +76,7 @@ wait_for_lock() {
 
 	# if we are not the first in line, spin
 	if [ "$(cat $__queue_file | awk NF | head -n 1)" != "$__ticket_id" ]; then
-		sleep 5
+		sleep $((1 + RANDOM % 5))
 		wait_for_lock $@
 	fi
 }
@@ -121,7 +121,7 @@ dequeue() {
 	set -e
 
 	if [ ! $__has_error -eq 0 ]; then
-		sleep 1
+		sleep $((1 + RANDOM % 5))
 		dequeue $@
 	fi
 }
