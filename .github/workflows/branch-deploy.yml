@@ -113,10 +113,10 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/lock@main
         id: unlock
         name: Test whether a lock exists
-        if: startsWith(github.event.comment.body, 'sfops test')
+        if: ${{ startsWith(github.event.comment.body, 'sfops test') ||  startsWith(github.event.comment.body, 'sfops forcetest')  }}
         continue-on-error: true
         with:
-          mode: "unlock-on-comment"
+          mode: ${{ startsWith(github.event.comment.body, 'sfops test') && 'unlock-on-comment' || 'unlock'  }}  
           environment: "test-${{ matrix.releaseName }}"
           environment_targets: "test-${{ matrix.releaseName }}"
           github_token: ${{steps.app-token.outputs.token}}

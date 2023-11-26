@@ -40,6 +40,10 @@ runs:
            echo '{"issue_number": "${{inputs.issue-number}}"}' > _data/locked.json
         fi
 
+         if [ ${{ inputs.status }} = forcelocked ]; then
+           echo '{}' > _data/locked.json
+        fi
+
         issue_details=$(gh api repos/${{ github.repository }}/pulls/${{inputs.issue-number}}) 
         head_ref=$(echo $issue_details| jq -r '.head.ref') 
 
