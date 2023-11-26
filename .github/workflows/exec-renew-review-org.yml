@@ -100,5 +100,8 @@ jobs:
 
       - name: Execute an empty commit
         run: |
+            git config --global user.email "sfops@flxbl.io"
+            git config --global user.name "sfops-bot"
+            git config --global --add safe.directory '*'
             git commit -m "chore(cicd):empty commmit to trigger validation" --allow-empty
          
