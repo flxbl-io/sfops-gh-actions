@@ -158,7 +158,7 @@ jobs:
           environment: test-${{ matrix.releaseName }}
           skip_ci: test-${{ matrix.releaseName }}
           skip_completing: "true"
-          skip_reviews: ${{ startsWith(github.event.comment.body, 'sfops forcetest') && format('test-{0}',  matrix.releaseName )] }}  
+          skip_reviews: ${{ startsWith(github.event.comment.body, 'sfops forcetest') && format('test-{0}',  matrix.releaseName ) }}  
 
       - name: Create Message Body as File
         id: message_template
