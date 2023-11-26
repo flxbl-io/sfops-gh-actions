@@ -30284,7 +30284,11 @@ const presets = [
   'heart',
   'hooray',
   'rocket',
-  'eyes'
+  'eyes',
+  'muscle',
+  'vials',
+  'test_tube',
+  'recycle'
 ]
 
 // Helper function to add a reaction to an issue_comment
