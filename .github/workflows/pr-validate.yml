@@ -62,6 +62,16 @@ jobs:
               💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
               🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another workitem
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
+
+      - uses: LouisBrunner/checks-action@v1.6.1
+        if: always()
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          name: 'Deploy to Test Environments'
+          status: 'queued'
+          output: |
+            {"summary":"Check for deployment to test environments","title":"Deployments to Test Environments"}
+              
             
 
 
