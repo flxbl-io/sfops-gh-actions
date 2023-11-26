@@ -227,7 +227,7 @@ jobs:
           domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{steps.app-token.outputs.token}}
-          issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
+          issue-number: ${{ github.event.issue.number }}
 
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
         name: Report Branch Deployments
@@ -239,7 +239,7 @@ jobs:
           domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{steps.app-token.outputs.token}}
-          issue-number: ${{ steps.branch-deploy.outputs.issue_number }}
+          issue-number: ${{ github.event.issue.number }}
 
   deploy-unlock:
     if: ${{ github.event.issue.pull_request &&  startsWith(github.event.comment.body, 'sfops unlock') }}
