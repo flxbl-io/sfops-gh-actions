@@ -164,7 +164,7 @@ jobs:
         if: ${{ startsWith(github.event.comment.body, 'sfops forcetest') }}
         uses: flxbl-io/sfops-gh-actions/branchDeploy@main
         with:
-          reaction: "muscle"
+          reaction: "eyes"
           stable_branch: "main"
           release-name: ${{ matrix.releaseName }}
           test-envs: ${{steps.fetchTestEnvs.outputs.allEnvs}}

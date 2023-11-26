@@ -45,7 +45,7 @@ jobs:
         uses: GrantBirki/comment@e6bf4bc177996c9572b4ddb98b25eb1a80f9abc9 # pin@v2.0.7
         with:
           comment-id: ${{ github.event.comment.id}}
-          reactions: recycle
+          reactions: eyes
 
       - uses: actions/create-github-app-token@v1
         id: app-token
@@ -63,7 +63,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ steps.comment-branch.outputs.head_sha}}
+          ref: ${{ steps.comment-branch.outputs.head_ref}}
           fetch-depth: 0
 
 
@@ -103,5 +103,8 @@ jobs:
             git config --global user.email "sfops@flxbl.io"
             git config --global user.name "sfops-bot"
             git config --global --add safe.directory '*'
+            git checkout ${{ steps.comment-branch.outputs.head_ref}}
             git commit -m "chore(cicd):empty commmit to trigger validation" --allow-empty
+            git remote add origin ${{ github.repository }}
+            git push --set-upstream origin ${{ steps.comment-branch.outputs.head_ref}}
          
