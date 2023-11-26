@@ -208,7 +208,7 @@ jobs:
         if: ${{ startsWith(github.event.comment.body, 'sfops test') || startsWith(github.event.comment.body, 'sfops forcetest') }}
         id: report-test
         with:
-          status: ${{ startsWith(github.event.comment.body, 'sfops test') && 'locked' || 'forced' ) }}  
+          status: ${{ startsWith(github.event.comment.body, 'sfops test') && 'locked' || 'forced'  }}  
           branch: ${{ steps.branch-deploy.outputs.ref }}
           domain: ${{ matrix.releaseName }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
