@@ -105,6 +105,5 @@ jobs:
             git config --global --add safe.directory '*'
             git checkout ${{ steps.comment-branch.outputs.head_ref}}
             git commit -m "chore(cicd):empty commmit to trigger validation" --allow-empty
-            git remote add origin ${{ github.repository }}
             git push --set-upstream origin ${{ steps.comment-branch.outputs.head_ref}}
          
