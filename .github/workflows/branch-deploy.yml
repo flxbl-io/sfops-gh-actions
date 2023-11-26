@@ -150,7 +150,7 @@ jobs:
         if: ${{ startsWith(github.event.comment.body, 'sfops test') && ( steps.unlock.outcome=='failure' || steps.unlock.outputs.unlocked == 'true')}}
         uses: flxbl-io/sfops-gh-actions/branchDeploy@main
         with:
-          reaction: "test_tube"
+          reaction: "eyes"
           stable_branch: "main"
           release-name: ${{ matrix.releaseName }}
           test-envs: ${{steps.fetchTestEnvs.outputs.allEnvs}}
