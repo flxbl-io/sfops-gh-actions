@@ -100,7 +100,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
         id: 'Update Checks'
         name: update-check
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY = 'true' }}
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           name: 'Deploy to Test Environments'
@@ -311,7 +311,7 @@ jobs:
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
         id: 'Update Checks'
         name: update-check
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY = 'true' }}
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
           name: 'Deploy to Test Environments'
