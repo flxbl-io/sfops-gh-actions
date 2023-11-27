@@ -40,7 +40,7 @@ runs:
 
     - name: Lock to get exclusive access to pool var
       uses: flxbl-io/sfops-gh-actions/lockResource@main
-      if: ${{ steps.checkInUseSandbox.outputs.INUSE_SANDBOX_NAME = '' }}
+      if: steps.checkInUseSandbox.outputs.INUSE_SANDBOX_NAME == '' 
       id: lockResource
       with:
         branch: pool-${{inputs.pool}} 
