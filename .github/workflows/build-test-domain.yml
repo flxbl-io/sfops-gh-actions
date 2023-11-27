@@ -84,19 +84,6 @@ jobs:
         with:
           gh_token: ${{ steps.app-token.outputs.token }}
           filter: "type:test,branch:${{ inputs.base-branch }}"
-
-      - uses: flxbl-io/sfops-gh-actions/checkActions@main
-        name: 'Update Checks'
-        id: update-check
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          name: 'Deploy to Test Environments'
-          status: 'completed'
-          check_id: -1
-          sha:   ${{ inputs.branchname }}
-          conclusion: 'success'
-          action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
          
 
  
