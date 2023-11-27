@@ -97,6 +97,21 @@ jobs:
           ref: ${{ inputs.branch-ref }}
           fetch-depth: 0
 
+      - uses: flxbl-io/sfops-gh-actions/checkActions@main
+        id: 'Update Checks'
+        name: update-check
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY = 'true' }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          name: 'Deploy to Test Environments'
+          status: 'completed'
+          check_id: -1
+          sha:   ${{ inputs.branchname }}
+          actions: 
+          conclusion: 'Deployment to test have sucessfully completed'
+          action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
+         
+
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
@@ -292,6 +307,20 @@ jobs:
             environment: ${{ matrix.environment }}
             setDeploymentAsFailure: "true"
             descriptionFilter: ${{ inputs.domain }}
+
+      - uses: flxbl-io/sfops-gh-actions/checkActions@main
+        id: 'Update Checks'
+        name: update-check
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY = 'true' }}
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          name: 'Deploy to Test Environments'
+          status: 'completed'
+          check_id: -1
+          sha:   ${{ inputs.branchname }}
+          actions: 
+          conclusion: 'Deployment to test have sucessfully completed'
+          action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
          
 
 

@@ -90,6 +90,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - uses: flxbl-io/sfops-gh-actions/lock@main
+        id: unlock
+        with:
+         mode: 'unlock'
+         environment: 'test-${{ matrix.releaseName }}'
+         environment_targets: 'test-${{ matrix.releaseName }}'
+         github_token: ${{steps.app-token.outputs.token}}
+         
+
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
@@ -376,14 +385,6 @@ jobs:
           message-path: |
             message.md
 
-
-      - uses: flxbl-io/sfops-gh-actions/lock@main
-        id: unlock
-        with:
-         mode: 'unlock'
-         environment: 'test-${{ matrix.releaseName }}'
-         environment_targets: 'test-${{ matrix.releaseName }}'
-         github_token: ${{steps.app-token.outputs.token}}
 
 
   comment_issue_on_error:
