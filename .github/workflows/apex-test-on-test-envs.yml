@@ -18,6 +18,8 @@ on:
         description: "Devhub Auth URL"
       SB_SFDX_AUTH_URL:
         description: "Sandbox Auth URL"
+      ENV_SFDX_AUTH_URL:
+        description: "Sandbox Auth URL"
       DATADOG_API_KEY:
         description: "Datadog api key to report metrics"
       DATADOG_HOST:
