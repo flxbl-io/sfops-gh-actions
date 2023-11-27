@@ -64,8 +64,8 @@ jobs:
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
 
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
-        id: 'Initiate Check'
-        name: initiate-check
+        name: 'Initiate Check'
+        id: initiate-check
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}

@@ -98,8 +98,8 @@ jobs:
           fetch-depth: 0
 
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
-        id: 'Update Checks'
-        name: update-check
+        name: 'Update Checks'
+        id: update-check
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
@@ -309,8 +309,8 @@ jobs:
             descriptionFilter: ${{ inputs.domain }}
 
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
-        id: 'Update Checks'
-        name: update-check
+        name: 'Update Checks'
+        id: update-check
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
