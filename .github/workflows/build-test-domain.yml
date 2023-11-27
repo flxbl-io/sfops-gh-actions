@@ -95,6 +95,7 @@ jobs:
           status: 'completed'
           check_id: -1
           sha:   ${{ inputs.branchname }}
+          actions: 
           conclusion: 'success'
           action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
          
@@ -317,6 +318,7 @@ jobs:
           status: 'completed'
           check_id: -1
           sha:   ${{ inputs.branchname }}
+          actions: 
           conclusion: 'success'
           action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
          
