@@ -78,8 +78,8 @@ jobs:
         id: message_template_forcetest
         run: |
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
-          printf "\n Your request to assign a new sandbox for the ${{ github.event.issue.number}} is in progress" >> message.md
-          printf "\n If your request is succesfull, you will find the new enviornment along with the validation run" >> message.md
+          printf "\n Your request to assign a new sandbox for the ${{ github.event.issue.number}} is succesfull" >> message.md
+          printf "\n You now need to close and reopen the PR, this is due to a limitation with Github!" >> message.md
                        
   
       - uses: mshick/add-pr-comment@v2
@@ -92,18 +92,3 @@ jobs:
           message-path: |
              message.md        
 
-      - name: Set GH_TOKEN to Env Variables
-        run: |
-            export GH_TOKEN=${{ steps.app-token.outputs.token }}
-            echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
-         
-
-      - name: Execute an empty commit
-        run: |
-            git config --global user.email "sfops@flxbl.io"
-            git config --global user.name "sfops-bot"
-            git config --global --add safe.directory '*'
-            git checkout ${{ steps.comment-branch.outputs.head_ref}}
-            git commit -m "chore(cicd):empty commmit to trigger validation" --allow-empty
-            git push --set-upstream origin ${{ steps.comment-branch.outputs.head_ref}}
-         
