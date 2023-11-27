@@ -30,11 +30,20 @@ runs:
         echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
 
+    - run: |
+        export GH_TOKEN=${{inputs.gh_token}}
+        sbx_name=$(node $GITHUB_ACTION_PATH/checkSandbox.js  ${{github.repository}} ${{inputs.pool}}  ${{inputs.branch}} ${{ inputs.issue-number }} )
+        echo "INUSE_SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
+      shell: bash
+      name: Check for In Use Sandbox
+      id: checkInUseSandbox
+
     - name: Lock to get exclusive access to pool var
       uses: flxbl-io/sfops-gh-actions/lockResource@main
+      if: ${{ steps.checkInUseSandbox.INUSE_SANDBOX_NAME=''}}
       id: lockResource
       with:
-        branch: pool
+        branch: pool-${{inputs.pool}} 
         repo-token: ${{ inputs.gh_token }}
 
     - run: |
@@ -48,6 +57,6 @@ runs:
       uses: flxbl-io/sfops-gh-actions/unlockResource@main
       if: always()
       with:
-        branch: pool
+        branch: pool-${{inputs.pool}} 
         repo-token: ${{ inputs.gh_token }}
         ticket_id: ${{ steps.lockResource.outputs.ticket_id }}
