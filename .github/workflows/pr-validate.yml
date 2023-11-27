@@ -63,13 +63,18 @@ jobs:
               🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another workitem
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
 
+ statuscheck:
+    name: "Deployment to Test Environments"
+    runs-on: ubuntu-latest
+    steps:
+
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
         name: 'Initiate Check'
         id: initiate-check
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          name: 'Deploy to Test Environments'
+          name: 'Deployments to Test Environments'
           status: 'queued'
           output: |
             {"summary":"Check for deployment to test environments","title":"Deployments to Test Environments"}
