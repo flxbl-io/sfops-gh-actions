@@ -47,7 +47,7 @@ jobs:
         with:
           allow-repeats: false
           message-id: intro
-          refresh-message-position: true
+          refresh-message-position: false
           repo-token: ${{ steps.app-token.outputs.token }}
           message: |
               Hello @${{ github.event.pull_request.user.login }}, :wave:
