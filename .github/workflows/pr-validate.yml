@@ -264,6 +264,7 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token-refreshed
         name: Refresh sfops App Token
+        if: always()
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
