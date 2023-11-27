@@ -90,6 +90,16 @@ jobs:
         with:
           fetch-depth: 0
 
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        name: "Get installation token for sfopsbot"
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+
+
       - uses: flxbl-io/sfops-gh-actions/lock@main
         id: unlock
         with:
@@ -118,7 +128,7 @@ jobs:
 
 
       - uses: actions/create-github-app-token@v1
-        id: app-token
+        id: app-token-refreshed
         name: "Get installation token for sfopsbot"
         with:
          app-id: ${{ inputs.sfopsbot-app-id }}
@@ -131,7 +141,7 @@ jobs:
         with:
           pathToReleaseConfigs: ${{ inputs.pathToReleaseConfigs }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
-          gh_token: ${{ steps.app-token.outputs.token }}
+          gh_token: ${{ steps.app-token-refreshed.outputs.token }}
           branch: ${{ inputs.branchname }} 
 
       # Publish artifacts
