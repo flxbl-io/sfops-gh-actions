@@ -58,8 +58,8 @@ jobs:
 
               You can type in the following as a comment for further actions
 
-              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful
-              💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
+              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful (only if BRANCH DEPLOY is true)
+              💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts ( only if BRANCH DEPLOY is true )
               🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another workitem
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
 

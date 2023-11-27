@@ -44,7 +44,7 @@ on:
 jobs:
   branch-deploy:
      uses:  flxbl-io/sfops-gh-actions/.github/workflows/branch-deploy.yml@main
-     if: ${{ github.event.issue.pull_request && ( startsWith(github.event.comment.body, 'sfops forcetest') ||  startsWith(github.event.comment.body, 'sfops test') || (startsWith(github.event.comment.body, 'sfops unlock'))) }}
+     if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' && ( github.event.issue.pull_request && ( startsWith(github.event.comment.body, 'sfops forcetest') ||  startsWith(github.event.comment.body, 'sfops test') || (startsWith(github.event.comment.body, 'sfops unlock')))) }}
      with:
       pathToReleaseConfigs: "config"
       dashboard-repo: ${{ inputs.dashboard-repo }}

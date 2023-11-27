@@ -85,18 +85,6 @@ jobs:
           gh_token: ${{ steps.app-token.outputs.token }}
           filter: "type:test,branch:${{ inputs.base-branch }}"
 
- 
-  build:
-    name: "Build packages"
-    runs-on: ubuntu-latest
-    container: ghcr.io/flxbl-io/sfops:latest
-    steps:
-
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch-ref }}
-          fetch-depth: 0
-
       - uses: flxbl-io/sfops-gh-actions/checkActions@main
         name: 'Update Checks'
         id: update-check
@@ -111,6 +99,18 @@ jobs:
           conclusion: 'Deployment to test have sucessfully completed'
           action_url: 'https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}'
          
+
+ 
+  build:
+    name: "Build packages"
+    runs-on: ubuntu-latest
+    container: ghcr.io/flxbl-io/sfops:latest
+    steps:
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch-ref }}
+          fetch-depth: 0
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
