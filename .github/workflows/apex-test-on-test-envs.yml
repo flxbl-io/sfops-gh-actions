@@ -32,6 +32,13 @@ on:
         description: "Preprod Sandbox Auth URL..workaround for now"
       UAT_SFDX_AUTH_URL:
         description: "Uat Sandbox Auth URL..workaround for now"
+      QA_SFDX_AUTH_URL:
+        description: "Uat Sandbox Auth URL..workaround for now"
+      IQA_SFDX_AUTH_URL:
+        description: "Uat Sandbox Auth URL..workaround for now"
+      SIT_SFDX_AUTH_URL:
+        description: "Uat Sandbox Auth URL..workaround for now"
+  
   
 
 
