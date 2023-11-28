@@ -94,7 +94,7 @@ runs:
 
         sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
 
-        if[ -n "${{ inputs.deactivateUsers }}"  ]
+        if[ -n "${{ inputs.deactivateUsers }}"  ]; then
           if [ -n "${{ inputs.usersToBeActivated }}" ]; then
             IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
             for index in "${!usersToBeActivated[@]}"
