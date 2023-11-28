@@ -17,6 +17,9 @@ inputs:
   usersToBeActivated:
     description: "Comma separated list of users to be activated"
     required: false
+  deactivateUsers:
+    description: "Deactivate users"
+    required: false
   apexClassId:
     description: "Apex Class Id to be used for apex test execution"
     required: false
@@ -78,9 +81,6 @@ runs:
         node $GITHUB_ACTION_PATH/dist/create-sandbox/index.js $sandbox_name devhub ${{ inputs.sourceSB  }} ${{ inputs.apexClassId  }}  
 
 
-
-
-
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
         #Sleep for 60 seconds before the sandbox need to be propoagated
@@ -94,18 +94,20 @@ runs:
 
         sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
 
-        if [ -n "${{ inputs.usersToBeActivated }}" ]; then
-          IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
-          for index in "${!usersToBeActivated[@]}"
-          do
-            usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
-          done
-          usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
+        if[ -n "${{ inputs.deactivateUsers }}"  ]
+          if [ -n "${{ inputs.usersToBeActivated }}" ]; then
+            IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
+            for index in "${!usersToBeActivated[@]}"
+            do
+              usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
+            done
+            usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
 
-          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name 2>/dev/null || true
-        else
-          # decativate all users excpet the initiating user
-          node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name   2>/dev/null || true
+            node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name 2>/dev/null || true
+          else
+            # deactivate all users excpet the initiating user
+            node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name   2>/dev/null || true
+          fi
         fi
 
         max_attempts=5

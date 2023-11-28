@@ -140,6 +140,7 @@ jobs:
            metrics-provider: ${{ inputs.metrics-provider }}
            datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
            datadog-host: ${{ secrets.DATADOG_HOST }}
+           deactivateUsers: ${{ vars.SFOPS_DEACTIVATE_USERS }}
 
         - uses: actions/create-github-app-token@v1
           id: app-token
