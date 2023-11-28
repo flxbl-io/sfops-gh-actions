@@ -12,7 +12,7 @@
         "axios": "^1.6.0"
     },
     "devDependencies": {
-        "@vercel/ncc": "0.36.1"
+        "@vercel/ncc": "0.38.1"
     },
     "author": "",
     "license": "ISC"

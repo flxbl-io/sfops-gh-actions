@@ -46,7 +46,7 @@
     "@types/node": "^18.11.2",
     "@types/string-similarity": "^4.0.0",
     "@typescript-eslint/parser": "^5.40.1",
-    "@vercel/ncc": "0.36.1",
+    "@vercel/ncc": "0.38.1",
     "axios": "^1.6.2",
     "engines-ok": "^1.2.0",
     "eslint": "^8.25.0",

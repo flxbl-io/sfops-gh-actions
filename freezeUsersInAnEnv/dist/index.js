@@ -1,7 +1,7 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 929:
+/***/ 758:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const { Transform } = __nccwpck_require__(781)
@@ -283,15 +283,15 @@ module.exports = (opts) => new CsvParser(opts)
 
 /***/ }),
 
-/***/ 369:
+/***/ 413:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 var __webpack_unused_export__;
 
 __webpack_unused_export__ = ({ value: true });
-var csv_stringifier_factory_1 = __nccwpck_require__(131);
-var csv_writer_factory_1 = __nccwpck_require__(962);
+var csv_stringifier_factory_1 = __nccwpck_require__(856);
+var csv_writer_factory_1 = __nccwpck_require__(826);
 var csvStringifierFactory = new csv_stringifier_factory_1.CsvStringifierFactory();
 var csvWriterFactory = new csv_writer_factory_1.CsvWriterFactory(csvStringifierFactory);
 __webpack_unused_export__ = function (params) {
@@ -310,15 +310,15 @@ exports.eD = function (params) {
 
 /***/ }),
 
-/***/ 131:
+/***/ 856:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var array_1 = __nccwpck_require__(351);
-var field_stringifier_1 = __nccwpck_require__(657);
-var object_1 = __nccwpck_require__(848);
+var array_1 = __nccwpck_require__(61);
+var field_stringifier_1 = __nccwpck_require__(92);
+var object_1 = __nccwpck_require__(394);
 var CsvStringifierFactory = /** @class */ (function () {
     function CsvStringifierFactory() {
     }
@@ -337,7 +337,7 @@ exports.CsvStringifierFactory = CsvStringifierFactory;
 
 /***/ }),
 
-/***/ 507:
+/***/ 754:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -382,7 +382,7 @@ function _validateRecordDelimiter(delimiter) {
 
 /***/ }),
 
-/***/ 351:
+/***/ 61:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -401,7 +401,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var abstract_1 = __nccwpck_require__(507);
+var abstract_1 = __nccwpck_require__(754);
 var ArrayCsvStringifier = /** @class */ (function (_super) {
     __extends(ArrayCsvStringifier, _super);
     function ArrayCsvStringifier(fieldStringifier, recordDelimiter, header) {
@@ -422,7 +422,7 @@ exports.ArrayCsvStringifier = ArrayCsvStringifier;
 
 /***/ }),
 
-/***/ 848:
+/***/ 394:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -441,8 +441,8 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var abstract_1 = __nccwpck_require__(507);
-var object_1 = __nccwpck_require__(604);
+var abstract_1 = __nccwpck_require__(754);
+var object_1 = __nccwpck_require__(719);
 var ObjectCsvStringifier = /** @class */ (function (_super) {
     __extends(ObjectCsvStringifier, _super);
     function ObjectCsvStringifier(fieldStringifier, header, recordDelimiter, headerIdDelimiter) {
@@ -486,13 +486,13 @@ exports.ObjectCsvStringifier = ObjectCsvStringifier;
 
 /***/ }),
 
-/***/ 962:
+/***/ 826:
 /***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var csv_writer_1 = __nccwpck_require__(803);
+var csv_writer_1 = __nccwpck_require__(493);
 var CsvWriterFactory = /** @class */ (function () {
     function CsvWriterFactory(csvStringifierFactory) {
         this.csvStringifierFactory = csvStringifierFactory;
@@ -523,7 +523,7 @@ exports.CsvWriterFactory = CsvWriterFactory;
 
 /***/ }),
 
-/***/ 803:
+/***/ 493:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -565,7 +565,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var file_writer_1 = __nccwpck_require__(526);
+var file_writer_1 = __nccwpck_require__(484);
 var DEFAULT_INITIAL_APPEND_FLAG = false;
 var CsvWriter = /** @class */ (function () {
     function CsvWriter(csvStringifier, path, encoding, append) {
@@ -606,7 +606,7 @@ exports.CsvWriter = CsvWriter;
 
 /***/ }),
 
-/***/ 657:
+/***/ 92:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -682,7 +682,7 @@ function _validateFieldDelimiter(delimiter) {
 
 /***/ }),
 
-/***/ 526:
+/***/ 484:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -724,7 +724,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-var promise_1 = __nccwpck_require__(473);
+var promise_1 = __nccwpck_require__(635);
 var fs_1 = __nccwpck_require__(147);
 var writeFilePromise = promise_1.promisify(fs_1.writeFile);
 var DEFAULT_ENCODING = 'utf8';
@@ -761,7 +761,7 @@ exports.FileWriter = FileWriter;
 
 /***/ }),
 
-/***/ 604:
+/***/ 719:
 /***/ ((__unused_webpack_module, exports) => {
 
 "use strict";
@@ -774,7 +774,7 @@ exports.isObject = function (value) {
 
 /***/ }),
 
-/***/ 473:
+/***/ 635:
 /***/ (function(__unused_webpack_module, exports) {
 
 "use strict";
@@ -882,9 +882,9 @@ module.exports = require("util");
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-const csv = __nccwpck_require__(929);
+const csv = __nccwpck_require__(758);
 const fs = __nccwpck_require__(147);
-const createCsvWriter = (__nccwpck_require__(369)/* .createObjectCsvWriter */ .eD);
+const createCsvWriter = (__nccwpck_require__(413)/* .createObjectCsvWriter */ .eD);
 const util = __nccwpck_require__(837);
 const pipeline = util.promisify((__nccwpck_require__(781).pipeline));
 const exec = util.promisify((__nccwpck_require__(81).exec));
