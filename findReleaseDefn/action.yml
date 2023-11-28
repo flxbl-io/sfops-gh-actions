@@ -23,7 +23,7 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
-        pathToReleaseDefn=$(node $GITHUB_ACTION_PATH/dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}})
+        pathToReleaseDefn=$(node $GITHUB_ACTION_PATH/dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}}) -w $GITHUB_WORKSPACE
         echo $pathToReleaseDefn 
         echo "RELEASE_DEFN_PATH=$pathToReleaseDefn" >> "$GITHUB_OUTPUT"
       shell: bash

@@ -26,7 +26,12 @@ const argv = yargs
     description: 'The branch name',
     type: 'string',
   })
-  .demandOption(['releaseDefn', 'domain', 'branchname'])
+  .option('workspace', {
+    alias: 'w',
+    description: 'Workspace where the definition has to be written',
+    type: 'string',
+  })
+  .demandOption(['releaseDefn', 'domain', 'branchname','workspace'])
   .help()
   .alias('help', 'h')
   .argv;
@@ -78,9 +83,9 @@ if (foundFiles.length === 0) {
 } else {
  
     console.error(`Found ReleaseDefn: ${foundFiles[0]}`);
-    fs.copyFileSync(foundFiles[0], __nccwpck_require__.ab + "findReleaseDefn/" + argv.releaseDefn + '.yml');
-    console.log(__nccwpck_require__.ab + "findReleaseDefn/" + argv.releaseDefn + '.yml');
-    console.error(`Copied to ${path.join(process.cwd(), argv.releaseDefn)}`);
+    fs.copyFileSync(foundFiles[0], path.join(argv.workspace, `${argv.releaseDefn}.yml`));
+    console.log(path.join(argv.workspace, `${argv.releaseDefn}.yml`));
+    console.error(`Copied to ${path.join(argv.workspace, argv.releaseDefn)}`);
 }
 
 execSync(`git worktree remove ${tempDir}`);
