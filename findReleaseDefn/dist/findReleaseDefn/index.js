@@ -64,7 +64,7 @@ const searchDomainDirectories = (dir, domain, fileName, results = []) => {
 
 const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'git-'));
 
-execSync(`git worktree add --detach ${tempDir} ${argv.branchname}`);
+execSync(`git worktree add --detach ${tempDir} origin/${argv.branchname}`);
 
 const fileNameWithoutExtension = getFileNameWithoutExtension(argv.releaseDefn);
 
