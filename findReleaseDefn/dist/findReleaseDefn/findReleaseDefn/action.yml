@@ -19,7 +19,7 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
-        node dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}}
+        node $GITHUB_ACTION_PATH/dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}}
       shell: bash
 
 
