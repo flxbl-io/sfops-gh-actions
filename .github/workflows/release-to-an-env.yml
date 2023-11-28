@@ -186,13 +186,13 @@ jobs:
       - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
         with:
-          changelog:  ${{inputs.releaseDefn}}.yml
+          changelog:  ${{steps.fetch-release-defn.outputs.releaseDefn}}
           excludePackages: ${{ inputs.excludePackages }}
 
       - name: "Run Override package version if any"
         uses: flxbl-io/sfops-gh-actions/overridePackageVersionInReleaseDefns@main
         with:
-          changelog:  ${{inputs.releaseDefn}}.yml
+          changelog:  ${{steps.fetch-release-defn.outputs.releaseDefn}}
           overridePackageVersions: ${{ inputs.overridePackageVersions }}
 
       # Release to environment
@@ -200,13 +200,13 @@ jobs:
         id: release
         run: |
           if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
-            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'   ${{inputs.releaseDefn}}.yml
+            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'    ${{steps.fetch-release-defn.outputs.releaseDefn}}
           fi
 
           if [ -z "${{ inputs.environment }}" ]; then
-           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{inputs.releaseDefn}}.yml --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{steps.fetch-release-defn.outputs.releaseDefn}}  --npm --scope ${{ github.repository_owner }} -v prod -g "::group::,::endgroup::"
           else
-           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{inputs.releaseDefn}}.yml --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
+           sfpowerscripts orchestrator:release -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{steps.fetch-release-defn.outputs.releaseDefn}} --npm --scope ${{ github.repository_owner }} -v prod --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}} -g "::group::,::endgroup::"
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

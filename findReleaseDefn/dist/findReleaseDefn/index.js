@@ -47,8 +47,8 @@ const searchDomainDirectories = (dir, domain, fileName, results = []) => {
     if (dirent.isDirectory()) {
       if (dirent.name === domain) {
         // If the directory matches the domain, search for the file
-        console.log(`Located ${domain} in ${dirent.path}`);
-        console.log(`Searching for ${fileName} in ${dirent.path}` )
+        console.error(`Located ${domain} in ${dirent.path}`);
+        console.error(`Searching for ${fileName} in ${dirent.path}` )
         const foundFiles = fs.readdirSync(fullPath, { withFileTypes: true })
           .filter(file => file.isFile() && file.name.startsWith(fileName))
           .map(file => path.join(fullPath, file.name));
@@ -68,18 +68,19 @@ execSync(`git worktree add --detach ${tempDir} origin/${argv.branchname}`);
 
 const fileNameWithoutExtension = getFileNameWithoutExtension(argv.releaseDefn);
 
-console.log(`Searching in ${tempDir} for directories named ${argv.domain} containing files named ${fileNameWithoutExtension}`);
+console.error(`Searching in ${tempDir} for directories named ${argv.domain} containing files named ${fileNameWithoutExtension}`);
 
 const foundFiles = searchDomainDirectories(tempDir, argv.domain, fileNameWithoutExtension);
 
 if (foundFiles.length === 0) {
-  console.log(`Release definition file not found in any '${argv.domain}' directories.`);
+  console.error(`Release definition file not found in any '${argv.domain}' directories.`);
   process.exit(1);
 } else {
  
-    console.log(`Found ReleaseDefn: ${foundFiles[0]}`);
+    console.error(`Found ReleaseDefn: ${foundFiles[0]}`);
     fs.copyFileSync(foundFiles[0], __nccwpck_require__.ab + "findReleaseDefn/" + argv.releaseDefn + '.yml');
-    console.log(`Copied to ${path.join(process.cwd(), argv.releaseDefn)}`);
+    console.log(__nccwpck_require__.ab + "findReleaseDefn/" + argv.releaseDefn + '.yml');
+    console.error(`Copied to ${path.join(process.cwd(), argv.releaseDefn)}`);
 }
 
 execSync(`git worktree remove ${tempDir}`);

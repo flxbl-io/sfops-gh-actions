@@ -114,13 +114,13 @@ jobs:
       - name: "Exclude Packages if  any"
         uses: flxbl-io/sfops-gh-actions/excludePackagesInReleaseDefns@main
         with:
-          changelog:  ${{inputs.releaseDefn}}.yml
+          changelog:   ${{steps.fetch-release-defn.outputs.releaseDefn}}
           excludePackages: ${{ inputs.excludePackages }}
 
       - name: "Run Override package version if any"
         uses: flxbl-io/sfops-gh-actions/overridePackageVersionInReleaseDefns@main
         with:
-          changelog: ${{inputs.releaseDefn}}.yml
+          changelog:  ${{steps.fetch-release-defn.outputs.releaseDefn}}
           overridePackageVersions: ${{ inputs.overridePackageVersions }}
 
       # Release to environment
@@ -128,10 +128,10 @@ jobs:
         id: release
         run: |
           if [ "${{ inputs.overrideSkipIfAlreadyInstalled }}" == "yes" ]; then
-            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.releaseDefn}}
+            sed -i 's/skipIfAlreadyInstalled: true/skipIfAlreadyInstalled: false/'  ${{steps.fetch-release-defn.outputs.releaseDefn}}
           fi
 
-           sfpowerscripts orchestrator:release --dryrun -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p   ${{inputs.releaseDefn}}.yml --npm --scope ${{ github.repository_owner }} --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}  -v prod -g "::group::,::endgroup::"
+           sfpowerscripts orchestrator:release --dryrun -u ${{steps.handle-auth.outputs.alias}} -d ${{ inputs.domain }} -p    ${{steps.fetch-release-defn.outputs.releaseDefn}}l --npm --scope ${{ github.repository_owner }} --generatechangelog --branchname ${{inputs.releaselogbranch}}-${{steps.handle-auth.outputs.alias}}  -v prod -g "::group::,::endgroup::"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
