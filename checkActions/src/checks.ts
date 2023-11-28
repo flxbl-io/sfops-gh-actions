@@ -1,13 +1,16 @@
-import {GitHub} from '@actions/github/lib/utils';
-import * as core from '@actions/core';
-import * as Inputs from './namespaces/Inputs';
+import { GitHub } from "@actions/github/lib/utils";
+import * as core from "@actions/core";
+import * as Inputs from "./namespaces/Inputs";
 
 type Ownership = {
   owner: string;
   repo: string;
 };
 
-const unpackInputs = (title: string, inputs: Inputs.Args): Record<string, unknown> => {
+const unpackInputs = (
+  title: string,
+  inputs: Inputs.Args
+): Record<string, unknown> => {
   let output;
   if (inputs.output) {
     output = {
@@ -22,7 +25,10 @@ const unpackInputs = (title: string, inputs: Inputs.Args): Record<string, unknow
 
   let details_url;
 
-  if (inputs.conclusion === Inputs.Conclusion.ActionRequired || inputs.actions) {
+  if (
+    inputs.conclusion === Inputs.Conclusion.ActionRequired ||
+    inputs.actions
+  ) {
     if (inputs.detailsURL) {
       const reasonList = [];
       if (inputs.conclusion === Inputs.Conclusion.ActionRequired) {
@@ -31,9 +37,9 @@ const unpackInputs = (title: string, inputs: Inputs.Args): Record<string, unknow
       if (inputs.actions) {
         reasonList.push(`'actions' was provided`);
       }
-      const reasons = reasonList.join(' and ');
+      const reasons = reasonList.join(" and ");
       core.info(
-        `'details_url' was ignored in favor of 'action_url' because ${reasons} (see documentation for details)`,
+        `'details_url' was ignored in favor of 'action_url' because ${reasons} (see documentation for details)`
       );
     }
     details_url = inputs.actionURL;
@@ -46,7 +52,8 @@ const unpackInputs = (title: string, inputs: Inputs.Args): Record<string, unknow
     output,
     actions: inputs.actions,
     conclusion: inputs.conclusion ? inputs.conclusion.toString() : undefined,
-    completed_at: inputs.status === Inputs.Status.Completed ? formatDate() : undefined,
+    completed_at:
+      inputs.status === Inputs.Status.Completed ? formatDate() : undefined,
     details_url,
   };
 };
@@ -60,9 +67,9 @@ export const createRun = async (
   name: string,
   sha: string,
   ownership: Ownership,
-  inputs: Inputs.Args,
+  inputs: Inputs.Args
 ): Promise<number> => {
-  const {data} = await octokit.rest.checks.create({
+  const { data } = await octokit.rest.checks.create({
     ...ownership,
     head_sha: sha,
     name: name,
@@ -76,7 +83,7 @@ export const updateRun = async (
   octokit: InstanceType<typeof GitHub>,
   id: number,
   ownership: Ownership,
-  inputs: Inputs.Args,
+  inputs: Inputs.Args
 ): Promise<void> => {
   const previous = await octokit.rest.checks.get({
     ...ownership,
@@ -93,14 +100,18 @@ export const getRun = async (
   octokit: InstanceType<typeof GitHub>,
   sha: string,
   ownership: Ownership,
-  name: string|undefined,
+  name: string | undefined
 ): Promise<number> => {
-  if(!name)
+  try {
+    if (!name) return -1;
+    const matchedChecks = await octokit.rest.checks.listForRef({
+      ...ownership,
+      ref: sha,
+      check_name: name,
+    });
+    console.log(`Found matches`,matchedChecks?.data?.check_runs?.length)
+    return matchedChecks.data.check_runs[0]?.id;
+  } catch (error) {
     return -1;
-  const matchedChecks = await octokit.rest.checks.listForRef({
-    ...ownership,
-    ref:sha,
-    check_name: name
-  });
-  return matchedChecks.data.check_runs[0].id;
+  }
 };

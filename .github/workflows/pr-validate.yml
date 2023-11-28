@@ -249,6 +249,7 @@ jobs:
       # Validate source and trigger test
       - name: 'Validate Against ci sandbox'
         if: steps.getTypeOfPool.outputs.type == 'sandbox'
+        id: validateWithSandbox
         run: |
           sfp orchestrator:validateAgainstOrg -u ci -v devhub --diffcheck --disableartifactupdate  --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
 
@@ -256,6 +257,7 @@ jobs:
       # Validate source and trigger test
       - name: 'Validate Against ci scratch org'
         if: steps.getTypeOfPool.outputs.type == 'scratchorg'
+        id: validateWithScratchOrg
         run: |
           sfp orchestrator:validate -p ${{steps.getTypeOfPool.outputs.pool }} -v devhub   --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
 
@@ -284,26 +286,28 @@ jobs:
             cat .sfpowerscripts/outputs/org-info.md >> message.md
           fi
           
-          if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; then
-            printf "\n### :eyes: Packages Validated\n" >> message.md
-            cat .sfpowerscripts/outputs/deployment-breakdown.md >> message.md
-          else
-            printf "\n### No changes detected for validation in ${{matrix.filePath}}\n" >> message.md
-          fi
-          
-          if [ -f .sfpowerscripts/outputs/build-error-info.md ]; then
-            printf "\n### :bangbang: Build Errors" >> message.md
-            printf "\nLooks like we have ran into some issues during the build of your packages \n" >> message.md
-            cat .sfpowerscripts/outputs/build-error-info.md >> message.md
-          fi    
-          if [ -f .sfpowerscripts/outputs/deployment-error.md ]; then
-            cat .sfpowerscripts/outputs/deployment-error.md >> message.md
-          fi
-          printf "\n### :checkered_flag: Status">> message.md
-          if [ -f .sfpowerscripts/outputs/validation-error.md ]; then
-            cat .sfpowerscripts/outputs/validation-error.md >> message.md
-          else
-            printf "\n#### :white_check_mark: No errors detected for validation in ${{matrix.filePath}}\n" >> message.md
+          if [ ${{ steps.validateWithSandbox.outcome }} != 'skipped' ] && [ ${{ steps.validateWithScratchOrg.outcome }} != 'skipped' ]; then
+            if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; then
+              printf "\n### :eyes: Packages Validated\n" >> message.md
+              cat .sfpowerscripts/outputs/deployment-breakdown.md >> message.md
+            else
+              printf "\n### No changes detected for validation in ${{matrix.filePath}}\n" >> message.md
+            fi
+            
+            if [ -f .sfpowerscripts/outputs/build-error-info.md ]; then
+              printf "\n### :bangbang: Build Errors" >> message.md
+              printf "\nLooks like we have ran into some issues during the build of your packages \n" >> message.md
+              cat .sfpowerscripts/outputs/build-error-info.md >> message.md
+            fi    
+            if [ -f .sfpowerscripts/outputs/deployment-error.md ]; then
+              cat .sfpowerscripts/outputs/deployment-error.md >> message.md
+            fi
+            printf "\n### :checkered_flag: Status">> message.md
+            if [ -f .sfpowerscripts/outputs/validation-error.md ]; then
+              cat .sfpowerscripts/outputs/validation-error.md >> message.md
+            else
+              printf "\n#### :white_check_mark: No errors detected for validation in ${{matrix.filePath}}\n" >> message.md
+            fi
           fi
           
 

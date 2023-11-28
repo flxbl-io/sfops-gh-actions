@@ -49,7 +49,8 @@ const unpackInputs = (title, inputs) => {
         };
     }
     let details_url;
-    if (inputs.conclusion === Inputs.Conclusion.ActionRequired || inputs.actions) {
+    if (inputs.conclusion === Inputs.Conclusion.ActionRequired ||
+        inputs.actions) {
         if (inputs.detailsURL) {
             const reasonList = [];
             if (inputs.conclusion === Inputs.Conclusion.ActionRequired) {
@@ -58,7 +59,7 @@ const unpackInputs = (title, inputs) => {
             if (inputs.actions) {
                 reasonList.push(`'actions' was provided`);
             }
-            const reasons = reasonList.join(' and ');
+            const reasons = reasonList.join(" and ");
             core.info(`'details_url' was ignored in favor of 'action_url' because ${reasons} (see documentation for details)`);
         }
         details_url = inputs.actionURL;
@@ -89,9 +90,16 @@ const updateRun = (octokit, id, ownership, inputs) => __awaiter(void 0, void 0, 
 });
 exports.updateRun = updateRun;
 const getRun = (octokit, sha, ownership, name) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!name)
+    var _a, _b, _c;
+    try {
+        if (!name)
+            return -1;
+        const matchedChecks = yield octokit.rest.checks.listForRef(Object.assign(Object.assign({}, ownership), { ref: sha, check_name: name }));
+        console.log(`Found matches`, (_b = (_a = matchedChecks === null || matchedChecks === void 0 ? void 0 : matchedChecks.data) === null || _a === void 0 ? void 0 : _a.check_runs) === null || _b === void 0 ? void 0 : _b.length);
+        return (_c = matchedChecks.data.check_runs[0]) === null || _c === void 0 ? void 0 : _c.id;
+    }
+    catch (error) {
         return -1;
-    const matchedChecks = yield octokit.rest.checks.listForRef(Object.assign(Object.assign({}, ownership), { ref: sha, check_name: name }));
-    return matchedChecks.data.check_runs[0].id;
+    }
 });
 exports.getRun = getRun;
