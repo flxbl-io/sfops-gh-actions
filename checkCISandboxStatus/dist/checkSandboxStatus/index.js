@@ -7861,6 +7861,46 @@ function removeHook(state, name, method) {
 
 /***/ }),
 
+/***/ 4119:
+/***/ ((module) => {
+
+module.exports = function dedent(templateStrings) {
+    var values = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        values[_i - 1] = arguments[_i];
+    }
+    var matches = [];
+    var strings = typeof templateStrings === 'string' ? [templateStrings] : templateStrings.slice();
+    // 1. Remove trailing whitespace.
+    strings[strings.length - 1] = strings[strings.length - 1].replace(/\r?\n([\t ]*)$/, '');
+    // 2. Find all line breaks to determine the highest common indentation level.
+    for (var i = 0; i < strings.length; i++) {
+        var match = void 0;
+        if (match = strings[i].match(/\n[\t ]+/g)) {
+            matches.push.apply(matches, match);
+        }
+    }
+    // 3. Remove the common indentation from all strings.
+    if (matches.length) {
+        var size = Math.min.apply(Math, matches.map(function (value) { return value.length - 1; }));
+        var pattern = new RegExp("\n[\t ]{" + size + "}", 'g');
+        for (var i = 0; i < strings.length; i++) {
+            strings[i] = strings[i].replace(pattern, '\n');
+        }
+    }
+    // 4. Remove leading whitespace.
+    strings[0] = strings[0].replace(/^\r?\n/, '');
+    // 5. Perform interpolation.
+    var string = strings[0];
+    for (var i = 0; i < values.length; i++) {
+        string += values[i] + strings[i + 1];
+    }
+    return string;
+};
+//# sourceMappingURL=index.js.map
+
+/***/ }),
+
 /***/ 5820:
 /***/ ((__unused_webpack_module, exports) => {
 
@@ -30135,11 +30175,14 @@ var __webpack_exports__ = {};
 __nccwpck_require__.r(__webpack_exports__);
 /* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_0__ = __nccwpck_require__(7131);
 /* harmony import */ var _actions_github__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__nccwpck_require__.n(_actions_github__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(9653);
-/* harmony import */ var _octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(_octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_2__ = __nccwpck_require__(9653);
+/* harmony import */ var _octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__nccwpck_require__.n(_octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var dedent_js__WEBPACK_IMPORTED_MODULE_1__ = __nccwpck_require__(4119);
+/* harmony import */ var dedent_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__nccwpck_require__.n(dedent_js__WEBPACK_IMPORTED_MODULE_1__);
 const fs = __nccwpck_require__(7147);
 const { execSync } = __nccwpck_require__(2081);
 const path = __nccwpck_require__(1017);
+
 
 
 
@@ -30295,7 +30338,7 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       // Create an octokit client with the retry plugin
       const octokit = _actions_github__WEBPACK_IMPORTED_MODULE_0__.getOctokit(TOKEN, {
-        additionalPlugins: [_octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_1__.octokitRetry],
+        additionalPlugins: [_octokit_plugin_retry__WEBPACK_IMPORTED_MODULE_2__.octokitRetry],
       });
 
       //Set default expiry
@@ -30304,8 +30347,8 @@ const processDevSandbox = async (variableName, sandbox) => {
       let message='';
       if(isUserNameCreationSuccessful)
       {
-      message = 
-      `Hello @${sandbox.requester} :wave:      
+      message = dedent_js__WEBPACK_IMPORTED_MODULE_1___default()(
+      `Hello @${sandbox.requester} :wave:     
       Your sandbox has been created successfully. 
       
       Please find the details below
@@ -30317,11 +30360,11 @@ const processDevSandbox = async (variableName, sandbox) => {
       Please check your email for details, on how to reset your password and get access to this org.
       Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
                       
-      This issue was processed by [sfops 🤖]`;
+      This issue was processed by [sfops 🤖]`);
       }
       else
       {
-       message = 
+       message = dedent_js__WEBPACK_IMPORTED_MODULE_1___default()(
        `Hello @${sandbox.requester} :wave:      
         Your sandbox has been created successfully. However, sfops was not able to provision a user
         sucessfully. So you would need to reach your admin to get your acess sorted out
@@ -30332,7 +30375,7 @@ const processDevSandbox = async (variableName, sandbox) => {
         - UserName: ${userName}
         - Expiry In: ${expiry} days
                           
-        This issue was processed by [sfops 🤖]`;
+        This issue was processed by [sfops 🤖]`);
       }
 
       await octokit.rest.issues.createComment({

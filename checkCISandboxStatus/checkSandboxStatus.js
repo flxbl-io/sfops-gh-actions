@@ -3,6 +3,7 @@ const { execSync } = require("child_process");
 const path = require("path");
 import * as github from "@actions/github";
 import { octokitRetry } from "@octokit/plugin-retry";
+import dedent from 'dedent-js'
 
 const [
   SCRIPT_PATH,
@@ -165,8 +166,8 @@ const processDevSandbox = async (variableName, sandbox) => {
       let message='';
       if(isUserNameCreationSuccessful)
       {
-      message = 
-      `Hello @${sandbox.requester} :wave:      
+      message = dedent(
+      `Hello @${sandbox.requester} :wave:     
       Your sandbox has been created successfully. 
       
       Please find the details below
@@ -178,11 +179,11 @@ const processDevSandbox = async (variableName, sandbox) => {
       Please check your email for details, on how to reset your password and get access to this org.
       Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
                       
-      This issue was processed by [sfops 🤖]`;
+      This issue was processed by [sfops 🤖]`);
       }
       else
       {
-       message = 
+       message = dedent(
        `Hello @${sandbox.requester} :wave:      
         Your sandbox has been created successfully. However, sfops was not able to provision a user
         sucessfully. So you would need to reach your admin to get your acess sorted out
@@ -193,7 +194,7 @@ const processDevSandbox = async (variableName, sandbox) => {
         - UserName: ${userName}
         - Expiry In: ${expiry} days
                           
-        This issue was processed by [sfops 🤖]`;
+        This issue was processed by [sfops 🤖]`);
       }
 
       await octokit.rest.issues.createComment({
