@@ -58,10 +58,9 @@ async function createUser(profileId, email) {
   try {
     const result = await exec(cmd);
     console.error(`Created User record ${userName} successfully `);
-
     const outputFilePath = path.resolve("username.output");
     fs.writeFileSync(outputFilePath, userName);
-    return;
+    return JSON.parse(result.stdout).result.id;
   } catch (err) {
     console.error(
       `Failed to create User record ${userName} due to error: ${err}`,
