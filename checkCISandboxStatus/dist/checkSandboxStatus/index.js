@@ -30336,7 +30336,7 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       await octokit.rest.issues.createComment({
         owner: GITHUB_REPO_OWNER,
-        name: GITHUB_REPO_NAME,
+        repo: GITHUB_REPO_NAME,
         issue_number: sandbox.issueNumber,
         body: message,
       });
