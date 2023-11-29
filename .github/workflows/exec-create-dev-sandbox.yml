@@ -129,6 +129,14 @@ jobs:
           with:
             node-version: '18'
   
+
+        - uses: actions/create-github-app-token@v1
+          id: app-token
+          with:
+            app-id: ${{ inputs.sfopsbot-app-id }}
+            private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+            owner: ${{ github.repository_owner }}
+
         
         - uses: flxbl-io/sfops-gh-actions/createSandboxForDev@main
           id: sandbox-creator
@@ -142,31 +150,6 @@ jobs:
            datadog-host: ${{ secrets.DATADOG_HOST }}
            deactivateUsers: ${{ vars.SFOPS_DEACTIVATE_USERS }}
 
-        - uses: actions/create-github-app-token@v1
-          id: app-token
-          with:
-            app-id: ${{ inputs.sfopsbot-app-id }}
-            private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-            owner: ${{ github.repository_owner }}
 
-        - uses: mshick/add-pr-comment@v2
-          name: Create comment after successfull fetching of scratch org
-          with:
-            allow-repeats: false
-            message-id: dev-sandbox
-            refresh-message-position: true
-            issue: ${{ github.event.issue.number }}
-            repo-token: ${{ steps.app-token.outputs.token }}
-            message: |
-              Hello @${{ github.event.issue.user.login }} :wave:
-              
-              Your sandbox has been created successfully. Please find the details below:
-              - Sandbox Name: ${{ steps.sandbox-creator.outputs.SANDBOX_NAME }}
-              - UserName: ${{ steps.sandbox-creator.outputs.SANDBOX_USERNAME }}
-              - Expiry In: ${{ steps.issue-analyzer.outputs.daysToKeep }} days
 
-              Please check your email for details, on how to reset your password and get access to this org.
-              Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
-              
-              This issue was processed by [sfops 🤖]
 

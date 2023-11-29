@@ -46,7 +46,7 @@ async function createSandbox(
 
     // Hack to get around the issue with sfdx org create sandbox command
     if (!sandboxDefinition.SourceSandboxName)
-      sfdxCommand = spawn("sfdx", [
+      sfdxCommand = spawn("sf", [
         "org",
         "create",
         "sandbox",

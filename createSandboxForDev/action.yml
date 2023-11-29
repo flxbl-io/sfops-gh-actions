@@ -2,6 +2,9 @@ name: "Create a Sandbox - Developer License"
 description: "Create a sandbox with developer license"
 
 inputs:
+  issue-number:
+    description: "Issue Number which triggered creation of this request"
+    required: true
   email:
     description: "Email of the user for which the sandbox is to be created"
     required: true
@@ -83,59 +86,15 @@ runs:
 
         echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
 
+        # Construct the JSON value
+        value="{\"name\":\"$sandbox_name\",\"expiry\":\"${{ inputs.daysToKeep }}\",\"requester\":\"${{ github.event.issue.user.login }}\",\"email\":\"${{ inputs.email }}\",\"issueNumber\":\"${{ inputs.issue-number }}\",\"status\":\"InProgress\",\"isActive\":\"true\"}"
+
+        # Set the GitHub Action variable
+        gh variable set "${{ inputs.issue-number }}_DEVSBX" -b "$value" --repo $GITHUB_REPO
+
+
+
         #Sleep for 60 seconds before the sandbox need to be propoagated
         sleep 60s
-
-
-        # calculate elapsed time and report
-        # do not fail even if the metrics where not able to be send
-        end=$(date +%s)
-        elapsed=$(( end - start ))
-
-        sfdx alias set  $sandbox_name=$DEVHUB_USERNAME.$sandbox_name
-
-        if [ -n "${{ inputs.deactivateUsers }}"  ]; then
-          if [ -n "${{ inputs.usersToBeActivated }}" ]; then
-            IFS=',' read -r -a usersToBeActivated <<< "${{ inputs.usersToBeActivated }}"
-            for index in "${!usersToBeActivated[@]}"
-            do
-              usersToBeActivated[index]="${usersToBeActivated[index]}${sandbox_name}"
-            done
-            usersToBeActivated=$(IFS=, ; echo "${usersToBeActivated[*]}")
-
-            node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $usersToBeActivated   $sandbox_name 2>/dev/null || true
-          else
-            # deactivate all users excpet the initiating user
-            node $GITHUB_ACTION_PATH/dist/deactivate-user/index.js  $DEVHUB_USERNAME.$sandbox_name  $sandbox_name   2>/dev/null || true
-          fi
-        fi
-
-        max_attempts=5
-        attempt_num=1
-        while ! node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}  $DEVHUB_USERNAME.$sandbox_name true; do
-            if (( attempt_num == max_attempts )); then
-                echo "Failed to create user after $max_attempts attempts."
-                exit 1
-            fi
-            echo "Attempt $attempt_num failed! Trying again in 5 seconds..."
-            sf org sandbox resume -n $sandbox_name -o $DEVHUB_USERNAME  2>/dev/null || true
-            ((attempt_num++))
-        done
-
-        #Reset Source tracking
-        sf project reset -o $DEVHUB_USERNAME.$sandbox_name 
-
-
-        echo "SANDBOX_NAME=$sandbox_name" >> "$GITHUB_OUTPUT"
-
-        SANDBOX_USERNAME=$(cat username.output)
-        echo "SANDBOX_USERNAME=$SANDBOX_USERNAME" >> "$GITHUB_OUTPUT"
-
-        if [ ${{ inputs.metrics-provider }} = 'datadog' ]; then
-          export "SFPOWERSCRIPTS_DATADOG=true" 
-          export "SFPOWERSCRIPTS_DATADOG_HOST=${{ inputs.datadog-host }}"
-          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.datadog-api-key }}"
-          sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"dev\"}
-        fi
 
       shell: bash

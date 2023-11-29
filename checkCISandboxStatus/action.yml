@@ -44,6 +44,6 @@ runs:
          export "SFPOWERSCRIPTS_DATADOG_API_KEY=${{ inputs.DATADOG_API_KEY }}"
         fi
 
-        node $GITHUB_ACTION_PATH/checkSandboxStatus.js  $GITHUB_ACTION_PATH  ${{ github.repository }}  $DEVHUB_USERNAME ${{ inputs.pathToPoolConfigFile }}
+        node $GITHUB_ACTION_PATH/checkSandboxStatus.js  ${{ inputs.gh_token }}  $GITHUB_ACTION_PATH   ${{ github.repository_owner }} ${{ github.event.repository.name }}   $DEVHUB_USERNAME ${{ inputs.pathToPoolConfigFile }}
         node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
       shell: bash

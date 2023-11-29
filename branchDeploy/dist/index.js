@@ -48671,26 +48671,7 @@ async function run() {
     core.debug(`🔒 stickyLocks: ${stickyLocks}`)
     core.debug(`💬 leaveComment: ${leaveComment}`)
 
-    // Aquire the branch-deploy lock
-    // const lockResponse = await lock(
-    //   octokit,
-    //   context,
-    //   precheckResults.ref,
-    //   reactRes.data.id,
-    //   stickyLocks, // sticky / hubot style locks - true/false depending on the input
-    //   environment, // environment
-    //   null, // details only flag
-    //   false, // postDeployStep
-    //   leaveComment // leaveComment - true/false depending on the input
-    // )
-
-    // If the lock request fails, exit the Action
-    // if (lockResponse.status === false) {
-    //   return 'safe-exit'
-    // }
-
-    // Add a comment to the PR letting the user know that a deployment has been started
-    // Format the success message
+   
     var deploymentType
     if (precheckResults.noopMode) {
       deploymentType = 'noop'
@@ -48698,29 +48679,6 @@ async function run() {
       deploymentType =
         environmentObj.environmentObj.sha !== null ? 'sha' : 'Branch'
     }
-    //const log_url = `${process.env.GITHUB_SERVER_URL}/${context.repo.owner}/${context.repo.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`
-    // const commentBody = dedent(`
-    //   ### Deployment In Progress 🚀
-    
-    //   Hi @${
-    //     context.actor
-    //   },
-      
-    //   Your request to deploy __${context.issue.number}__ for release __${releaseName}__ to __test__ environments is in progress
-
-    //   You can watch the progress [here](${log_url}) 🔗
-
-    //   This issue is being processed by [sfops 🤖]
-
-    //   > __${deploymentType}__: \`${precheckResults.ref}\`
-    // `)
-
-    // // Make a comment on the PR
-    // await octokit.rest.issues.createComment({
-    //   ...context.repo,
-    //   issue_number: context.issue.number,
-    //   body: commentBody
-    // })
 
     // Set outputs for noopMode
     if (precheckResults.noopMode) {
@@ -48786,24 +48744,6 @@ async function run() {
     }
 
 
-    // const {data: createDeploy} = await octokit.rest.repos.createDeployment({
-    //   owner: owner,
-    //   repo: repo,
-    //   ref: precheckResults.ref,
-    //   auto_merge: auto_merge,
-    //   required_contexts: requiredContexts,
-    //   environment: environment,
-    //   // description: "",
-    //   // :description note: Short description of the deployment.
-    //   production_environment: isProductionEnvironment,
-    //   // :production_environment note: specifies if the given environment is one that end-users directly interact with. Default: true when environment is production and false otherwise.
-    //   payload: {
-    //     type: 'branch-deploy'
-    //   }
-    // });
-    // core.setOutput('deployment_id', createDeploy.id)
-    // core.saveState('deployment_id', createDeploy.id)
-
     // If a merge to the base branch is required, let the user know and exit
     for (const testEnvironment of testEnvironments) {
     let id = deploymentIdsMappedToTestEnvs.get(testEnvironment);
@@ -48828,16 +48768,7 @@ async function run() {
     }
    }
 
-    // // Set the deployment status to in_progress
-    // await createDeploymentStatus(
-    //   octokit,
-    //   context,
-    //   precheckResults.ref,
-    //   'in_progress',
-    //   createDeploy.id,
-    //   environment,
-    //   environmentObj.environmentUrl // environment_url (can be null)
-    // )
+
 
     for (const testEnvironment of testEnvironments) {
       await createDeploymentStatus(

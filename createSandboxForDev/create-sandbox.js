@@ -45,7 +45,7 @@ console.error("Sandbox Definition File Created...");
 console.error(JSON.stringify(sandboxDefinition));
 //Hack to get around the issue with sfdx org create sandbox command
 if (!sandboxDefinition.SourceSandboxName)
-  sfdxCommand = spawn("sfdx", [
+  sfdxCommand = spawn("sf", [
     "org",
     "create",
     "sandbox",
@@ -55,11 +55,7 @@ if (!sandboxDefinition.SourceSandboxName)
     name,
     "-o",
     process.argv[3],
-    "-w",
-    "300",
     "--no-prompt",
-    "-i",
-    "300",
     "--json",
   ]);
 else
@@ -75,11 +71,7 @@ else
     process.argv[3],
     "-c",
     process.argv[4],
-    "-w",
-    "300",
     "--no-prompt",
-    "-i",
-    "300",
     "--json",
   ]);
 

@@ -1,9 +1,19 @@
 const fs = require("fs");
 const { execSync } = require("child_process");
 const path = require("path");
+import * as github from "@actions/github";
+import { octokitRetry } from "@octokit/plugin-retry";
 
-const [SCRIPT_PATH, GITHUB_REPO, DEVHUB_USERNAME, PATH_TO_POOL_CONFIG] =
-  process.argv.slice(2);
+const [
+  SCRIPT_PATH,
+  TOKEN,
+  GITHUB_REPO_OWNER,
+  GITHUB_REPO_NAME,
+  DEVHUB_USERNAME,
+  PATH_TO_POOL_CONFIG,
+] = process.argv.slice(2);
+
+const GITHUB_REPO = `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
 
 // Function to run shell commands synchronously
 const runCommand = (command) => {
@@ -35,8 +45,10 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
         `sf org sandbox resume -n ${sandboxName} -o ${DEVHUB_USERNAME} --json`
       );
     } catch (error) {
-      console.log(`Check the status of this sandbox ${sandboxName} in DevHub,Probably its still in progress`);
-      sandboxStatus=null;
+      console.log(
+        `Check the status of this sandbox ${sandboxName} in DevHub,Probably its still in progress`
+      );
+      sandboxStatus = null;
     }
 
     if (!sandboxStatus) return;
@@ -72,13 +84,115 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       runCommand(
         `gh variable set ${variableName} -b '${value}' --repo ${GITHUB_REPO}`
       );
-      console.log(`Sandbox ${sandboxName} is  marked as available at ${variableName}`)
+      console.log(
+        `Sandbox ${sandboxName} is  marked as available at ${variableName}`
+      );
       try {
         runCommand(
-          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {\"type\":\"ci\"}'
+          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {"type":"ci"}'
         );
       } catch (error) {
-        console.log(`Skipping posting metric.. Check whether datadog env variable is properly configued`);
+        console.log(
+          `Skipping posting metric.. Check whether datadog env variable is properly configued`
+        );
+      }
+    }
+  } catch (err) {
+    console.error(`Error processing sandbox ${sandboxName}:`, err);
+  }
+};
+
+const processDevSandbox = async (variableName, sandbox) => {
+  try {
+    console.log(`Processing Developer Sandbox`);
+
+    try {
+      sandboxStatus = runCommand(
+        `sf org sandbox resume -n ${sandbox.name} -o ${DEVHUB_USERNAME} --json`
+      );
+    } catch (error) {
+      console.log(
+        `Check the status of this sandbox ${sandboxName} in DevHub,Probably its still in progress`
+      );
+      sandboxStatus = null;
+    }
+
+    if (!sandboxStatus) return;
+
+    const parsedStatus = JSON.parse(sandboxStatus).result.Status;
+
+    console.log(`${sandboxName}:${parsedStatus}`);
+    if (parsedStatus === "Completed") {
+      runCommand(
+        `sf alias set ${sandboxName}=${DEVHUB_USERNAME}.${sandboxName}`
+      );
+
+      let count = 0;
+      const maxAttempts = 5;
+      let userName = `${DEVHUB_USERNAME}.${sandboxName}`;
+      while (true) {
+        if (count == maxAttempts) {
+          console.log(`Failed to create user after ${maxAttempts}`);
+          break;
+        }
+
+        try {
+          userName = execSync(
+            `node ${path.join(
+              SCRIPT_PATH,
+              "dist/create-user/index.js"
+            )} "System Adminstrator" ${sandbox.email} ${DEVHUB_USERNAME}.${
+              sandbox.name
+            }`
+          );
+          break;
+        } catch (error) {
+          console.log(error);
+          count++;
+        }
+      }
+
+      // Create an octokit client with the retry plugin
+      const octokit = github.getOctokit(TOKEN, {
+        additionalPlugins: [octokitRetry],
+      });
+
+      //Set default expiry
+      const expiry = sandbox.expiry?sandbox.expiry:15;
+
+      let message = `Hello @${sandbox.requesterr} :wave:
+              
+                      Your sandbox has been created successfully. Please find the details below:
+                      - Sandbox Name: ${sandbox.name}
+                      - UserName: ${userName}
+                      - Expiry In: ${expiry}  days
+
+                      Please check your email for details, on how to reset your password and get access to this org.
+                      Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
+                      
+                      This issue was processed by [sfops 🤖]`;
+
+      await octokit.rest.issues.createComment({
+        owner: GITHUB_REPO_OWNER,
+        name: GITHUB_REPO_NAME,
+        issue_number: sandbox.issueNumber,
+        body: message,
+      });
+
+      //Now delete the variable
+      runCommand(`gh variable delete ${variableName}  --repo ${GITHUB_REPO}`);
+
+      console.log(
+        `Sandbox ${sandboxName} is  marked as available at ${variableName}`
+      );
+      try {
+        runCommand(
+          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {"type":"ci"}'
+        );
+      } catch (error) {
+        console.log(
+          `Skipping posting metric.. Check whether datadog env variable is properly configued`
+        );
       }
     }
   } catch (err) {
@@ -88,8 +202,31 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
 
 // Main execution
 (async () => {
-  const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
+  //Handle Dev Sandboxes
+  const devSandboxesList = execSync(
+    `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"_DEVSBX\\\"))"`
+  );
+  if (!devSandboxesList) return;
 
+  const githubDevSandboxVariableValues = devSandboxesList
+    .toString()
+    .split("\n")
+    .filter(Boolean);
+
+  for (const variableValue of githubSandboxVariableValues) {
+    const variableName = JSON.parse(variableValue).name;
+    const sandboxJson = JSON.parse(
+      execSync(
+        `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}?per_page=100" --jq ".value | fromjson"`
+      )
+    );
+    if (sandboxJson.status === "InProgress") {
+      await processDevSandbox(variableName, sandboxJson);
+    }
+  }
+
+  //Handle CI Sandboxes
+  const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
   const sandboxesList = execSync(
     `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"_SBX\\\"))"`
   );
@@ -99,18 +236,17 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
     .toString()
     .split("\n")
     .filter(Boolean);
-
   for (const variableValue of githubSandboxVariableValues) {
-    const sandboxName = JSON.parse(variableValue).name;
-    const poolConfig = findPoolConfig(sandboxName, configJson);
+    const variableName = JSON.parse(variableValue).name;
+    const poolConfig = findPoolConfig(variableName, configJson);
     if (poolConfig) {
       const sandboxJson = JSON.parse(
         execSync(
-          `gh api "/repos/${GITHUB_REPO}/actions/variables/${sandboxName}?per_page=100" --jq ".value | fromjson"`
+          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}?per_page=100" --jq ".value | fromjson"`
         )
       );
       if (sandboxJson.status === "InProgress") {
-        await processSandbox(sandboxName, sandboxJson.name, poolConfig);
+        await processSandbox(variableName, sandboxJson.name, poolConfig);
       }
     }
   }
