@@ -88,7 +88,7 @@ function run() {
                     id = yield (0, checks_1.getRun)(octokit, sha, ownership, inputs.name);
                     if (id == -1) {
                         core.debug(`Unable to find run id on the sha ${sha}`);
-                        core.setFailed(`Unable to find run id on the sha ${sha}`);
+                        return;
                     }
                 }
                 core.debug(`Updating a Run on ${ownership.owner}/${ownership.repo}@${sha} (${id})`);
@@ -99,7 +99,6 @@ function run() {
         catch (e) {
             const error = e;
             core.debug(error.toString());
-            core.setFailed(error.message);
         }
     });
 }

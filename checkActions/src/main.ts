@@ -64,7 +64,7 @@ async function run(): Promise<void> {
         if(id==-1)
         {
          core.debug(`Unable to find run id on the sha ${sha}`)
-         core.setFailed(`Unable to find run id on the sha ${sha}`);
+         return;
         }
       }
       core.debug(`Updating a Run on ${ownership.owner}/${ownership.repo}@${sha} (${id})`);
@@ -74,7 +74,6 @@ async function run(): Promise<void> {
   } catch (e) {
     const error = e as Error;
     core.debug(error.toString());
-    core.setFailed(error.message);
   }
 }
 

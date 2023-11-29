@@ -90,13 +90,20 @@ const updateRun = (octokit, id, ownership, inputs) => __awaiter(void 0, void 0, 
 });
 exports.updateRun = updateRun;
 const getRun = (octokit, sha, ownership, name) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+    var _a, _b;
     try {
         if (!name)
             return -1;
-        const matchedChecks = yield octokit.rest.checks.listForRef(Object.assign(Object.assign({}, ownership), { ref: sha, check_name: name }));
-        console.log(`Found matches`, (_b = (_a = matchedChecks === null || matchedChecks === void 0 ? void 0 : matchedChecks.data) === null || _a === void 0 ? void 0 : _a.check_runs) === null || _b === void 0 ? void 0 : _b.length);
-        return (_c = matchedChecks.data.check_runs[0]) === null || _c === void 0 ? void 0 : _c.id;
+        const matchedChecks = yield octokit.rest.checks.listForRef(Object.assign(Object.assign({}, ownership), { ref: sha }));
+        console.log(`Found checks`, (_b = (_a = matchedChecks === null || matchedChecks === void 0 ? void 0 : matchedChecks.data) === null || _a === void 0 ? void 0 : _a.check_runs) === null || _b === void 0 ? void 0 : _b.length);
+        let matchedCheckRunId = -1;
+        for (const check of matchedChecks.data.check_runs) {
+            console.log(`Analysing checks`, check.name);
+            if (check.name.includes(name)) {
+                matchedCheckRunId = check.id;
+            }
+        }
+        return matchedCheckRunId;
     }
     catch (error) {
         return -1;

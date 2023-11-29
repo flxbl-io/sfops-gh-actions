@@ -106,11 +106,20 @@ export const getRun = async (
     if (!name) return -1;
     const matchedChecks = await octokit.rest.checks.listForRef({
       ...ownership,
-      ref: sha,
-      check_name: name,
+      ref: sha
     });
-    console.log(`Found matches`,matchedChecks?.data?.check_runs?.length)
-    return matchedChecks.data.check_runs[0]?.id;
+
+    console.log(`Found checks`,matchedChecks?.data?.check_runs?.length)
+    let matchedCheckRunId:number=-1;
+    for (const check of matchedChecks.data.check_runs) {
+      console.log(`Analysing checks`,check.name)
+      if(check.name.includes(name))
+      {
+        matchedCheckRunId = check.id;
+      }
+    }
+  
+    return matchedCheckRunId;
   } catch (error) {
     return -1;
   }
