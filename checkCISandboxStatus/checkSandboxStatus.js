@@ -182,6 +182,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       }
       else
       {
+       message = 
        `Hello @${sandbox.requester} :wave:      
         Your sandbox has been created successfully. However, sfops was not able to provision a user
         sucessfully. So you would need to reach your admin to get your acess sorted out
