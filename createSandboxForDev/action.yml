@@ -26,6 +26,9 @@ inputs:
   apexClassId:
     description: "Apex Class Id to be used for apex test execution"
     required: false
+  gh_token:
+    description: "Token for GitHub API"
+    required: true
   metrics-provider:
     description: "The metrics provider to be used"
   datadog-api-key:
@@ -55,7 +58,7 @@ runs:
     - id: createSandbox
       run: |
         # Fetch username
-
+        export GH_TOKEN=${{inputs.gh_token}}
         devhubInfo=$(sf org display -o devhub --json)
 
         # Use jq to extract the username

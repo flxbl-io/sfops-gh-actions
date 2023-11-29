@@ -150,6 +150,7 @@ jobs:
            datadog-host: ${{ secrets.DATADOG_HOST }}
            deactivateUsers: ${{ vars.SFOPS_DEACTIVATE_USERS }}
            issue-number: ${{ inputs.issue-number }}
+           gh_token: ${{ steps.app-token.outputs.token }}
 
 
 

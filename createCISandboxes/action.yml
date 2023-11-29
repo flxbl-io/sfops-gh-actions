@@ -27,7 +27,6 @@ runs:
       run: |
         export GH_TOKEN=${{inputs.gh_token}}
         config=$(cat ${{ inputs.pathToPoolConfigFile }})
-        export GH_TOKEN=${{inputs.gh_token}}
 
         for entry in $(echo "$config" | jq -c '.[]'); do
            echo 'Processing pool: ' $(echo $entry | jq -r '.pool')
