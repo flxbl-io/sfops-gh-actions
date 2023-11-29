@@ -134,7 +134,7 @@ else
     "-c",
     process.argv[4],
     "--no-prompt",
-    "--json"
+    "--json",
   ]);
 
 sfdxCommand.stdout.on("data", (data) => {
@@ -145,18 +145,16 @@ sfdxCommand.stderr.on("data", (data) => {
   console.error(`${data}`);
 });
 
- sfdxCommand.on("close", (code) => {
-      if (code == 68) {
-        console.error("Sandbox requested submitted successfully.");
-        resolve(name);
-      } else if (code == 0) {
-        console.error("Sandbox created successfully.");
-        resolve(name);
-      } else {
-        console.error(`sfdx command exited with code ${code}`);
-        reject(`Failed to create sandbox: ${name}`);
-      }
-  });
+sfdxCommand.on("close", (code) => {
+  if (code == 68) {
+    console.error("Sandbox requested submitted successfully.");
+  } else if (code == 0) {
+    console.error("Sandbox created successfully.");
+  } else {
+    console.error(`sfdx command exited with code ${code}`);
+    throw new error(`Failed to create sandbox: ${name}`);
+  }
+});
 
 })();
 
