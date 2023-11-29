@@ -149,6 +149,7 @@ jobs:
            datadog-api-key: ${{ secrets.DATADOG_API_KEY }}
            datadog-host: ${{ secrets.DATADOG_HOST }}
            deactivateUsers: ${{ vars.SFOPS_DEACTIVATE_USERS }}
+           issue-number: ${{ inputs.issue-number }}
 
 
 
