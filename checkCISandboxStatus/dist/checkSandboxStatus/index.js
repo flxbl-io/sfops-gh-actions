@@ -30281,7 +30281,7 @@ const processDevSandbox = async (variableName, sandbox) => {
             `node ${path.join(
               SCRIPT_PATH,
               "dist/create-user/index.js"
-            )} "System Adminstrator" ${sandbox.email} ${DEVHUB_USERNAME}.${
+            )} "System Administrator" ${sandbox.email} ${DEVHUB_USERNAME}.${
               sandbox.name
             }`
           );
