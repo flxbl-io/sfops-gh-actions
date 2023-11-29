@@ -49,6 +49,7 @@ jobs:
           message-id: intro
           refresh-message-position: false
           repo-token: ${{ steps.app-token.outputs.token }}
+          if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
           message: |
               Hello @${{ github.event.pull_request.user.login }}, :wave:
 
@@ -58,10 +59,29 @@ jobs:
 
               You can type in the following as a comment for further actions
 
-              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful (only if BRANCH DEPLOY is true)
-              💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts ( only if BRANCH DEPLOY is true )
+              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful
+              💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
               🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another workitem
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
+
+      - uses: mshick/add-pr-comment@v2
+        with:
+          allow-repeats: false
+          message-id: intro
+          refresh-message-position: false
+          repo-token: ${{ steps.app-token.outputs.token }}
+          if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }}
+          message: |
+              Hello @${{ github.event.pull_request.user.login }}, :wave:
+
+              If you are a new contributor to this repository, read on!
+
+              This is a sfops powered Salesforce repository.  Your PR will now be validated against a scratch org or sandbox depending on the configuration
+
+              You can type in the following as a comment for further actions
+              
+              ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
+
 
  statuscheck:
     name: "Deployments to Test Environments"
