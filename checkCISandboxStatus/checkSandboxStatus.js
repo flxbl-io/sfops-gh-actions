@@ -37,12 +37,12 @@ const findPoolConfig = (variableName, configJson) => {
 // Main function to process each sandbox
 const processSandbox = async (variableName, sandboxName, poolConfig) => {
   try {
-    console.log(`Processing Sandbox`);
+    console.log(`Processing Sandbox ${sandboxName}`);
     let sandboxStatus = "InProgress";
 
     try {
       sandboxStatus = runCommand(
-        `sf org sandbox resume -n ${sandboxName} -o ${DEVHUB_USERNAME} --json`
+        `sf org sandbox resume -n ${sandboxName} -o ${DEVHUB_USERNAME} --json -w 1`
       );
     } catch (error) {
       console.log(
