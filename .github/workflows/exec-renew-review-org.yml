@@ -87,7 +87,7 @@ jobs:
         with:
           allow-repeats: false
           repo-token: ${{ steps.app-token.outputs.token }}
-          message-id: deployment-${{ matrix.releaseName }}
+          message-id: renew-${{ inputs.issue-number }}
           refresh-message-position: true
           message-path: |
              message.md        

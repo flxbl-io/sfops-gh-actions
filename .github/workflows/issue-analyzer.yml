@@ -234,7 +234,6 @@ jobs:
          needs.create-an-env.result == 'success' ||
          needs.deletion-of-component.result == 'success' ||
          needs.test-deletion-of-component.result == 'success' ||
-         needs.fetch-scratchorg-from-pool.result == 'success' ||
          needs.freeze-user.result == 'success' ||
          needs.unfreeze-user.result == 'success' ||
          needs.update-releasename.result == 'success' ||

@@ -58,7 +58,7 @@ jobs:
     name: Fetch Snapshot Environments
     runs-on: ubuntu-latest
     outputs:
-      envsAsJSON: ${{ steps.fetchTestEnvs.outputs.allEnvsAsJSON }}
+      envsAsJSON: ${{ steps.fetchSnapshotEnvs.outputs.allEnvsAsJSON }}
     steps:
 
       - uses: actions/checkout@v3
@@ -104,8 +104,8 @@ jobs:
         id: unlock
         with:
          mode: 'unlock'
-         environment: 'test-${{ matrix.releaseName }}'
-         environment_targets: 'test-${{ matrix.releaseName }}'
+         environment: 'test-${{ inputs.releasename }}'
+         environment_targets: 'test-${{ inputs.releasename }}'
          github_token: ${{steps.app-token.outputs.token}}
          
 
@@ -163,7 +163,7 @@ jobs:
     needs:
       - build
       - fetch-snapshot-envs
-    if: ${{ needs.fetch-test-envs.outputs.envsAsJSON != '[]' && needs.fetch-test-envs.outputs.envsAsJSON != '' }}
+    if: ${{ needs.fetch-snapshot-envs.outputs.envsAsJSON != '[]' && needs.fetch-snapshot-envs.outputs.envsAsJSON != '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -294,7 +294,7 @@ jobs:
         run: |
           BRANCH_NAME=${{ github.ref_name }}
           if [[ $BRANCH_NAME == release* ]]; then
-            RELEASE_NAME="hotfix-${{ steps.get-domain.outputs.domain }}-$(date +'%d-%m')-${{ github.run_id }}"
+            RELEASE_NAME="hotfix-${{ inputs.releasename  }}-$(date +'%d-%m')-${{ github.run_id }}"
           else
             RELEASE_NAME="${{ inputs.releasename }}-$(date +'%d-%m')-${{ github.run_id }}"
           fi
@@ -374,7 +374,7 @@ jobs:
           repo-token: ${{ steps.app-token.outputs.token }}
           message: |
             This work item  is now published in the following release defn  ${{env.RELEASE_NAME}} .
-            The link is available at https://${{ github.repository.owner}}.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
+            The link is available at https://${{ github.repository_owner }}.github.io/${{inputs.dashboard-repo}}/changelog/changelog-${{inputs.domain}}.html#${{env.RELEASE_NAME}}
 
       - name: Create Message Body as File
         id: message_template
@@ -390,7 +390,7 @@ jobs:
         with:
           allow-repeats: false
           repo-token: ${{ steps.app-token.outputs.token }}
-          message-id: ${{matrix.filePath}}
+          message-id: ${{ inputs.releasename }}
           refresh-message-position: true
           message-path: |
             message.md
