@@ -89,7 +89,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {"type":"ci"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"ci"}'
         );
       } catch (error) {
         console.log(
@@ -104,7 +104,8 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
 
 const processDevSandbox = async (variableName, sandbox) => {
   try {
-    console.log(`Processing Developer Sandbox`);
+    console.log(`Processing Developer Sandbox ${sandbox.name}`);
+    let sandboxStatus;
 
     try {
       sandboxStatus = runCommand(
@@ -112,27 +113,27 @@ const processDevSandbox = async (variableName, sandbox) => {
       );
     } catch (error) {
       console.log(
-        `Check the status of this sandbox ${sandboxName} in DevHub,Probably its still in progress`
+        `Check the status of this sandbox ${sandbox.name} in DevHub,Probably its still in progress`,
       );
-      sandboxStatus = null;
+      return;
     }
-
-    if (!sandboxStatus) return;
 
     const parsedStatus = JSON.parse(sandboxStatus).result.Status;
 
-    console.log(`${sandboxName}:${parsedStatus}`);
+    console.log(`${sandbox.name}:${parsedStatus}`);
     if (parsedStatus === "Completed") {
       runCommand(
-        `sf alias set ${sandboxName}=${DEVHUB_USERNAME}.${sandboxName}`
+        `sf alias set ${sandbox.name}=${DEVHUB_USERNAME}.${sandbox.name}`
       );
 
       let count = 0;
       const maxAttempts = 5;
-      let userName = `${DEVHUB_USERNAME}.${sandboxName}`;
+      let isUserNameCreationSuccessful=false;
+      let userName = `${DEVHUB_USERNAME}.${sandbox.name}`;
       while (true) {
         if (count == maxAttempts) {
           console.log(`Failed to create user after ${maxAttempts}`);
+          isUserNameCreationSuccessful=false;
           break;
         }
 
@@ -145,9 +146,10 @@ const processDevSandbox = async (variableName, sandbox) => {
               sandbox.name
             }`
           );
+          isUserNameCreationSuccessful=true;
           break;
         } catch (error) {
-          console.log(error);
+          console.log(`Unable to create user due to ${error.message}`);
           count++;
         }
       }
@@ -160,17 +162,38 @@ const processDevSandbox = async (variableName, sandbox) => {
       //Set default expiry
       const expiry = sandbox.expiry?sandbox.expiry:15;
 
-      let message = `Hello @${sandbox.requesterr} :wave:
-              
-                      Your sandbox has been created successfully. Please find the details below:
-                      - Sandbox Name: ${sandbox.name}
-                      - UserName: ${userName}
-                      - Expiry In: ${expiry}  days
+      let message='';
+      if(isUserNameCreationSuccessful)
+      {
+      message = 
+      `Hello @${sandbox.requester} :wave:      
+      Your sandbox has been created successfully. 
+      
+      Please find the details below
 
-                      Please check your email for details, on how to reset your password and get access to this org.
-                      Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
+      - Sandbox Name: ${sandbox.name}
+      - UserName: ${userName}
+      - Expiry In: ${expiry}  days
+
+      Please check your email for details, on how to reset your password and get access to this org.
+      Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
                       
-                      This issue was processed by [sfops 🤖]`;
+      This issue was processed by [sfops 🤖]`;
+      }
+      else
+      {
+       `Hello @${sandbox.requester} :wave:      
+        Your sandbox has been created successfully. However, sfops was not able to provision a user
+        sucessfully. So you would need to reach your admin to get your acess sorted out
+
+        Please provide the below details to the administrator
+
+        - Sandbox Name: ${sandbox.name}
+        - UserName: ${userName}
+        - Expiry In: ${expiry} days
+                          
+        This issue was processed by [sfops 🤖]`;
+      }
 
       await octokit.rest.issues.createComment({
         owner: GITHUB_REPO_OWNER,
@@ -179,15 +202,15 @@ const processDevSandbox = async (variableName, sandbox) => {
         body: message,
       });
 
-      //Now delete the variable
+      // delete the variable
       runCommand(`gh variable delete ${variableName}  --repo ${GITHUB_REPO}`);
 
       console.log(
-        `Sandbox ${sandboxName} is  marked as available at ${variableName}`
+        `Sandbox ${sandbox.name} is  marked as available at ${variableName}`
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sfpowerscripts.sandbox.created" -t counter -g {"type":"ci"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"dev"}'
         );
       } catch (error) {
         console.log(
@@ -196,13 +219,14 @@ const processDevSandbox = async (variableName, sandbox) => {
       }
     }
   } catch (err) {
-    console.error(`Error processing sandbox ${sandboxName}:`, err);
+    console.error(`Error processing sandbox ${sandbox.name}:`, err);
   }
 };
 
 // Main execution
 (async () => {
   //Handle Dev Sandboxes
+  console.log(`Checking status of  Developer Sandboxes.. `);
   const devSandboxesList = execSync(
     `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"_DEVSBX\\\"))"`
   );
@@ -213,7 +237,7 @@ const processDevSandbox = async (variableName, sandbox) => {
     .split("\n")
     .filter(Boolean);
 
-  for (const variableValue of githubSandboxVariableValues) {
+  for (const variableValue of githubDevSandboxVariableValues) {
     const variableName = JSON.parse(variableValue).name;
     const sandboxJson = JSON.parse(
       execSync(
@@ -221,11 +245,13 @@ const processDevSandbox = async (variableName, sandbox) => {
       )
     );
     if (sandboxJson.status === "InProgress") {
+      console.log(`Processing variable ${variableName}`)
       await processDevSandbox(variableName, sandboxJson);
     }
   }
 
   //Handle CI Sandboxes
+  console.log(`Processing CI Sandboxes.. `);
   const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
   const sandboxesList = execSync(
     `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"_SBX\\\"))"`
@@ -246,6 +272,7 @@ const processDevSandbox = async (variableName, sandbox) => {
         )
       );
       if (sandboxJson.status === "InProgress") {
+        console.log(`Processing variable ${variableName}`)
         await processSandbox(variableName, sandboxJson.name, poolConfig);
       }
     }
