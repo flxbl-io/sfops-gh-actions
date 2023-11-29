@@ -61,8 +61,6 @@ async function createUser(profileId, email) {
 
     const outputFilePath = path.resolve("username.output");
     fs.writeFileSync(outputFilePath, userName);
-
-    console.log(userName);
     return;
   } catch (err) {
     console.error(
@@ -124,6 +122,8 @@ async function main() {
   const cmd = ` sf apex run -f resetPassword.apex  -o ${targetOrg}`;
   const result = await exec(cmd);
   console.error(`Reset password for User record ${userId} successfully `);
+  const userNameRead = fs.readFileSync("username.output",'utf8');
+  console.log(userNameRead);
 }
 
 main().catch((err) => {
