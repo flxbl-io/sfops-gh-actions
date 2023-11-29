@@ -64,7 +64,7 @@ jobs:
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying
 
  statuscheck:
-    name: "Deployment to Test Environments"
+    name: "Deployments to Test Environments"
     runs-on: ubuntu-latest
     steps:
 

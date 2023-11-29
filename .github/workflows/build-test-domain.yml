@@ -301,7 +301,7 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.NPM_TOKEN }}
-          name: 'Deploy to Test Environments'
+          name: 'Deployments to Test Environments'
           status: 'completed'
           check_id: -1
           sha:   ${{ inputs.branchname }}

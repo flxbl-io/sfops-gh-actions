@@ -100,6 +100,7 @@ const getRun = (octokit, sha, ownership, name) => __awaiter(void 0, void 0, void
         for (const check of matchedChecks.data.check_runs) {
             console.log(`Analysing checks`, check.name);
             if (check.name.includes(name)) {
+                console.log(`Matched check`, check.id);
                 matchedCheckRunId = check.id;
             }
         }

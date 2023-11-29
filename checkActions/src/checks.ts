@@ -115,6 +115,7 @@ export const getRun = async (
       console.log(`Analysing checks`,check.name)
       if(check.name.includes(name))
       {
+        console.log(`Matched check`, check.id);
         matchedCheckRunId = check.id;
       }
     }
