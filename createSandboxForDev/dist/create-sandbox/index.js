@@ -145,15 +145,18 @@ sfdxCommand.stderr.on("data", (data) => {
   console.error(`${data}`);
 });
 
-sfdxCommand.on("close", (code) => {
-  if (code !== 0) {
-    console.error(`sfdx command exited with code ${code}`);
-    process.exit(1);
-  }
-
-  console.error("Sandbox created successfully.");
-  fs.unlinkSync("sandboxDefinition.json");
-});
+ sfdxCommand.on("close", (code) => {
+      if (code == 68) {
+        console.error("Sandbox requested submitted successfully.");
+        resolve(name);
+      } else if (code == 0) {
+        console.error("Sandbox created successfully.");
+        resolve(name);
+      } else {
+        console.error(`sfdx command exited with code ${code}`);
+        reject(`Failed to create sandbox: ${name}`);
+      }
+  });
 
 })();
 
