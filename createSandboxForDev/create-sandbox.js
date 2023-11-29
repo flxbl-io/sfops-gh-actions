@@ -49,6 +49,7 @@ if (!sandboxDefinition.SourceSandboxName)
     "org",
     "create",
     "sandbox",
+    "--async",
     "-f",
     "sandboxDefinition.json",
     "-a",
@@ -63,6 +64,7 @@ else
     "org",
     "create",
     "sandbox",
+    "--async",
     "-f",
     "sandboxDefinition.json",
     "-a",
@@ -72,8 +74,7 @@ else
     "-c",
     process.argv[4],
     "--no-prompt",
-    "--json",
-    "--async"
+    "--json"
   ]);
 
 sfdxCommand.stdout.on("data", (data) => {

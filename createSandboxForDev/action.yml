@@ -90,7 +90,7 @@ runs:
         value="{\"name\":\"$sandbox_name\",\"expiry\":\"${{ inputs.daysToKeep }}\",\"requester\":\"${{ github.event.issue.user.login }}\",\"email\":\"${{ inputs.email }}\",\"issueNumber\":\"${{ inputs.issue-number }}\",\"status\":\"InProgress\",\"isActive\":\"true\"}"
 
         # Set the GitHub Action variable
-        gh variable set "${{ inputs.issue-number }}_DEVSBX" -b "$value" --repo $GITHUB_REPO
+        gh variable set "${{ sandbox_name }}_DEVSBX" -b "$value" --repo $GITHUB_REPO
 
 
 
