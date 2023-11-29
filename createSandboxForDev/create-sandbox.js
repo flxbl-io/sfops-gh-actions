@@ -73,6 +73,7 @@ else
     process.argv[4],
     "--no-prompt",
     "--json",
+    "--async"
   ]);
 
 sfdxCommand.stdout.on("data", (data) => {
