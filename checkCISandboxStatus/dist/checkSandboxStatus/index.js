@@ -30228,7 +30228,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"ci"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"ci\"}'
         );
       } catch (error) {
         console.log(
@@ -30349,7 +30349,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"dev"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"dev\"}'
         );
       } catch (error) {
         console.log(
