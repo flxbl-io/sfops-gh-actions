@@ -298,6 +298,7 @@ jobs:
         name: 'Update Checks'
         id: update-check
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
+        continue-on-error: true
         with:
           token: ${{ secrets.NPM_TOKEN }}
           name: 'Deploy to Test Environments'
