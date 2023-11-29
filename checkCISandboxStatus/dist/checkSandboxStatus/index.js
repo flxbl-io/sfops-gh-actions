@@ -30266,7 +30266,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       );
 
       let count = 0;
-      const maxAttempts = 5;
+      const maxAttempts = 1;
       let isUserNameCreationSuccessful=false;
       let userName = `${DEVHUB_USERNAME}.${sandbox.name}`;
       while (true) {
