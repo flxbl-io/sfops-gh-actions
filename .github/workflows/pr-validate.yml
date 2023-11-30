@@ -44,12 +44,12 @@ jobs:
          owner: ${{ github.repository_owner }}
 
       - uses: mshick/add-pr-comment@v2
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
         with:
           allow-repeats: false
           message-id: intro
           refresh-message-position: false
           repo-token: ${{ steps.app-token.outputs.token }}
-          if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
           message: |
               Hello @${{ github.event.pull_request.user.login }}, :wave:
 
@@ -65,12 +65,12 @@ jobs:
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying (only for sandboxes)
 
       - uses: mshick/add-pr-comment@v2
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }}
         with:
           allow-repeats: false
           message-id: intro
           refresh-message-position: false
           repo-token: ${{ steps.app-token.outputs.token }}
-          if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }}
           message: |
               Hello @${{ github.event.pull_request.user.login }}, :wave:
 
