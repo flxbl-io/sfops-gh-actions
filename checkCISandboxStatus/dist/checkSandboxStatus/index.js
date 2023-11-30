@@ -30198,11 +30198,12 @@ const [
 const GITHUB_REPO = `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
 
 // Function to run shell commands synchronously
-const runCommand = (command) => {
+const runCommand = (command,ignoreError) => {
   try {
     return execSync(command).toString();
   } catch (err) {
-    throw Error(err.stderr.toString());
+    if(!ignoreError)
+      throw Error(err.stderr.toString());
   }
 };
 
@@ -30359,6 +30360,8 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       Please check your email for details, on how to reset your password and get access to this org.
       Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
+
+      If you are asked for a password hint for any reason type in __San Francisco__
                       
       This issue was processed by [sfops 🤖]`);
       }
@@ -30374,6 +30377,8 @@ const processDevSandbox = async (variableName, sandbox) => {
         - Sandbox Name: ${sandbox.name}
         - UserName: ${userName}
         - Expiry In: ${expiry} days
+
+        If you are asked for a password hint for any reason type in __San Francisco__
                           
         This issue was processed by [sfops 🤖]`);
       }
@@ -30387,6 +30392,11 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       // delete the variable
       runCommand(`gh variable delete ${variableName}  --repo ${GITHUB_REPO}`);
+
+      
+
+      //Add source tracking reset
+      runCommand(`sf project reset tracking --target-org ${sandbox.name}`,true);
 
       console.log(
         `Sandbox ${sandbox.name} is  marked as available at ${variableName}`
