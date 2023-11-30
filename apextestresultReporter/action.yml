@@ -60,6 +60,7 @@ runs:
       uses: flxbl-io/sfops-gh-actions/fetchAllEnvs@main
       with:
         gh_token: ${{ env.GH_TOKEN }}
+        filter: "testrun:true"
 
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
