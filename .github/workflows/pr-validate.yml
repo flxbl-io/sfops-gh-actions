@@ -296,6 +296,8 @@ jobs:
         id: message_template
         if: ${{ always() }}
         run: |
+          has_errors=false
+
           printf "Hello  @${{ github.event.pull_request.user.login }}, " > message.md
           printf "\nPlease find some information if available regarding your [validation run](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
           
@@ -304,8 +306,12 @@ jobs:
           if [ -f  .sfpowerscripts/outputs/org-info.md ]; then
             printf "\n### :o: Org Info" >> message.md
             cat .sfpowerscripts/outputs/org-info.md >> message.md
+          else
+            printf "\n### :warning: Unable to Fetch Org Info" >> message.md
+            printf "\nWe are unable to fetch an org or process validation, You need to double check the run" >> message.md
+            exit 0
           fi
-          
+
           if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; then
             printf "\n### :eyes: Packages Validated\n" >> message.md
             cat .sfpowerscripts/outputs/deployment-breakdown.md >> message.md
@@ -315,17 +321,28 @@ jobs:
             printf "\n### :bangbang: Build Errors" >> message.md
             printf "\nLooks like we have ran into some issues during the build of your packages \n" >> message.md
             cat .sfpowerscripts/outputs/build-error-info.md >> message.md
+            has_errors=true
           fi    
 
           if [ -f .sfpowerscripts/outputs/deployment-error.md ]; then
             cat .sfpowerscripts/outputs/deployment-error.md >> message.md
+            has_errors=true
           fi
 
-          printf "\n### :checkered_flag: Status">> message.md
 
           if [ -f .sfpowerscripts/outputs/validation-error.md ]; then
             cat .sfpowerscripts/outputs/validation-error.md >> message.md
+            has_errors=true
           fi
+          
+          printf "\n### :checkered_flag: Errors">> message.md
+
+          if $has_errors; then
+            printf "\n## :x: Validation Failed, Check for Errors" >> message.md
+          else
+            printf "\n## :white_check_mark: Validation Successful, No Errors Found" >> message.md
+          fi
+
           
           
 
