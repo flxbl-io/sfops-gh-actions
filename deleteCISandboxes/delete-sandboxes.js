@@ -75,9 +75,11 @@ console.log(
 );
 for (const sandboxName of completedNumericSandboxNames) {
   try {
-    console.log(`Deleting Sandbox ${sandboxName}`);
+    console.log(`--------------------------------------------`);
+    console.log(`\n:rocket: Deleting Sandbox ${sandboxName}`);
     deleteSandbox(devHubUserName, sandboxName);
     deleteMatchingGitHubVariables(sandboxName, repository);
+    console.log(`--------------------------------------------`);
   } catch (err) {
     console.log(`Error deleting sandbox ${sandboxName},skipping`);
   }
