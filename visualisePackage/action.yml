@@ -45,6 +45,7 @@ runs:
         cd $GITHUB_ACTION_PATH/
         go mod tidy
         go run main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_WORKSPACE/domain.json
+        cp data.js $GITHUB_WORKSPACE/_data/packageVisualisation/data.js
       shell: bash
 
     - name: "Push changes to dashboard-repo"
