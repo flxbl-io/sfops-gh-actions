@@ -1,5 +1,16 @@
 const { execSync } = require("child_process");
 
+
+// Function to run shell commands synchronously
+const runCommand = (command, ignoreError) => {
+  try {
+    return execSync(command).toString();
+  } catch (err) {
+    if (!ignoreError) throw Error(err.stderr.toString());
+  }
+};
+
+
 function deleteSandbox(devHubUserName, sandboxName) {
   console.log(
     `Attempting to logout of the sandbox if its already authenticated... `,
@@ -44,3 +55,9 @@ sandboxName = sandboxName.trim();
 sandboxName = sandboxName.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "");
 
 deleteSandbox(devHubUserName, sandboxName);
+
+
+console.error(`Attempting to delete any variables in Github`)
+
+//Delete any variables
+runCommand(`gh variable delete ${sandboxName}_DEVSBX  --repo ${GITHUB_REPO}`,true);

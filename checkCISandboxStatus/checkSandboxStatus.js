@@ -3,7 +3,7 @@ const { execSync } = require("child_process");
 const path = require("path");
 import * as github from "@actions/github";
 import { octokitRetry } from "@octokit/plugin-retry";
-import dedent from 'dedent-js'
+import dedent from "dedent-js";
 
 const [
   SCRIPT_PATH,
@@ -17,12 +17,11 @@ const [
 const GITHUB_REPO = `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
 
 // Function to run shell commands synchronously
-const runCommand = (command,ignoreError) => {
+const runCommand = (command, ignoreError) => {
   try {
     return execSync(command).toString();
   } catch (err) {
-    if(!ignoreError)
-      throw Error(err.stderr.toString());
+    if (!ignoreError) throw Error(err.stderr.toString());
   }
 };
 
@@ -91,7 +90,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"ci\"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"ci"}'
         );
       } catch (error) {
         console.log(
@@ -115,7 +114,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       );
     } catch (error) {
       console.log(
-        `Check the status of this sandbox ${sandbox.name} in DevHub,Probably its still in progress`,
+        `Check the status of this sandbox ${sandbox.name} in DevHub,Probably its still in progress`
       );
       return;
     }
@@ -130,12 +129,12 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       let count = 0;
       const maxAttempts = 1;
-      let isUserNameCreationSuccessful=false;
+      let isUserNameCreationSuccessful = false;
       let userName = `${DEVHUB_USERNAME}.${sandbox.name}`;
       while (true) {
         if (count == maxAttempts) {
           console.log(`Failed to create user after ${maxAttempts}`);
-          isUserNameCreationSuccessful=false;
+          isUserNameCreationSuccessful = false;
           break;
         }
 
@@ -148,7 +147,7 @@ const processDevSandbox = async (variableName, sandbox) => {
               sandbox.name
             }`
           );
-          isUserNameCreationSuccessful=true;
+          isUserNameCreationSuccessful = true;
           break;
         } catch (error) {
           console.log(`Unable to create user due to ${error.message}`);
@@ -162,13 +161,12 @@ const processDevSandbox = async (variableName, sandbox) => {
       });
 
       //Set default expiry
-      const expiry = sandbox.expiry?sandbox.expiry:15;
+      const expiry = sandbox.expiry ? sandbox.expiry : 15;
 
-      let message='';
-      if(isUserNameCreationSuccessful)
-      {
-      message = dedent(
-      `Hello @${sandbox.requester} :wave:     
+      let message = "";
+      if (isUserNameCreationSuccessful) {
+        message = dedent(
+          `Hello @${sandbox.requester} :wave:     
       Your sandbox has been created successfully. 
       
       Please find the details below
@@ -182,12 +180,11 @@ const processDevSandbox = async (variableName, sandbox) => {
 
       If you are asked for a password hint for any reason type in __San Francisco__
                       
-      This issue was processed by [sfops 🤖]`);
-      }
-      else
-      {
-       message = dedent(
-       `Hello @${sandbox.requester} :wave:      
+      This issue was processed by [sfops 🤖]`
+        );
+      } else {
+        message = dedent(
+          `Hello @${sandbox.requester} :wave:      
         Your sandbox has been created successfully. However, sfops was not able to provision a user
         sucessfully. So you would need to reach your admin to get your acess sorted out
 
@@ -199,7 +196,8 @@ const processDevSandbox = async (variableName, sandbox) => {
 
         If you are asked for a password hint for any reason type in __San Francisco__
                           
-        This issue was processed by [sfops 🤖]`);
+        This issue was processed by [sfops 🤖]`
+        );
       }
 
       await octokit.rest.issues.createComment({
@@ -209,20 +207,30 @@ const processDevSandbox = async (variableName, sandbox) => {
         body: message,
       });
 
-      // delete the variable
-      runCommand(`gh variable delete ${variableName}  --repo ${GITHUB_REPO}`);
+      const value = JSON.stringify({
+        ...sandbox,
+        status: "Assigned",
+      });
 
-      
+      runCommand(
+        `gh variable set ${variableName} -b '${value}' --repo ${GITHUB_REPO}`
+      );
+      console.log(
+        `Sandbox ${sandbox.name} is  marked as assgined at ${variableName}`
+      );
 
       //Add source tracking reset
-      runCommand(`sf project reset tracking --target-org ${sandbox.name}`,true);
+      runCommand(
+        `sf project reset tracking --target-org ${sandbox.name}`,
+        true
+      );
 
       console.log(
         `Sandbox ${sandbox.name} is  marked as available at ${variableName}`
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {\"type\":\"dev\"}'
+          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"dev"}'
         );
       } catch (error) {
         console.log(
@@ -257,7 +265,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       )
     );
     if (sandboxJson.status === "InProgress") {
-      console.log(`Processing variable ${variableName}`)
+      console.log(`Processing variable ${variableName}`);
       await processDevSandbox(variableName, sandboxJson);
     }
   }
@@ -284,7 +292,7 @@ const processDevSandbox = async (variableName, sandbox) => {
         )
       );
       if (sandboxJson.status === "InProgress") {
-        console.log(`Processing variable ${variableName}`)
+        console.log(`Processing variable ${variableName}`);
         await processSandbox(variableName, sandboxJson.name, poolConfig);
       }
     }
