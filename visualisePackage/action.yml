@@ -23,6 +23,12 @@ runs:
         echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
 
+
+    - name: Setup Go 
+      uses: actions/setup-go@v4
+      with:
+          go-version: '1.21.x'
+
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         mkdir -p _data/packageVisualisation
