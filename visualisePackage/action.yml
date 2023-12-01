@@ -33,9 +33,8 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         mkdir -p _data/packageVisualisation
-        cd $GITHUB_ACTION_PATH/ && go mod download && cd ../.. 
         node $GITHUB_ACTION_PATH/dist/index.js $GITHUB_WORKSPACE/${{inputs.pathToReleaseConfig}}
-        go run $GITHUB_ACTION_PATH/cmd/extract-data/main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_ACTION_PATH/domain.json
+        go run $GITHUB_ACTION_PATH/main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_ACTION_PATH/domain.json
       shell: bash
 
     - name: "Push changes to dashboard-repo"
