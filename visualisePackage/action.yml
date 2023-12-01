@@ -24,11 +24,19 @@ runs:
       shell: bash
 
 
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        node $GITHUB_ACTION_PATH/dist/index.js $GITHUB_WORKSPACE/${{inputs.pathToReleaseConfig}}
+      shell: bash
+
     - name: Setup Go 
       uses: actions/setup-go@v4
       with:
           go-version: '1.21.x'
           go-version-file: '$GITHUB_ACTION_PATH/go.mod'
+
+          
+
 
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
@@ -36,7 +44,7 @@ runs:
         node $GITHUB_ACTION_PATH/dist/index.js $GITHUB_WORKSPACE/${{inputs.pathToReleaseConfig}}
         cd $GITHUB_ACTION_PATH/
         go mod tidy
-        go run main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_ACTION_PATH/domain.json
+        go run main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_WORKSPACE/domain.json
       shell: bash
 
     - name: "Push changes to dashboard-repo"
