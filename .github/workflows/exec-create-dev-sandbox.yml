@@ -38,7 +38,7 @@ on:
 jobs:  
 
   issue-analyzer:
-    if: contains(github.event.issue.title, 'Ops - Request a new Dev Sandbox')
+    if: contains(github.event.issue.title, 'Ops - Request a new Dev Sandbox') &&  github.event.action != 'reopened'
     runs-on: ubuntu-latest
     outputs:
       sourceSB: ${{ steps.issue-analyzer-output.outputs.sourceSB }}
