@@ -25,6 +25,8 @@ function readYamlFiles(directoryPath) {
 
 function writeDomainJson(directoryPath) {
   const mappings = readYamlFiles(directoryPath);
+  console.log(`Written to`, process.cwd());
+  console.log(`Mappings identified:`, JSON.stringify(mappings, null, 2));
   fs.writeFileSync('domain.json', JSON.stringify(mappings, null, 2));
 }
 

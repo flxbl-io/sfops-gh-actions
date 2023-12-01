@@ -34,7 +34,6 @@ jobs:
         with:
            app-id: ${{ inputs.sfopsbot-app-id }}
            private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-           owner: ${{ github.repository_owner }}
 
 
       - uses: flxbl-io/sfops-gh-actions/reportGithubMetrics@main
