@@ -29,7 +29,15 @@ type packageDirectory struct {
 func main() {
 	repoPath := flag.String("repo", "", "Path to the git repository")
 	domainPath := flag.String("domain", "domain.json", "Path to the domain file")
+
+  
+
 	flag.Parse()
+
+	// Pring the flag value
+	fmt.Println("repo:", *repoPath)
+	fmt.Println("domain:", *domainPath)
+
 
 	if *repoPath == "" {
 		log.Fatal("Repository path is required")
