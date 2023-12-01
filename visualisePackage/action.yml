@@ -42,7 +42,7 @@ runs:
     - run: |
         mkdir -p _data/packageVisualisation
         cd $GITHUB_ACTION_PATH/
-        go mod tidy 2>/dev.null
+        go mod tidy 2>/dev/null
         go run main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_WORKSPACE/domain.json
         cat data.js
         cp data.js $GITHUB_WORKSPACE/_data/packageVisualisation/data.js
