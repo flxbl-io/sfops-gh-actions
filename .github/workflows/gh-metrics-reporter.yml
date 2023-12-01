@@ -44,3 +44,22 @@ jobs:
             DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
             DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
 
+
+  report-package-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+           app-id: ${{ inputs.sfopsbot-app-id }}
+           private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+
+
+      - uses: flxbl-io/sfops-gh-actions/visualisePackage@main
+        id: report-metrics
+        with:
+            gh_token: ${{ steps.app-token.outputs.token }}
+            dashboard-repo: ${{ inputs.dashboard-repo }}
+            pathToReleaseConfig: "config"

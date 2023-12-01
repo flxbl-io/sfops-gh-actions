@@ -1,0 +1,42 @@
+#always assume it needs sfpowerscripts docker image as the run time
+
+name: "Report packages"
+description: "Report packages"
+inputs:
+  pathToReleaseConfig: 
+   description: "Path to the releaseconfig/domain"
+   required: false
+  dashboard-repo:
+    description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
+    required: true
+  gh_token:
+    description: "github token to use for commiting to repo"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        mkdir -p _data/packageVisualisation
+        node $GITHUB_ACTION_PATH/visualisePackage.js $GITHUB_WORKSPACE/${{inputs.pathToReleaseConfig}}
+        go run $GITHUB_ACTION_PATH/cmd/extract-data/main.go --repo $GITHUB_WORKSPACE --domain $GITHUB_WORKSPACE/domain.json
+      shell: bash
+
+    - name: "Push changes to dashboard-repo"
+      id: updateGitRepo
+      uses: flxbl-io/sfops-gh-actions/updateGitRepo@main
+      with:
+        target-repo: ${{ inputs.dashboard-repo }}
+        source-dir: _data
+        target-dir: _data
+        commit-message: "Updated information about a branch"
+        update-release-names: false
+        gh_token: ${{ inputs.gh_token }}
