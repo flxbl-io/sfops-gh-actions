@@ -43,6 +43,6 @@ runs:
         target-repo: ${{ inputs.dashboard-repo }}
         source-dir: _data
         target-dir: _data
-        commit-message: "Updated information about a branch"
+        commit-message: "Updated information about sandbox"
         update-release-names: false
         gh_token: ${{ inputs.gh_token }}

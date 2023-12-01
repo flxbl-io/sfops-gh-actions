@@ -68,5 +68,15 @@ jobs:
           DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
 
 
+      #Create a sandbox
+      - name: 'Update Sandbox status '
+        uses:  flxbl-io/sfops-gh-actions/sandboxStatusReporter@main
+        continue-on-error: true
+        with:
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token:  ${{ steps.app-token.outputs.token }}
+
+
+
 
 
