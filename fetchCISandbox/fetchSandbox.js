@@ -12,6 +12,13 @@ async function findAvailableSandbox(
   branch = branch.toUpperCase();
   const end = Date.now() + timeoutMinutes * 60000;
 
+  console.error(`----------------------------------------------------`);
+  console.error(`Action: fetchCISandbox`);  
+  console.error(`Pool: ${domain}`);
+  console.error(`Branch: ${branch}`);
+  
+
+
   while (true) {
     const output = execSync(
       `gh api /repos/${githubRepo}/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\\"^${domain}_${branch}_[^_]*_SBX$\\")).name"`
@@ -23,7 +30,9 @@ async function findAvailableSandbox(
       process.exit(1);
     }
 
+
     let firstInUseSandbox = "";
+    let firstExpiredSandbox;
     let availableSandbox;
     let isIssueAssigned = false;
     let assignedSandboxInfo;
@@ -38,7 +47,7 @@ async function findAvailableSandbox(
         ).toString()
       );
       const { status, isActive, name, issue } = sandbox;
-      console.error(`Checking Name:${name}..Status:${status}...IsActive:${isActive}...Issue:${issue?issue:'N/A'}.`);
+      console.error(`Processing Sandbox   name:${name} status:${status} isActive:${isActive} issue:${issue?issue:'N/A'}.`);
 
       // Check if the sandbox is associated with the issue
       if (issue === issueNumber) {
@@ -57,6 +66,10 @@ async function findAvailableSandbox(
           assignedSandboxInfo = sandbox
           availableSandbox = name;
           break;
+        }else if (status == 'Expired')
+        {
+          if(!firstExpiredSandbox)
+              firstExpiredSandbox = name;
         }
       }
     }
@@ -74,7 +87,7 @@ async function findAvailableSandbox(
           ).toString()
         );
         const { status, isActive, name, issue } = sandbox;
-        console.error(`Checking Name:${name}..Status:${status}...IsActive:${isActive}...Issue:${issue?issue:'N/A'}.`);
+        console.error(`Processing Sandbox   name:${name} status:${status} isActive:${isActive} issue:${issue?issue:'N/A'}.`);
         if (status === "Available" && isActive) {
           console.error(
             `Found an available sandbox at ${sandbox.name} `
@@ -115,8 +128,16 @@ async function findAvailableSandbox(
           );
           process.exit(1);
         } else {
-          console.error(`Returning first InUse sandbox: ${firstInUseSandbox}`);
-          console.log(firstInUseSandbox);
+          if(firstExpiredSandbox)
+          {
+            console.error(`We ran out of time and no sandbox was found, So returning you an expire done temporarily : ${firstExpiredSandbox}`);
+            console.log(firstExpiredSandbox);
+          }
+          else
+          {
+            console.error(`No sandboxes available, nothing to be provided to you!!`);
+            process.exit(1);
+          }
           process.exit(0);
         }
       }
