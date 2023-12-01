@@ -4194,7 +4194,7 @@ function readYamlFiles(directoryPath) {
 function writeDomainJson(directoryPath) {
   const mappings = readYamlFiles(directoryPath);
   console.log(`Written to`, cwd());
-  fs.writeFileSync('domain.json'), JSON.stringify(mappings, null, 2));
+  fs.writeFileSync('domain.json', JSON.stringify(mappings, null, 2));
 }
 
 // Command line argument for directory path
