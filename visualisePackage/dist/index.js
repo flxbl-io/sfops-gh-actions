@@ -4193,7 +4193,7 @@ function readYamlFiles(directoryPath) {
 
 function writeDomainJson(directoryPath) {
   const mappings = readYamlFiles(directoryPath);
-  console.log(`Written to`, cwd());
+  console.log(`Written to`, process.cwd());
   fs.writeFileSync('domain.json', JSON.stringify(mappings, null, 2));
 }
 
