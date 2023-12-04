@@ -103,6 +103,14 @@ jobs:
           devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           gh_token: ${{ steps.app-token.outputs.token }}
 
+      #Update sandbox status
+      - name: 'Update Sandbox status '
+        uses:  flxbl-io/sfops-gh-actions/sandboxStatusReporter@main
+        continue-on-error: true
+        with:
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token:  ${{ steps.app-token.outputs.token }}
+
 
 
 

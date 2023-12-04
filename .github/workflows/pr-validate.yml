@@ -225,7 +225,7 @@ jobs:
           branch: ${{ github.base_ref }}
           gh_token: ${{ steps.app-token.outputs.token }}
           issue-number: ${{ github.event.number }}
-
+          dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
 
 
 
@@ -239,6 +239,7 @@ jobs:
           releaseName: ${{ matrix.releaseName}}
           gh_token: ${{ steps.app-token.outputs.token }}
           issue-number: ${{ github.event.number }}
+          dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
 
 
 
