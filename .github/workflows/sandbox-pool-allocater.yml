@@ -3,20 +3,20 @@ on:
   workflow_call:
     inputs:
       users-to-be-activated:
-         description: The users to be activated in the sandbox
-         type: "string"
+        description: The users to be activated in the sandbox
+        type: "string"
       path-to-config:
-         description: The path to sandbox pool config
-         type: "string"
+        description: The path to sandbox pool config
+        type: "string"
       metrics-provider:
         description: "The metrics provider to be used"
         type: "string"
       dashboard-repo:
         description: "Target repo to submit package version report as HTML"
         type: "string"
-      sfopsbot-app-id: 
-         description: The App id of the bot used for this workflow_call
-         type: "string"
+      sfopsbot-app-id:
+        description: The App id of the bot used for this workflow_call
+        type: "string"
     secrets:
       NPM_TOKEN:
         description: "GH TOKEN to publish to NPM"
@@ -31,12 +31,10 @@ on:
       SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
 
-
-
 jobs:
   check-ci-sandbox-status:
     runs-on: ubuntu-latest
-    continue-on-error: true 
+    continue-on-error: true
     container: ghcr.io/flxbl-io/sfops:latest
 
     steps:
@@ -45,41 +43,38 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-         owner: ${{ github.repository_owner }}
+          app-id: ${{ inputs.sfopsbot-app-id }}
+          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
 
-         
-      - name: 'Authenticate DevHub'
+      - name: "Authenticate DevHub"
         run: |
-              echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
-              sfdx auth:sfdxurl:store -f authfile -a devhub
+          echo "${{ secrets.DEVHUB_SFDX_AUTH_URL }}" > ./authfile
+          sfdx auth:sfdxurl:store -f authfile -a devhub
 
       #Create a sandbox
-      - name: 'Provision sandboxes to Available'
-        uses:  flxbl-io/sfops-gh-actions/checkCISandboxStatus@main
+      - name: "Provision sandboxes to Available"
+        uses: flxbl-io/sfops-gh-actions/checkCISandboxStatus@main
         with:
           devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
-          usersToBeActivated:  ${{ inputs.users-to-be-activated }}
+          usersToBeActivated: ${{ inputs.users-to-be-activated }}
           pathToPoolConfigFile: ${{ inputs.path-to-config }}
-          gh_token:  ${{ steps.app-token.outputs.token }}
+          gh_token: ${{ steps.app-token.outputs.token }}
           metrics-provider: ${{ inputs.metrics-provider }}
           DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
           DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
 
-
       #Create a sandbox
-      - name: 'Update Sandbox status '
-        uses:  flxbl-io/sfops-gh-actions/sandboxStatusReporter@main
+      - name: "Update Sandbox status "
+        uses: flxbl-io/sfops-gh-actions/sandboxStatusReporter@main
         continue-on-error: true
         with:
           dashboard-repo: ${{ inputs.dashboard-repo }}
-          gh_token:  ${{ steps.app-token.outputs.token }}
-
+          gh_token: ${{ steps.app-token.outputs.token }}
 
   update-scratchorg-status:
     runs-on: ubuntu-latest
-    continue-on-error: true 
+    continue-on-error: true
     container: ghcr.io/flxbl-io/sfops:latest
 
     steps:
@@ -88,21 +83,13 @@ jobs:
       - uses: actions/create-github-app-token@v1
         id: app-token
         with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-         owner: ${{ github.repository_owner }}
-
+          app-id: ${{ inputs.sfopsbot-app-id }}
+          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
 
       - name: Report Scratch Org Status
         uses: flxbl-io/sfops-gh-actions/scratchOrgStatusReporter@main
         with:
-         devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_UR }}
-         dashboard-repo: ${{ inputs.dashboard-repo }}
-        gh_token: ${{ steps.app-token.outputs.token }}
-
-
-
-
-
-
-
+          devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_UR }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token: ${{ steps.app-token.outputs.token }}
