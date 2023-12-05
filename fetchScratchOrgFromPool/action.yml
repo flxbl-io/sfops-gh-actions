@@ -47,7 +47,7 @@ runs:
     - id: fetch_so
       shell: bash
       run: |
-        SO_USERNAME=$(node $GITHUB_ACTION_PATH/distdist/fetch-scratch-org/index.js --repo ${{github.repository}} --tag ${{ inputs.tag }} --devhub devhub --email ${{ inputs.email }} --issue-number ${{ inputs.issue-number }})
+        SO_USERNAME=$(node $GITHUB_ACTION_PATH/dist/fetch-scratch-org/index.js --repo ${{github.repository}} --tag ${{ inputs.tag }} --devhub devhub --email ${{ inputs.email }} --issue-number ${{ inputs.issue-number }})
         echo "SO_USERNAME=$SO_USERNAME" >> "$GITHUB_OUTPUT"
 
     - id: assign_user
