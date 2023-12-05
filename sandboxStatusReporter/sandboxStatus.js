@@ -5,7 +5,7 @@ async function getSandboxStatus(githubRepo) {
     console.error(`Fetching sandbox statuses from ${githubRepo}...`);
 
     const output = execSync(
-        `gh api /repos/${githubRepo}/actions/variables?per_page=100 --jq ".variables[].name"`
+        `gh api /repos/${githubRepo}/actions/variables --paginate --jq ".variables[].name"`
     ).toString();
     const sandboxNames = output.trim().split("\n");
 

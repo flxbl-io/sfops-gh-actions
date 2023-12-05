@@ -21,7 +21,7 @@ async function findAvailableSandbox(
 
   while (true) {
     const output = execSync(
-      `gh api /repos/${githubRepo}/actions/variables?per_page=100 --jq ".variables[] | select(.name | test(\\"^${domain}_${branch}_[^_]*_SBX$\\")).name"`
+      `gh api /repos/${githubRepo}/actions/variables --paginate --jq ".variables[] | select(.name | test(\\"^${domain}_${branch}_[^_]*_SBX$\\")).name"`
     ).toString();
     const sandboxes = output.trim().split("\n");
 
