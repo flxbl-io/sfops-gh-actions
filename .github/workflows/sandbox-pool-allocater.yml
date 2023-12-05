@@ -90,6 +90,6 @@ jobs:
       - name: Report Scratch Org Status
         uses: flxbl-io/sfops-gh-actions/scratchOrgStatusReporter@main
         with:
-          devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_UR }}
+          devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           dashboard-repo: ${{ inputs.dashboard-repo }}
           gh_token: ${{ steps.app-token.outputs.token }}
