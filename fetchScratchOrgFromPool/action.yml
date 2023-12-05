@@ -10,11 +10,17 @@ inputs:
   email:
     description: "Email of the user for which the scratch org is to be assigned"
     required: true
-  gh_token: # id of input
+  dashboard-repo:
+    description: "name of the repo to report to"
+    required: true
+  gh_token: 
     description: "github token to use for commiting to repo"
     required: true
   daysToKeep:
     description: "Amount of days the scratch org should be kept for"
+    required: true
+  issue-number:
+    description: "The issue number where this scratch org will be used"
     required: true
 outputs:
   SO_USERNAME:
@@ -41,8 +47,7 @@ runs:
     - id: fetch_so
       shell: bash
       run: |
-        scratchOrgInfo=$(sfp pool:fetch -t ${{ inputs.tag }} -v devhub --json)
-        SO_USERNAME=$(echo $scratchOrgInfo | jq -r '.username')
+        SO_USERNAME=$(sh $GITHUB_ACTION_PATH/fetchScratchOrgFromPool.sh ${{github.repository}} ${{ inputs.tag }} devhub ${{ inputs.email }} ${{ inputs.issue-number }})
         echo "SO_USERNAME=$SO_USERNAME" >> "$GITHUB_OUTPUT"
 
     - id: assign_user
@@ -52,7 +57,14 @@ runs:
         then
            echo "No users to be assigned"
         else
-           node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}   ${{ steps.fetch_so.outputs.SO_USERNAME }}  false
+            node $GITHUB_ACTION_PATH/dist/create-user/index.js "System Administrator" ${{ inputs.email }}   ${{ steps.fetch_so.outputs.SO_USERNAME }}  false
             ASSIGNED_USERNAME=$(cat username.output)
             echo "ASSIGNED_USERNAME=$ASSIGNED_USERNAME" >> "$GITHUB_OUTPUT"
         fi
+
+    - id: report_status
+      uses: flxbl-io/sfops-gh-actions/scratchOrgStatusReporter@main
+      with:
+        devhub_sfdx_auth_url: ${{ inputs.devhub_sfdx_auth_url }}
+        dashboard-repo: ${{ inputs.dashboard-repo }}
+        gh_token: ${{ inputs.gh_token }}
