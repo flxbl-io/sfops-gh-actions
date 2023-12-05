@@ -80,7 +80,7 @@ jobs:
 
 
       - name: Install Unlocked Package
-        uses: flxbl-io/sfops-gh-actions/unlockedPackageInstaller@main
+        uses: flxbl-io/sfops-gh-actions/secondGenPackageInstaller@main
         with:
             target-org: ${{steps.handle-auth.outputs.alias}}
             package: ${{ inputs.package }}
