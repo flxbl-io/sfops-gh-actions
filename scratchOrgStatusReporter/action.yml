@@ -30,7 +30,6 @@ runs:
       shell: bash
 
     - run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
         mkdir -p _data/scratchOrgStatus
         node $GITHUB_ACTION_PATH/retrieveStatus.js devhub ${{github.repository}} _data/scratchOrgStatus/scratchOrgStatus.json
       shell: bash

@@ -141,6 +141,7 @@ jobs:
            daysToKeep: ${{ needs.issue-analyzer.outputs.daysToKeep }}
            gh_token:  ${{ steps.app-token.outputs.token }}
            issue-number: ${{ github.event.issue.number }}
+           dashboard-repo: ${{ inputs.dashboard-repo }}
 
         - name: Create comment after successfull fetching of scratch org
           uses: peter-evans/create-or-update-comment@v3

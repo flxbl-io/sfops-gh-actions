@@ -159,7 +159,7 @@ jobs:
       with:
         status: 'validation'
         branch: ${{ github.event.pull_request.head.ref }}   
-        dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
+        dashboard-repo:  ${{ vars.SFOPS_DASHBOARD_REPO }}
         gh_token: ${{steps.app-token.outputs.token}}
         issue-number: ${{ github.event.pull_request.number }}
   
@@ -225,7 +225,7 @@ jobs:
           branch: ${{ github.base_ref }}
           gh_token: ${{ steps.app-token.outputs.token }}
           issue-number: ${{ github.event.number }}
-          dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
+          dashboard-repo:  ${{ vars.SFOPS_DASHBOARD_REPO }}
 
 
 
@@ -239,7 +239,7 @@ jobs:
           releaseName: ${{ matrix.releaseName}}
           gh_token: ${{ steps.app-token.outputs.token }}
           issue-number: ${{ github.event.number }}
-          dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
+          dashboard-repo:  ${{ vars.SFOPS_DASHBOARD_REPO }}
 
 
 
@@ -410,7 +410,7 @@ jobs:
        with:
         status: 'validated'
         branch: ${{ github.event.pull_request.head.ref }}   
-        dashboard-repo:  ${{ vars.SFOPS_DASBHOARD_REPO }}
+        dashboard-repo:  ${{ vars.SFOPS_DASHBOARD_REPO }}
         gh_token: ${{steps.app-token.outputs.token}}
         issue-number: ${{ github.event.pull_request.number }}
 
