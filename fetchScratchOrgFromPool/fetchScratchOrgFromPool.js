@@ -66,7 +66,7 @@ async function runScript(argv) {
         console.error(augmentedJson);
 
         try {
-            execSync(`gh variable set "SO_${issueNumber}" -r ${repo} --body '${augmentedJson}'`);
+            execSync(`gh variable set "SO_${issueNumber}" --repo ${repo} --body '${augmentedJson}'`);
         } catch (error) {
             console.error('Error setting GitHub variable:', error.message);
             process.exit(1);
