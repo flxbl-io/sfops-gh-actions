@@ -30271,7 +30271,7 @@ const processSandbox = async (variableName, sandboxName, poolConfig) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"ci"}'
+          `sfp metrics:report -m "sandbox.created" -t counter -g '{\"type\":\"dev\"}'`
         );
       } catch (error) {
         console.log(
@@ -30411,7 +30411,7 @@ const processDevSandbox = async (variableName, sandbox) => {
       );
       try {
         runCommand(
-          'sfp metrics:report -m "sandbox.created" -t counter -g {"type":"dev"}'
+          `sfp metrics:report -m "sandbox.created" -t counter -g '{\"type\":\"dev\"}'`
         );
       } catch (error) {
         console.log(
@@ -30455,7 +30455,7 @@ const processDevSandbox = async (variableName, sandbox) => {
   console.log(`Processing CI Sandboxes.. `);
   const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
   const sandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100" --jq ".variables[] | select(.name | test(\\\"_SBX\\\"))"`
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq ".variables[] | select(.name | test(\\\"_SBX\\\"))"`
   );
   if (!sandboxesList) return;
 
@@ -30469,7 +30469,7 @@ const processDevSandbox = async (variableName, sandbox) => {
     if (poolConfig) {
       const sandboxJson = JSON.parse(
         execSync(
-          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}?per_page=100" --jq ".value | fromjson"`
+          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
         )
       );
       if (sandboxJson.status === "InProgress") {
