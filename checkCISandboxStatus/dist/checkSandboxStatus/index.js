@@ -30429,7 +30429,7 @@ const processDevSandbox = async (variableName, sandbox) => {
   //Handle Dev Sandboxes
   console.log(`Checking status of  Developer Sandboxes.. `);
   const devSandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables --paginate --jq ".variables[] | select(.name | test(\\\"_DEVSBX\\\"))"`
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq ".variables[] | select(.name | test(\\\"_DEVSBX\\\"))"`
   );
   if (!devSandboxesList) return;
 
