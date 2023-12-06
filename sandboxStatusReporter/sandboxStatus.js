@@ -26,14 +26,16 @@ async function getSandboxStatus(githubRepo) {
         let domain = sandboxName.split('_').slice(0,-3).join('_');
 
 
-        const sandbox = JSON.parse(
+        const sandboxVariable = JSON.parse(
             execSync(
-                `gh api /repos/${githubRepo}/actions/variables/${sandboxName.trim()} --jq ".value"`
+                `gh api /repos/${githubRepo}/actions/variables/${sandboxName.trim()}`
             ).toString()
         );
 
         // Add domain and type to the sandbox object
+        let sandbox = sandboxVariable.value;
         sandbox.domain = domain;
+        sandbox.created_at = sandboxVariable.created_at;
         sandbox.type = type;
 
         if (type === 'Developer') {
