@@ -33,7 +33,7 @@ async function getSandboxStatus(githubRepo) {
         );
 
         // Add domain and type to the sandbox object
-        let sandbox = sandboxVariable.value;
+        let sandbox = JSON.parse(sandboxVariable.value);
         sandbox.domain = domain;
         sandbox.created_at = sandboxVariable.created_at;
         sandbox.type = type;
