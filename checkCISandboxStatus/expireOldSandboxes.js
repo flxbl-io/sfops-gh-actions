@@ -7,7 +7,7 @@ const CONFIG_FILE = process.argv[3];
 // Fetch the variables
 const VARIABLES = JSON.parse(
   execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables?per_page=100"`,
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate`,
   ).toString(),
 );
 
