@@ -24,7 +24,7 @@ function markSandboxAsExpired(githubRepo, issueNumber) {
   let variables;
   try {
     const output = execSync(
-      `gh api /repos/${githubRepo}/actions/variables?per_page=100`
+      `gh api /repos/${githubRepo}/actions/variables --paginate`
     ).toString();
     variables = JSON.parse(output).variables;
   } catch (e) {

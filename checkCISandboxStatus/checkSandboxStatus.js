@@ -261,7 +261,7 @@ const processDevSandbox = async (variableName, sandbox) => {
     const variableName = JSON.parse(variableValue).name;
     const sandboxJson = JSON.parse(
       execSync(
-        `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}?per_page=100" --jq ".value | fromjson"`
+        `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
       )
     );
     if (sandboxJson.status === "InProgress") {
