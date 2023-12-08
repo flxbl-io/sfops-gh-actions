@@ -179,7 +179,7 @@ jobs:
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
           printf "\n Your request to deploy __${{ github.event.issue.number }}__ for domain/releaseconfig  __${{ matrix.releaseName }}__ to __test__ environments is in progress" >> message.md
           printf "\nPlease find some information if available regarding your [deployment request](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
-          printf "\nYou have force pushed your feature branch to test environments, this may overrwrite exiting workitems already in flight or have other unintended issues. Hope you know what you are doing!" >> message.md
+          printf "\nYou have force pushed your feature branch to test environments, this may overwrite exiting workitems already in flight or have other unintended issues. Hope you know what you are doing!" >> message.md
                 
   
       - uses: mshick/add-pr-comment@v2
