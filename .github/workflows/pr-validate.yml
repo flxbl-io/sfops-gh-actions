@@ -59,10 +59,11 @@ jobs:
 
               You can type in the following as a comment for further actions
 
-              🧪 ```sfops test ``` : Deploy this PR to Test Environments, if your review and validation is successful
+              🧪 ```sfops test ```     : Deploy this PR to Test Environments, if your review and validation is successful
               💪 ```sfops forcetest``` : Deploy this PR to Test Environments without considering any impacts
-              🔓 ```sfops unlock``` : If this issue is previously deployed to test environment and you need to unlock to push another workitem
-              ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying (only for sandboxes)
+              🔓 ```sfops unlock```    : If this issue is previously deployed to test environment and you need to unlock to push another workitem
+              ♻️  ```sfops renew```     : If you believe your review environment is corrupted, add this comment before retrying (only for sandboxes)
+              🕙 ```sfops extend```    : Extend the review environment upto 48 hours (only for sandboxes)
 
       - uses: mshick/add-pr-comment@v2
         if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }}
@@ -81,6 +82,7 @@ jobs:
               You can type in the following as a comment for further actions
               
               ♻️  ```sfops renew``` : If you believe your review environment is corrupted, add this comment before retrying (only for sandboxes)
+              🕙 ```sfops extend```: Extend the review environment upto 48 hours (only for sandboxes)
 
 
  statuscheck:

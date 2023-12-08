@@ -3,6 +3,9 @@ name: "sfops - Deploy from a PR Branch"
 on:
   workflow_call:
     inputs:
+      issue-number:
+        description: "The issue number where this sandbox will be used"
+        required: true
       pathToReleaseConfigs:
         description: "The path to the directory that has all release config"
         type: "string"
@@ -53,9 +56,39 @@ jobs:
       workitem-url: ${{ inputs.workitem-url }}
       workitem-filter: ${{ inputs.workitem-filter }}
       sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
+      additional-plugins: ${{ inputs.additional-plugins }}
      secrets:
       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
       SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+  renew-org:
+    name: "Renew Sandbox and retrigger validation"
+    uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-renew-review-org.yml@main
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, 'sfops renew')  }}
+    with:
+      issue-number: ${{ github.event.issue.number }}
+      sfopsbot-app-id: ${{ vars.SFOPSBOT_APP_ID }}
+    secrets:
+      DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+      DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
+      SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+      NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
+  extend-org:
+    name: "Extend review Sandbox"
+    uses: flxbl-io/sfops-gh-actions/.github/workflows/exec-extend-review-org.yml@main
+    if: ${{ github.event.issue.pull_request && startsWith(github.event.comment.body, 'sfops extend')  }}
+    with:
+      issue-number: ${{ github.event.issue.number }}
+      sfopsbot-app-id: ${{ vars.SFOPSBOT_APP_ID }}
+    secrets:
       DATADOG_API_KEY: ${{ secrets.DATADOG_API_KEY }}
       DATADOG_HOST: ${{ secrets.DATADOG_HOST }}
       SFOPSBOT_APP_PRIVATE_KEY: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}

@@ -45,5 +45,6 @@ runs:
         fi
 
         node $GITHUB_ACTION_PATH/dist/checkSandboxStatus/index.js  $GITHUB_ACTION_PATH  ${{ inputs.gh_token }}   ${{ github.repository_owner }} ${{ github.event.repository.name }}   $DEVHUB_USERNAME ${{ inputs.pathToPoolConfigFile }}
-        node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }}
+        node $GITHUB_ACTION_PATH/expireOldSandboxes.js  ${{ github.repository }} ${{ inputs.pathToPoolConfigFile }} 
+        node $GITHUB_ACTION_PATH/deleteExpiredSandboxes.js ${{ github.repository }} $DEVHUB_USERNAME
       shell: bash

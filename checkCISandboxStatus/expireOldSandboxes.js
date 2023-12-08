@@ -19,42 +19,65 @@ for (const { pool: POOL_NAME, count: COUNT, branch:BRANCH } of POOLS_AND_COUNTS)
   const MATCHING_VARIABLES = VARIABLES.variables
     .filter((v) => pattern.test(v.name))
     .filter((v) => {
-      const valueObj = JSON.parse(v.value);
-      return valueObj.status !== "InProgress";
+      console.log(`\nChecking ${v.name}`);
+      const valueOfVar = JSON.parse(v.value);
+      if(valueOfVar.status === "InProgress" || valueOfVar.status === 'Expired') 
+      {
+        console.log(`Status: ${valueOfVar.status}`);
+        console.log(`Proceeding to Expiration`,false);
+        return false;
+      }
+
+      console.log(`Status: ${valueOfVar.status}`);
+      const creationDate = new Date(v.created_at);
+      const hoursSinceCreation = (Date.now() - creationDate) / (1000 * 60 * 60);
+      let isExpirationEligible = true;
+      if(valueOfVar.isExtended)
+      {
+        const hoursSinceExtension = (Date.now() - creationDate) / (1000 * 60 * 60);
+        console.log(`Hours since extension: ${hoursSinceExtension}`);
+        if(hoursSinceExtension < 48)
+        {
+          isExpirationEligible = false;
+        }
+        else
+        {
+          isExpirationEligible = false;
+        }
+      }
+
+     
+      console.log(`Hours since creation: ${hoursSinceCreation}`);
+      console.log(`isExpirationEligible : ${isExpirationEligible}`);
+      console.log(`Proceeding to Expiration`,valueOfVar.status !== 'Expired' &&  valueOfVar.status !== "InProgress" && hoursSinceCreation >= 24 && isExpirationEligible);
+;
+     
+      return  valueOfVar.status !== 'Expired' &&  valueOfVar.status !== "InProgress" && hoursSinceCreation >= 24 && isExpirationEligible;
     });
 
   const CURRENT_COUNT = MATCHING_VARIABLES.length;
 
+  console.log(`\nFinalized Details:`);
   console.log(`Pool: ${POOL_NAME}`);
   console.log(`Branch: ${BRANCH.toUpperCase()}`);
   console.log(`Desired available count: ${COUNT}`);
-  console.log(`Current count of available sandboxes: ${CURRENT_COUNT}`);
-
-  // Sort by creation date and take all but the newest COUNT
-  const TO_EXPIRE = MATCHING_VARIABLES.sort(
-    (a, b) => new Date(a.created_at) - new Date(b.created_at),
-  )
-    .slice(0, -COUNT)
-    .map((v) => v.name);
+  console.log(`Sandboxes to Expire: ${CURRENT_COUNT}`);
 
   // Loop through the variables to expire
-  for (const variable_name of TO_EXPIRE) {
-    const variable = VARIABLES.variables.find((v) => v.name === variable_name);
-    const sandbox_name = JSON.parse(variable.value).name;
-    const sandbox_status = JSON.parse(variable.value).status;
-    const issue = JSON.parse(variable.value).issue;
-    console.log(sandbox_name, sandbox_status);
+  for (const variable of MATCHING_VARIABLES) {
+
+    let valueOfVar =  JSON.parse(variable.value);
+    console.log(`Expiring ${variable.name} due to policy: ${valueOfVar.isExtended ? "48-hour expiry with extension" : "24-hour minimum age"}`);
     const value = JSON.stringify({
-      name: sandbox_name,
+      ...valueOfVar,
       status: "Expired",
       isActive: "false",
-      issue: issue
     });
 
-    console.log(`Expiring ${variable_name}`);
+    console.log(`Expiring ${variable.name}`);
     // Set the GitHub Action variable with updated status
     execSync(
-      `gh variable set "${variable_name}" -b '${value}' --repo ${GITHUB_REPO}`,
+      `gh variable set "${variable.name}" -b '${value}' --repo ${GITHUB_REPO}`,
     );
   }
 }
