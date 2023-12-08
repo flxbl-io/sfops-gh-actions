@@ -91,6 +91,13 @@ jobs:
           echo "Deleting scratch org ${{ steps.parse_so_info.outputs.SO_USERNAME }}"
           sfp pool:org:delete -u ${{ steps.parse_so_info.outputs.SO_USERNAME }} -v devhub 
 
+
+      - name: Delete Associated Github Variable
+        continue-on-error: true
+        run: |
+          echo "Deleting github variable ${{ steps.parse_so_info.outputs.SO_USERNAME }}"
+          gh variable delete SO_${{ github.event.issue.number }}  --repo ${{ github.repository }}
+
   delete-dev-sandbox:
     if: contains(github.event.issue.title, 'Ops - Request a new Dev Sandbox')
     runs-on: ubuntu-latest
