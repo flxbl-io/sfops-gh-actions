@@ -50,6 +50,7 @@ function deleteSandbox(devHubUserName, sandboxName) {
 
 let devHubUserName = process.argv[2];
 let sandboxName = process.argv[3];
+let GITHUB_REPO = process.argv[4];
 
 sandboxName = sandboxName.trim();
 sandboxName = sandboxName.replace(/(^\s*(?!.+)\n+)|(\n+\s+(?!.+)$)/g, "");

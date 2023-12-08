@@ -36,7 +36,7 @@ runs:
 
         export SF_JSON_TO_STDOUT=true
         # Run the delete-sandbox.js script and capture the exit code
-        node $GITHUB_ACTION_PATH/delete-sandbox.js  $DEVHUB_USERNAME  ${{inputs.sandboxName}} 2>&1
+        node $GITHUB_ACTION_PATH/delete-sandbox.js  $DEVHUB_USERNAME  ${{inputs.sandboxName}} ${{github.repository}} 2>&1
         delete_status=$?
 
         # If the script runs successfully, output true, else output false
