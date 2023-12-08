@@ -36,7 +36,7 @@ function markSandboxAsExpired(githubRepo, issueNumber) {
   const sandboxPattern = new RegExp(`_SBX$`);
   for (const variable of variables) {
     if (sandboxPattern.test(variable.name)) {
-      console.log(`Checking Sandbox`,JSON.parse(variable.value))
+      console.error(`Checking Sandbox`,JSON.parse(variable.value))
       const sandboxData = JSON.parse(variable.value);
       if (sandboxData.issue === issueNumber && (sandboxData.status!='Expired')) {
         // Mark the sandbox as expired

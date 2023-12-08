@@ -30,7 +30,7 @@ runs:
 
     - run: |
         export GH_TOKEN=${{inputs.gh_token}}
-        sbx_name=$(node $GITHUB_ACTION_PATH/removeAsssignment.js  ${{github.repository}} ${{ inputs.issue-number }} 20 )
+        sbx_name=$(node $GITHUB_ACTION_PATH/removeAsssignment.js  ${{github.repository}} ${{ inputs.issue-number }})
         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash
       id: removeAsssignment

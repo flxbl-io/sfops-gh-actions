@@ -1,4 +1,4 @@
-name: Renew-Review-Org
+name: Extend-Review-Org
 
 
 on:
@@ -68,7 +68,7 @@ jobs:
 
 
       - name: Extend the current review org
-        uses:  flxbl-io/sfops-gh-actions/removeAssignmentCISandbox@main
+        uses:  flxbl-io/sfops-gh-actions/extendCISandbox@main
         with:
          issue-number: ${{ inputs.issue-number }}
          gh_token:  ${{ steps.app-token.outputs.token }}
