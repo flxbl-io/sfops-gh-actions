@@ -58,6 +58,8 @@ function getGithubVariables(githubRepo) {
     }
 }
 
+console.log('\n Initiating Sandbox deletion process for expired Orgs...');
+
 // Filter variables marked for expiry
 const variablesForDeletion = getGithubVariables().filter(variable => {
   const value = JSON.parse(variable.value);

@@ -5,7 +5,7 @@ on:
     inputs:
       issue-number:
         description: "The issue number where this sandbox will be used"
-        required: true
+        type: "string"
       pathToReleaseConfigs:
         description: "The path to the directory that has all release config"
         type: "string"
