@@ -39,10 +39,14 @@ function extendSandbox(githubRepo, issueNumber) {
     if (sandboxPattern.test(variable.name)) {
       console.error(`Checking Sandbox`,JSON.parse(variable.value))
       const sandboxData = JSON.parse(variable.value);
-      if (sandboxData.issue === issueNumber && ( sandboxData.isExtended!='true' )) {
+      if (sandboxData.issue === issueNumber && ( !sandboxData.isExtended )) {
         // Mark the sandbox as expired
         isSandboxFound=true;
         updateSandboxStatus(variable.name, sandboxData);
+      }
+      else if( sandboxData.issue === issueNumber && sandboxData.isExtended )
+      {
+        throw new Error(`Sandbox is already extended, Unable to extend further`)
       }
     }
   }

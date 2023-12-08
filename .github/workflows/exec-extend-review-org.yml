@@ -87,6 +87,8 @@ jobs:
         run: |
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
           printf "\n Your request to extend the review sandbox for the ${{ github.event.issue.number}} is unsucessfull" >> message.md
+          printf "\n The associated org could not be found or the org has been already extended, please proceed to close and reopen the PR" >> message.md
+          
 
                        
   
