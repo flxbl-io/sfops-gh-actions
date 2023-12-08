@@ -75,15 +75,26 @@ jobs:
 
 
       - name: Create Message Body as File
-        id: message_template_forcetest
+        id: message_template_success
+        if: success()
         run: |
           printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
-          printf "\n Your request to assign a new sandbox for the ${{ github.event.issue.number}} is succesfull" >> message.md
-          printf "\n You now need to close and reopen the PR, this is due to a limitation with Github!" >> message.md
+          printf "\n Your request to remove the assignment of  the review sandbox for the ${{ github.event.issue.number}} is succesfull" >> message.md
+          printf "\n Please proceed to close and reopen the PR" >> message.md
+
+      - name: Create Message Body as File
+        id: message_template_error
+        if: failure()
+        run: |
+          printf "\nHello @${{ github.event.issue.user.login }} :wave:\n" >> message.md
+          printf "\n Your request to remove the assignment of  the review sandbox for the ${{ github.event.issue.number}} is unsuccesfull" >> message.md
+          printf "\n You ma still  proceed to close and reopen the PR" >> message.md
+
                        
   
       - uses: mshick/add-pr-comment@v2
         name: Print Commment
+        if: success() || failure()
         with:
           allow-repeats: false
           repo-token: ${{ steps.app-token.outputs.token }}
@@ -91,4 +102,3 @@ jobs:
           refresh-message-position: true
           message-path: |
              message.md        
-

@@ -17,7 +17,7 @@ function extendSandbox(githubRepo, issueNumber) {
       )}' --repo ${githubRepo}`
     );
     console.error(`Marked sandbox ${sandboxData.name} for last extension.`);
-    console.log(sandboxName);
+    console.log(sandboxData.name);
   }
 
   // Fetch all variables
@@ -34,20 +34,26 @@ function extendSandbox(githubRepo, issueNumber) {
 
   // Filter for sandboxes assigned to the specified issue
   const sandboxPattern = new RegExp(`_SBX$`);
+
   for (const variable of variables) {
     if (sandboxPattern.test(variable.name)) {
       console.error(`Checking Sandbox`,JSON.parse(variable.value))
       const sandboxData = JSON.parse(variable.value);
-      if (sandboxData.issue === issueNumber && (sandboxData.status!='Expired')) {
+      if (sandboxData.issue === issueNumber && ( sandboxData.isExtended!='true' )) {
         // Mark the sandbox as expired
+        isSandboxFound=true;
         updateSandboxStatus(variable.name, sandboxData);
       }
     }
   }
 
-  console.error(`No sandbox currently assigned to issue ${issueNumber}.`);
 }
 
+let isSandboxFound=false;
 const [githubRepo, issueNumber] = process.argv.slice(2);
-
 extendSandbox(githubRepo,issueNumber);
+
+if(!isSandboxFound)
+{
+ throw new Error(`No Sandbox found to extend for issue ${issueNumber}`)
+}

@@ -3,12 +3,11 @@ const { execSync } = require("child_process");
 function markSandboxAsExpired(githubRepo, issueNumber) {
 
   // Function to update sandbox status to 'Expired'
-  function updateSandboxStatus(sandboxVariableName, sandboxName) {
+  function updateSandboxStatus(sandboxVariableName, sandboxData) {
     const expiredSandboxData = {
-      name: sandboxName,
-      isActive: true,
+      ...sandboxData,
+      isActive: false,
       status: "Expired",
-      issue: issueNumber,
     };
 
     execSync(
@@ -16,8 +15,8 @@ function markSandboxAsExpired(githubRepo, issueNumber) {
         expiredSandboxData
       )}' --repo ${githubRepo}`
     );
-    console.error(`Marked sandbox ${sandboxName} as expired.`);
-    console.log(sandboxName);
+    console.error(`Marked sandbox ${sandboxData.name} as expired.`);
+    console.log(sandboxData.name);
   }
 
   // Fetch all variables
@@ -40,14 +39,27 @@ function markSandboxAsExpired(githubRepo, issueNumber) {
       const sandboxData = JSON.parse(variable.value);
       if (sandboxData.issue === issueNumber && (sandboxData.status!='Expired')) {
         // Mark the sandbox as expired
-        updateSandboxStatus(variable.name, sandboxData.name);
+        isSandboxFound=true;
+        updateSandboxStatus(variable.name, sandboxData);
+      }
+      else if(sandboxData.issue === issueNumber && sandboxData.status==='Expired')
+      {
+        isSandboxFound=true;
+        console.error(`Sandbox ${sandboxData.name} is already expired.`);
+        updateSandboxStatus(variable.name, sandboxData);
       }
     }
   }
-
-  console.error(`No sandbox currently assigned to issue ${issueNumber}.`);
 }
 
+
+let isSandboxFound=false;
 const [githubRepo, issueNumber] = process.argv.slice(2);
 
 markSandboxAsExpired(githubRepo,issueNumber);
+
+if(!isSandboxFound)
+{
+ throw new Error(`No Sandbox found to extend for issue ${issueNumber}`)
+}
+
