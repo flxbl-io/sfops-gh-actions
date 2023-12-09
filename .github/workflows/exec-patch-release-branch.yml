@@ -39,7 +39,7 @@ on:
 
 jobs:
   issue-analyzer:
-    if: contains(github.event.issue.title, 'Dev - Request a release branch to be created from a release definition')
+    if: contains(github.event.issue.title, 'Request a release branch from a release definition')
     runs-on: ubuntu-latest
     outputs:
       releasedefn: ${{ steps.issue-analyzer-output.outputs.releasedefn }}
