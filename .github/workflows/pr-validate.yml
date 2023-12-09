@@ -202,7 +202,6 @@ jobs:
             sfdx auth:sfdxurl:store -f authfile -a devhub
 
       - name: 'Fetch Type of Pool'
-        if: github.base_ref == 'main'
         uses:  flxbl-io/sfops-gh-actions/getTypeOfPool@main
         id: getTypeOfPool
         with:
