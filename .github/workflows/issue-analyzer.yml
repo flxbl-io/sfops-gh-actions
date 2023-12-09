@@ -175,6 +175,7 @@ jobs:
      issue-number: ${{ inputs.issue-number }}   
      sfopsbot-app-id: ${{ inputs.sfopsbot-app-id }}
      metrics-provider: ${{ inputs.metrics-provider }}
+     dashboard-repo: ${{ inputs.dashboard-repo }}
    secrets:
       DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
       SB_SFDX_AUTH_URL: ${{ secrets.SB_SFDX_AUTH_URL }}

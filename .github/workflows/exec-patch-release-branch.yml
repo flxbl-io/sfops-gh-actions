@@ -127,26 +127,29 @@ jobs:
       - name: 'Fail if branch exists in Origin '
         id: branch-exists
         run: |
-           if git ls-remote --heads origin release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }} > /dev/null 2>&1; then
+           if git ls-remote --heads origin | grep -q "release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}-patch" > /dev/null 2>&1; then
              echo "Branch $branch_name already exists in origin"
              echo "branch_exists=true" >> "$GITHUB_OUTPUT"
            fi
 
       - name: Fetch Release Defn
-        id: fetch-release-defn
+        id: create-patch-release-logs
         if: ${{ steps.branch-exists.outputs.branch_exists != 'true' }}
-        uses:  flxbl-io/sfops-gh-actions/findReleaseDefn@main
+        uses:  flxbl-io/sfops-gh-actions/createPatchReleaseLogs@main
         with: 
           releaseDefn: ${{ needs.issue-analyzer.outputs.releasedefn }}
           domain: ${{ needs.issue-analyzer.outputs.domain }}
           branch: releasedefns
+          patchDirectory: release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch
+          gh_token: ${{ steps.app-token.outputs.token }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
 
 
       # Release to environment
       - name: 'Patch Release Branch'
         if: ${{ steps.branch-exists.outputs.branch_exists != 'true' }}
         run: |
-            sfp repo:patch -p  ${{steps.fetch-release-defn.outputs.releaseDefn}}  -s main  -t release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}  --npm --scope ${{ github.repository_owner }} 
+            sfp repo:patch -p  ${{steps.create-patch-release-logs.outputs.releaseDefn}}  -s main  -t release/${{ needs.issue-analyzer.outputs.releasedefn }}-patch  --npm --scope ${{ github.repository_owner }} 
         env:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}    
 
@@ -160,7 +163,11 @@ jobs:
             Hello @${{ github.event.issue.user.login }} :wave:
             
             We have successfully patched the release branch with the requested release definition ${{ steps.issue-parser.outputs.issueparser_releasedefn }}
-            A new branch has been created with name release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}
+            A new branch has been created with name release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch
+
+            A new branch has been created with name release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch is available for you to create a Pull Request against this branch
+
+            
 
             Please proceed to create a Pull Request against this branch
 
@@ -177,7 +184,7 @@ jobs:
             Hello @${{ github.event.issue.user.login }} :wave:
             
             Looks, like the branch was already patched with the requested release definition ${{ steps.issue-parser.outputs.issueparser_releasedefn }}
-            A new branch has been created with name release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }} is available for you to create a Pull Request against this branch
+            A new branch has been created with name release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch is available for you to create a Pull Request against this branch
 
             This issue is being processed by [sfops 🤖]      
       

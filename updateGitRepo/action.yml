@@ -2,7 +2,7 @@ name: "Update Contents of a git directory"
 description: "Fetch all release names given a path to the directory that contains release configs"
 inputs:
   target-repo:
-    description: "name of the repo to report to, will create a folder packageVersionReports in the target repo"
+    description: "name of the repo to report to, will create a folder in the target repo"
     required: true
   source-dir:
     description: "The path to the source directory, whose contents should be copied over"

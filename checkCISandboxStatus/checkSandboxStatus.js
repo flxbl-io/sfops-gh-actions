@@ -178,6 +178,8 @@ const processDevSandbox = async (variableName, sandbox) => {
       Please check your email for details, on how to reset your password and get access to this org.
       Please note this sandbox would get automatically deleted when the number of days mentioned above expires.
 
+      __Please note closing this issue will delete the sandbox__
+
       If you are asked for a password hint for any reason type in __San Francisco__
                       
       This issue was processed by [sfops 🤖]`
@@ -193,6 +195,8 @@ const processDevSandbox = async (variableName, sandbox) => {
         - Sandbox Name: ${sandbox.name}
         - UserName: ${userName}
         - Expiry In: ${expiry} days
+
+        __Please note closing this issue will delete the sandbox__
 
         If you are asked for a password hint for any reason type in __San Francisco__
                           

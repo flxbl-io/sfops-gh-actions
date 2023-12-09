@@ -158,7 +158,7 @@ jobs:
               - Expiry In:  ${{ needs.issue-analyzer.outputs.daysToKeep }} days
 
               Please check your email for details, on how to reset your password and get access to this org.
-              Please note this scratch org would get automatically deleted when the number of days mentioned above expires.
+              Please note this scratch org would get automatically deleted when the number of days mentioned above expires or when you close this issue.
 
               This issue was processed by [sfops 🤖]
       
