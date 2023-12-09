@@ -101,7 +101,7 @@ jobs:
 
   execute_action:
     runs-on: ubuntu-latest
-    container: ghcr.io/flxbl-io/sfops:latest
+    container: ghcr.io/flxbl-io/sfops-lite:latest
     concurrency: patch
     needs: issue-analyzer
     steps:
@@ -138,4 +138,4 @@ jobs:
         run: |
             sfp repo:patch -p  ${{steps.fetch-release-defn.outputs.releaseDefn}}  -s main  -t release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}  --npm --scope ${{ github.repository_owner }} 
         env:
-         NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}         
+         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}    
