@@ -99,6 +99,7 @@ jobs:
             Please check the logs at https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}
   
   execute_action:
+    name: 'Execute Release to any env'
     needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/release-to-an-env.yml@main
     with:

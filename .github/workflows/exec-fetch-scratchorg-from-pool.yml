@@ -110,6 +110,7 @@ jobs:
           echo "email=${{ steps.issue-parser.outputs.issueparser_email }}" >> "$GITHUB_OUTPUT"
         
   execute_action:
+    name: Fetch Scratch Org from pool
     needs: issue-analyzer
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest

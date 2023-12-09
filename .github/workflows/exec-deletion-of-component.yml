@@ -109,6 +109,7 @@ jobs:
             echo "parsedEnvs=$output" >> "$GITHUB_OUTPUT"
   
   execute_action:
+    name: 'Extend Deletion of component'
     needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/delete-component-job.yml@main
     strategy:

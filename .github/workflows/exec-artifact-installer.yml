@@ -112,6 +112,7 @@ jobs:
            fi
           
   execute_action:
+    name: 'Execute Artifact Installation'
     needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/sfp-artifact-installer.yml@main
     strategy:

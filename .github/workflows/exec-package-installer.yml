@@ -112,6 +112,7 @@ jobs:
            fi
           
   execute_action:
+    name: 'Install Package to an org'
     needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/unlocked-package-installer-job.yml@main
     strategy:
