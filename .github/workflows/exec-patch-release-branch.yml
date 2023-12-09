@@ -124,23 +124,18 @@ jobs:
            owner: ${{ github.repository_owner }}
 
 
+      - name: Fetch Release Defn
+        id: fetch-release-defn
+        uses:  flxbl-io/sfops-gh-actions/findReleaseDefn@main
+        with: 
+          releaseDefn: ${{ needs.issue-analyzer.outputs.releasedefn }}
+          domain: ${{ needs.issue-analyzer.outputs.domain }}
+          branch: releasedefns
+
+
       # Release to environment
       - name: 'Patch Release Branch'
         run: |
-            # Get the latest release defn from releasedefns branch
-            pathToReleaseDef="${{ needs.issue-analyzer.outputs.releasedefn }}"
-            extension="${pathToReleaseDef##*.}"
-             if [[ "$extension" == "yaml" || "$extension" == "yml" ]]; then
-                pathWithoutExtension="${pathToReleaseDef%.*}"
-            fi
-
-            git config --global --add safe.directory /__w/sf-core/sf-core
-
-            git branch --delete --remotes origin/release/${{ needs.issue-analyzer.outputs.domain }} --force || true
-            git fetch origin --prune
-
-
-            git show origin/releasedefns:${{ needs.issue-analyzer.outputs.domain }}/$pathToReleaseDef.yml > $pathToReleaseDef.yml
-            sfpowerscripts repo:patch -p  $pathToReleaseDef.yml -s main  -t release/${{ needs.issue-analyzer.outputs.domain }} --npm --scope ${{ github.repository_owner }} 
+            sfp repo:patch -p  ${{steps.fetch-release-defn.outputs.releaseDefn}}  -s main  -t release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}  --npm --scope ${{ github.repository_owner }} 
         env:
          NODE_AUTH_TOKEN: ${{ steps.app-token.outputs.token }}         
