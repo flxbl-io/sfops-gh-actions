@@ -110,6 +110,7 @@ jobs:
             echo "parsedEnvs=$output" >> "$GITHUB_OUTPUT"
                   
   execute_action:
+    name: 'Unfreeze Users'
     needs: issue-analyzer
     uses:  flxbl-io/sfops-gh-actions/.github/workflows/unfreeze-users-in-an-env.yml@main
     strategy:

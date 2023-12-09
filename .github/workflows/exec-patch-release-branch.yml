@@ -127,7 +127,7 @@ jobs:
       - name: 'Fail if branch exists in Origin '
         id: branch-exists
         run: |
-           if git ls-remote --heads origin "$branch_name" > /dev/null 2>&1; then
+           if git ls-remote --heads origin release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }} > /dev/null 2>&1; then
              echo "Branch $branch_name already exists in origin"
              echo "branch_exists=true" >> "$GITHUB_OUTPUT"
            fi

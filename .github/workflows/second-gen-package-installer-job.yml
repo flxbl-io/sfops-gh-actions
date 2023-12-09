@@ -48,6 +48,7 @@ on:
 
 jobs:
   install-unlocked:
+    name: "Install an unlocked/managed package to target org"
     runs-on: ubuntu-latest
     container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}
