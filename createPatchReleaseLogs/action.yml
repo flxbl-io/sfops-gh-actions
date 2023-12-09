@@ -29,21 +29,14 @@ outputs:
 runs:
   using: "composite"
   steps:
-
     - run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
-        export GH_TOKEN=${{inputs.gh_token}}
-        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
-      shell: bash
-
-
-    - run: |
         pathToReleaseDefn=$(node $GITHUB_ACTION_PATH/dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}} -w $GITHUB_WORKSPACE -p ${{inputs.patchDirectory}} )
         echo $pathToReleaseDefn 
         echo "RELEASE_DEFN_PATH=$pathToReleaseDefn" >> "$GITHUB_OUTPUT"
         node $GITHUB_ACTION_PATH/dist/updateGitRepo/index.js --gh_token ${{ inputs.gh_token }} --github_repo_url ${{ github.repository }} --dir_to_copy  ${{inputs.patchDirectory}}  --target_dir  ${{inputs.patchDirectory}} --commit_message "[ci skip] Patched ReleaseDefns" 
+        
         # Create a hotfix directory if it does not exist
         mkdir -p _data/hotfixes
         echo '{"branch": "release-${{inputs.releaseDefn}}-patch", "domain":"${{inputs.domain}}"}' > _data/hotfixes/release-${{inputs.releaseDefn}}-patch.json

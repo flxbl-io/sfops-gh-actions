@@ -127,12 +127,14 @@ jobs:
       - name: 'Fail if branch exists in Origin '
         id: branch-exists
         run: |
-           git config --global --add safe.directory $GITHUB_WORKSPACE
-           git remote -v
-           if git ls-remote --heads origin | grep -q "release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}-patch" > /dev/null 2>&1; then
-             echo "Branch $branch_name already exists in origin"
-             echo "branch_exists=true" >> "$GITHUB_OUTPUT"
-           fi
+            git config --global --add safe.directory "$GITHUB_WORKSPACE"
+            branch_name="release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch" 
+            if git ls-remote --heads origin | grep -q "refs/heads/$branch_name"; then
+              echo "Branch $branch_name already exists in origin"
+              echo "branch_exists=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "Branch $branch_name does not exist in origin"
+            fi
 
       - name: Fetch Release Defn
         id: create-patch-release-logs
