@@ -50,7 +50,6 @@ runs:
         repo-token: ${{ inputs.gh_token }}
 
     - run: |
-        export GH_TOKEN=${{inputs.gh_token}}
         sbx_name=$(node $GITHUB_ACTION_PATH/fetchSandbox.js  ${{github.repository}} ${{inputs.pool}}  ${{inputs.branch}} ${{ inputs.issue-number }} 20 )
         echo "SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash
@@ -58,7 +57,7 @@ runs:
 
     - name: Release locked access to pool vars
       uses: flxbl-io/sfops-gh-actions/unlockResource@main
-      if: always()
+      if: always() && steps.checkInUseSandbox.outputs.INUSE_SANDBOX_NAME == ''
       with:
         branch: pool-${{inputs.pool}} 
         repo-token: ${{ inputs.gh_token }}
