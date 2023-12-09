@@ -127,6 +127,7 @@ jobs:
       - name: 'Fail if branch exists in Origin '
         id: branch-exists
         run: |
+           git config --global --add safe.directory $GITHUB_WORKSPACE
            git remote -v
            if git ls-remote --heads origin | grep -q "release/${{ needs.issue-analyzer.outputs.domain }}-${{ needs.issue-analyzer.outputs.releasedefn }}-patch" > /dev/null 2>&1; then
              echo "Branch $branch_name already exists in origin"
