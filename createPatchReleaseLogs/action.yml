@@ -42,7 +42,7 @@ runs:
         echo "RELEASE_DEFN_PATH=$pathToReleaseDefn" >> "$GITHUB_OUTPUT"
         
         # Copy Release Logs from prod
-        node $GITHUB_ACTION_PATH/dist/copyReleaseLogs/index.js -b releaselogs-prod -d ${{inputs.domain}} -p ${{inputs.patchDirectory}}
+        node $GITHUB_ACTION_PATH/dist/copyReleaseLogs/index.js -b releaselogs-prod -d ${{inputs.domain}} -p "${{inputs.patchDirectory}}/${{inputs.domain}}"
 
         node $GITHUB_ACTION_PATH/dist/updateGitRepo/index.js --gh_token ${{ inputs.gh_token }} --github_repo_url ${{ github.repository }} --dir_to_copy  ${{inputs.patchDirectory}}  --target_dir  ${{inputs.patchDirectory}} --commit_message "[ci skip] Patched ReleaseDefns" 
         
