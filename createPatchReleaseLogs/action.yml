@@ -32,6 +32,11 @@ runs:
     - run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
         git fetch --all
+        
+        # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+
         pathToReleaseDefn=$(node $GITHUB_ACTION_PATH/dist/findReleaseDefn/index.js -r ${{inputs.releaseDefn}} -d ${{inputs.domain}} -b ${{inputs.branch}} -w $GITHUB_WORKSPACE -p ${{inputs.patchDirectory}} )
         echo $pathToReleaseDefn 
         echo "RELEASE_DEFN_PATH=$pathToReleaseDefn" >> "$GITHUB_OUTPUT"
