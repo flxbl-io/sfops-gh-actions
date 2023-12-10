@@ -4,7 +4,7 @@
   "description": "",
   "main": "findReleaseDefn.js",
   "scripts": {
-    "build": "ncc build findReleaseDefn.js -o dist/findReleaseDefn && ncc build updateGitRepo.js  -o dist/updateGitRepo "
+    "build": "ncc build findReleaseDefn.js -o dist/findReleaseDefn && ncc build updateGitRepo.js  -o dist/updateGitRepo  && ncc build copyReleaseLogs.js -o dist/copyReleaseLogs"
   },
   "author": "flxbl-io",
   "license": "BSL",
