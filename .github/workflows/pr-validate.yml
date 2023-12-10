@@ -217,7 +217,7 @@ jobs:
   
       # Fetch a sandbox
       - name: 'Fetch CI Sandboxes'
-        if: contains(github.base_ref,'release') == false  && steps.getTypeOfPool.outputs.type == 'sandbox'
+        if: contains(github.base_ref,'release-') == false  && steps.getTypeOfPool.outputs.type == 'sandbox'
         uses: flxbl-io/sfops-gh-actions/fetchCISandbox@main
         id: fetchCISandbox
         with:
@@ -231,7 +231,7 @@ jobs:
 
 
       - name: 'Fetch CI Sandboxes for hotfixes'
-        if:  contains(github.base_ref,'release') || github.base_ref == 'refs/heads/release/**'
+        if:  contains(github.base_ref,'release-') || github.base_ref == 'refs/heads/release/**'
         uses:  flxbl-io/sfops-gh-actions/fetchCISandbox@main
         id: fetchCISandboxHotfix
         with:
@@ -251,7 +251,7 @@ jobs:
            sfdx alias set ci=${{ inputs.devhub-username }}.${{ steps.fetchCISandbox.outputs.sbxname }}
 
       - name: 'Authenticate ci for hotfix'
-        if: contains(github.base_ref,'release') || github.base_ref == 'refs/heads/release/**'
+        if: contains(github.base_ref,'release-') || github.base_ref == 'refs/heads/release/**'
         run: |
            sf org resume sandbox -n ${{ steps.fetchCISandboxHotfix.outputs.sbxname }} -o devhub
            sf alias set ci=${{ inputs.devhub-username }}.${{ steps.fetchCISandboxHotfix.outputs.sbxname }}
