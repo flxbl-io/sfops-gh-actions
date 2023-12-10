@@ -153,7 +153,7 @@ jobs:
       - name: 'Patch Release Branch'
         if: ${{ steps.branch-exists.outputs.branch_exists != 'true' }}
         run: |
-            sfp repo:patch -p  ${{steps.create-patch-release-logs.outputs.releaseDefn}}  -s main  -t release/${{ needs.issue-analyzer.outputs.releasedefn }}-patch  --npm --scope ${{ github.repository_owner }} 
+            sfp repo:patch -p  ${{steps.create-patch-release-logs.outputs.releaseDefn}}  -s main  -t release-${{ needs.issue-analyzer.outputs.releasedefn }}-patch  --npm --scope ${{ github.repository_owner }} 
         env:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}    
 

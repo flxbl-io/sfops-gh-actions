@@ -217,7 +217,7 @@ export class GitHub {
 
   /** Return a hotfix label based on base branch type. */
   static getHotfixLabel = (baseBranch: string): string => {
-    if (baseBranch.startsWith('release/v')) return this.labels.hotfixPreProd;
+    if (baseBranch.startsWith('release-')) return this.labels.hotfixPreProd;
     if (baseBranch.startsWith('production')) return this.labels.hotfixProd;
     return '';
   };
