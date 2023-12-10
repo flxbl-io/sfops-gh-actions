@@ -44,7 +44,7 @@ jobs:
          owner: ${{ github.repository_owner }}
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }}
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }} && contains(github.base_ref,'release-') == false
         with:
           allow-repeats: false
           message-id: intro
@@ -66,7 +66,7 @@ jobs:
               🕙 ```sfops extend```    : Extend the review environment upto 48 hours (only for sandboxes)
 
       - uses: mshick/add-pr-comment@v2
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }}
+        if: ${{ vars.SFOPS_BRANCH_DEPLOY == '' }} || contains(github.base_ref,'release-') == true
         with:
           allow-repeats: false
           message-id: intro
