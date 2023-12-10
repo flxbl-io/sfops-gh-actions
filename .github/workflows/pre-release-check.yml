@@ -141,6 +141,7 @@ jobs:
           echo "Hello @${{ inputs.issue-author }} , " > message.md
           echo " " >> message.md
           echo "Please find the contents of release defintion after applying any transformations to ${{steps.handle-auth.outputs.alias}}" >> message.md
+          echo "If this is all good, you may proceed to request approvals or approve the deployment to this environment"
           echo " " >> message.md
           if [ -f .sfpowerscripts/outputs/deployment-breakdown.md ]; then
             cat .sfpowerscripts/outputs/deployment-breakdown.md >> message.md
@@ -150,7 +151,7 @@ jobs:
           if [ -f .sfpowerscripts/outputs/release-changelog.md ]; then
             cat .sfpowerscripts/outputs/release-changelog.md  >> message.md
           else
-            echo "Unable to figure out work items in this release, if you think this is incorrect, contact support! " >> message.md
+            echo "Unable to figure out work items in this release, if you think this is incorrect, contact sfops support from sfops dev central! " >> message.md
           fi
 
           cat message.md
