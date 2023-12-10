@@ -128,6 +128,10 @@ open_github_pull_request()
     echo "+++ Description"
     echo "$formatBody"
 
+    # Create labels
+    gh label create autocreated -c "1D76DB" -d "Label to denote the pr was autocreated" 2>/dev/null || true
+    gh label create priority -c "FF0000" -d "Label to denote the pr is high priority" 2>/dev/null || true
+    
     # Create a new pull request with the retrieved title and the generated body
     echo "+++ Create PR"
     gh pr create -B "$targetBranch" -H "$branchName"  -l "autocreated","priority" --title "$title" --body "${formatBody}" 

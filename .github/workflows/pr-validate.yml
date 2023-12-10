@@ -384,8 +384,6 @@ jobs:
           gh_token: ${{ steps.app-token-refreshed.outputs.token }}
           branch: ${{ github.base_ref }}
 
-
-
  results:
     if: ${{ always() }}
     runs-on: ubuntu-latest

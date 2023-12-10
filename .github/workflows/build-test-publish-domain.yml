@@ -623,7 +623,7 @@ jobs:
       - name: "Cherry pick the commit and create PR"
         uses: flxbl-io/sfops-gh-actions/cherrypickAndCreatePR@main
         continue-on-error: true
-        if: contains(github.ref,'release') || github.ref == 'refs/heads/release/**'
+        if: contains(github.ref,'release-') || github.ref == 'refs/heads/release/**'
         with:
           git-user-email: sfopsbot@flxbl.io
           git-user-name: build-bot
