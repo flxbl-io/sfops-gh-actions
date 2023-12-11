@@ -152,6 +152,8 @@ jobs:
         with: 
           devhub_sfdx_auth_url: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
           sandboxName: ${{ steps.parse_sandbox_info.outputs.SANDBOX_NAME }}
+          gh_token: ${{ steps.app-token.outputs.token }}
+
           
       - name: Reopen Issue if Sandbox Deletion Failed
         if: steps.delete_sandbox.outputs.DELETED == 'false' || failure()

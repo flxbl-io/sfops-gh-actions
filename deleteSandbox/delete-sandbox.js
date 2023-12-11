@@ -6,6 +6,7 @@ const runCommand = (command, ignoreError) => {
   try {
     return execSync(command).toString();
   } catch (err) {
+    console.error(err.stderr.toString());
     if (!ignoreError) throw Error(err.stderr.toString());
   }
 };
