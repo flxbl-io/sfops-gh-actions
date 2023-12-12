@@ -24,7 +24,7 @@ function extendSandbox(githubRepo, issueNumber) {
   let variables;
   try {
     const output = execSync(
-      `gh api /repos/${githubRepo}/actions/variables --paginate`
+      `gh api /repos/${githubRepo}/actions/variables --paginate | gh merge-json`
     ).toString();
     variables = JSON.parse(output).variables;
   } catch (e) {

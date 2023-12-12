@@ -7,7 +7,7 @@ const CONFIG_FILE = process.argv[3];
 // Fetch the variables
 const VARIABLES = JSON.parse(
   execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate`,
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json`,
   ).toString(),
 );
 
@@ -66,18 +66,26 @@ for (const { pool: POOL_NAME, count: COUNT, branch:BRANCH } of POOLS_AND_COUNTS)
   // Loop through the variables to expire
   for (const variable of MATCHING_VARIABLES) {
 
-    let valueOfVar =  JSON.parse(variable.value);
-    console.log(`Expiring ${variable.name} due to policy: ${valueOfVar.isExtended ? "48-hour expiry with extension" : "24-hour minimum age"}`);
-    const value = JSON.stringify({
-      ...valueOfVar,
-      status: "Expired",
-      isActive: "false",
-    });
+      try
+      {
+      let valueOfVar =  JSON.parse(variable.value);
+      console.log(`Expiring ${variable.name} due to policy: ${valueOfVar.isExtended ? "48-hour expiry with extension" : "24-hour minimum age"}`);
+      const value = JSON.stringify({
+        ...valueOfVar,
+        status: "Expired",
+        isActive: "false",
+      });
 
-    console.log(`Expiring ${variable.name}`);
-    // Set the GitHub Action variable with updated status
-    execSync(
-      `gh variable set "${variable.name}" -b '${value}' --repo ${GITHUB_REPO}`,
-    );
+      console.log(`Expiring ${variable.name}`);
+      // Set the GitHub Action variable with updated status
+      execSync(
+        `gh variable set "${variable.name}" -b '${value}' --repo ${GITHUB_REPO}`,
+      );
+    }
+    catch(e)
+    {
+      console.log(`Error while expiring ${variable.name}`);
+      console.log(e);
+    }
   }
 }
