@@ -19,7 +19,7 @@ const GITHUB_REPO = `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
 // Function to run shell commands synchronously
 const runCommand = (command, ignoreError) => {
   try {
-    return execSync(command).toString();
+    return execSync(command,{ encoding: 'utf8'}).toString();
   } catch (err) {
     if (!ignoreError) throw Error(err.stderr.toString());
   }
@@ -252,7 +252,8 @@ const processDevSandbox = async (variableName, sandbox) => {
   //Handle Dev Sandboxes
   console.log(`Checking status of  Developer Sandboxes.. `);
   const devSandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq ".variables[] | select(.name | test(\\\"_DEVSBX\\\"))"`
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq '.variables[] | select(.name | test("_DEVSBX"))'`,
+    { encoding: 'utf8', timeout: 10000 }
   );
   if (!devSandboxesList) return;
 
@@ -278,7 +279,8 @@ const processDevSandbox = async (variableName, sandbox) => {
   console.log(`Processing CI Sandboxes.. `);
   const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
   const sandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq ".variables[] | select(.name | test(\\\"_SBX\\\"))"`
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq '.variables[] | select(.name | test("_SBX"))'`,
+    { encoding: 'utf8', timeout: 10000 }
   );
   if (!sandboxesList) return;
 
@@ -293,7 +295,8 @@ const processDevSandbox = async (variableName, sandbox) => {
         if (poolConfig) {
           const sandboxJson = JSON.parse(
             execSync(
-              `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
+              `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`,
+              { encoding: 'utf8', timeout: 10000 }
             )
           );
           if (sandboxJson.status === "InProgress") {
