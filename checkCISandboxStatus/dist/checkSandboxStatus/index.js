@@ -30468,18 +30468,22 @@ const processDevSandbox = async (variableName, sandbox) => {
     .split("\n")
     .filter(Boolean);
   for (const variableValue of githubSandboxVariableValues) {
-    const variableName = JSON.parse(variableValue).name;
-    const poolConfig = findPoolConfig(variableName, configJson);
-    if (poolConfig) {
-      const sandboxJson = JSON.parse(
-        execSync(
-          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
-        )
-      );
-      if (sandboxJson.status === "InProgress") {
-        console.log(`Processing variable ${variableName}`);
-        await processSandbox(variableName, sandboxJson.name, poolConfig);
-      }
+    try {
+       const variableName = JSON.parse(variableValue).name;
+       const poolConfig = findPoolConfig(variableName, configJson);
+        if (poolConfig) {
+          const sandboxJson = JSON.parse(
+            execSync(
+              `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
+            )
+          );
+          if (sandboxJson.status === "InProgress") {
+            console.log(`Processing variable ${variableName}`);
+            await processSandbox(variableName, sandboxJson.name, poolConfig);
+          }
+        }
+    }catch(error){
+      console.log(`Error processing variable ${variableValue}`,error);
     }
   }
 })();
