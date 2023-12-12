@@ -27,16 +27,29 @@ runs:
     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
       shell: bash
 
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+    - run: |
+        gh extension install heaths/gh-merge-json
+      shell: bash
+
     - run: |
         echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
         sfdx auth:sfdxurl:store -f authfile -a devhub
       shell: bash
 
+
+
     - id: checkSandboxStatus
       run: |
         devhubInfo=$(sf org display -o devhub --json)
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
-        export GH_TOKEN=${{inputs.gh_token}}
+
 
         if [ '${{ inputs.metrics-provider }}' = 'datadog' ]; then
          export "SFPOWERSCRIPTS_DATADOG=true" 

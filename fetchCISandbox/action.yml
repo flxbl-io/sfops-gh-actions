@@ -34,7 +34,10 @@ runs:
       shell: bash
 
     - run: |
-        export GH_TOKEN=${{inputs.gh_token}}
+        gh extension install heaths/gh-merge-json
+      shell: bash
+
+    - run: |
         sbx_name=$(node $GITHUB_ACTION_PATH/checkSandbox.js  ${{github.repository}} ${{inputs.pool}}  ${{inputs.branch}} ${{ inputs.issue-number }} )
         echo "INUSE_SANDBOX_NAME=$sbx_name" >> "$GITHUB_OUTPUT"
       shell: bash

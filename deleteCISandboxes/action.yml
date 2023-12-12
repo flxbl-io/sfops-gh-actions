@@ -15,7 +15,16 @@ runs:
     - run: git config --global --add safe.directory $GITHUB_WORKSPACE
       shell: bash
 
-    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+    # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
+        export GH_TOKEN=${{inputs.gh_token}}
+        echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
+      shell: bash
+
+
+    - run: |
+        gh extension install heaths/gh-merge-json
       shell: bash
 
     - run: |
@@ -28,10 +37,8 @@ runs:
         # Fetch username
 
         devhubInfo=$(sf org display -o devhub --json)
-
         # Use jq to extract the username
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
-        export GH_TOKEN=${{inputs.gh_token}}
         node $GITHUB_ACTION_PATH/delete-sandboxes.js ${{ github.repository }}  $DEVHUB_USERNAME
 
       shell: bash
