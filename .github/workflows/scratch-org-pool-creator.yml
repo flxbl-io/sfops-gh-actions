@@ -32,6 +32,8 @@ on:
         description: "Datadog host to report metrics"
       SFOPSBOT_APP_PRIVATE_KEY:
         description: "Private key of the bot app used"
+      PACKAGE_INSTALLATION_KEYS:
+        description: "Package installation keys"
 
 
 
@@ -69,7 +71,12 @@ jobs:
          registry-url: 'https://npm.pkg.github.com'
 
       - name: 'Prepare a pool of scratch orgs'
-        run: 'sfp orchestrator:prepare -f ${{ inputs.path-to-config }} -v devhub'
+        run: |
+          if [ -z "${{ secrets.PACKAGE_INSTALLATION_KEYS }}" ]; then
+            sfp orchestrator:prepare -f ${{ inputs.path-to-config }} -v devhub
+          else
+            sfp orchestrator:prepare -f ${{ inputs.path-to-config }} -v devhub --keys ${{ secrets.PACKAGE_INSTALLATION_KEYS }}
+          fi
         env:
          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         
