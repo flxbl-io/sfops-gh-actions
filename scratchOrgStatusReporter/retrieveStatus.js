@@ -15,7 +15,7 @@ function getGithubVariables(githubRepo) {
     try {
         const command = `gh api /repos/${githubRepo}/actions/variables --paginate --jq ".variables[] | select(.name | test(\\\"^SO_\\\")) | {name: .name, value: .value}"`
         console.error(`Executing Command ${command}`)
-        const output = execSync(command).toString();
+        const output = execSync(command,{ encoding: 'utf8', timeout: 10000 }).toString();
         return JSON.parse(`[${output.trim().split("\n").join(",")}]`);
     } catch (error) {
         console.error('Error getting GitHub variables:', error);
