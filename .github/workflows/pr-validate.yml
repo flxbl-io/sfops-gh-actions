@@ -245,7 +245,7 @@ jobs:
 
 
       - name: 'Authenticate ci'
-        if: github.base_ref == 'main' && steps.getTypeOfPool.outputs.type == 'sandbox'
+        if: steps.getTypeOfPool.outputs.type == 'sandbox' && contains(github.base_ref,'release-') == false
         run: |
            sfdx org resume sandbox -n ${{ steps.fetchCISandbox.outputs.sbxname }} -o devhub
            sfdx alias set ci=${{ inputs.devhub-username }}.${{ steps.fetchCISandbox.outputs.sbxname }}
