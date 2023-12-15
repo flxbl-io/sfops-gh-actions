@@ -20,7 +20,8 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: git config --global --add safe.directory $GITHUB_WORKSPACE
+    - run: |
+        git config --global --add safe.directory $GITHUB_WORKSPACE
         export GH_TOKEN=${{inputs.gh_token}}
         echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
