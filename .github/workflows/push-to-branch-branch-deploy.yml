@@ -101,6 +101,7 @@ jobs:
         name: find-pr-number
         with:
             state: closed
+            github-token: ${{steps.app-token.outputs.token}}
 
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
         name: Report Branch Deployments
@@ -167,6 +168,7 @@ jobs:
         name: find-pr-number
         with:
             state: closed
+            github-token: ${{steps.app-token.outputs.token}}
 
 
       - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
