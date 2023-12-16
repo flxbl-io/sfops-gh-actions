@@ -208,6 +208,8 @@ jobs:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
+         skip-token-revoke: true
+
 
       - uses: actions/download-artifact@v3
         id: download_artifacts
@@ -227,7 +229,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-          repo-token: ${{ steps.app-token.outputs.token }}
+          repo-token: ${{ secrets.NPM_TOKEN }}
           branch: ${{ matrix.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -262,6 +264,23 @@ jobs:
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         run: |
           sfpowerscripts orchestrator:deploy -u ${{ matrix.environment }} -g "::group::,::endgroup::"
+
+      - uses: actions/create-github-app-token@v1
+        id: app-token-refreshed
+        with:
+         app-id: ${{ inputs.sfopsbot-app-id }}
+         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
+         owner: ${{ github.repository_owner }}
+         skip-token-revoke: true
+
+      - name: "Run package version reporter"
+        uses: flxbl-io/sfops-gh-actions/packageversionReporter@main
+        if: ${{ steps.download_artifacts.outcome == 'success'}}
+        with:
+          alias: ${{ matrix.environment }}
+          env-name: ${{ matrix.environment }}
+          dashboard-repo: ${{ inputs.dashboard-repo }}
+          gh_token: ${{ steps.app-token-refreshed.outputs.token }}
 
   build:
     name: "Build packages"
@@ -367,7 +386,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-          repo-token: ${{ steps.app-token.outputs.token }}
+          repo-token: ${{ secrets.NPM_TOKEN }}
           branch: ${{ matrix.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -467,7 +486,7 @@ jobs:
         uses: ben-z/gh-action-mutex@v1.0-alpha-7
         if: ${{ steps.download_artifacts.outcome == 'success'}}
         with:
-          repo-token: ${{ steps.app-token.outputs.token }}
+          repo-token: ${{ secrets.NPM_TOKEN }}
           branch: ${{ matrix.environment }}-mutex
 
       - name: "Authenticate Dev Hub"
@@ -606,6 +625,7 @@ jobs:
          app-id: ${{ inputs.sfopsbot-app-id }}
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
+
 
       - name: "Report changelog"
         uses: flxbl-io/sfops-gh-actions/changelogReporter@main
