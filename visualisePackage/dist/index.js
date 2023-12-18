@@ -4175,7 +4175,7 @@ function readYamlFiles(directoryPath) {
 
   // Read all files in the directory
   fs.readdirSync(directoryPath).forEach(file => {
-    if (path.extname(file) === '.yaml') {
+    if (path.extname(file) === '.yaml' || path.extname(file) === '.yml') {
       const filePath = path.join(directoryPath, file);
       const fileContents = fs.readFileSync(filePath, 'utf8');
       const data = yaml.load(fileContents);
