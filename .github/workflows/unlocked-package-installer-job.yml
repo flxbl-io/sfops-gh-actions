@@ -52,7 +52,7 @@ jobs:
   install-unlocked:
     name: Install second generation package
     runs-on: ubuntu-latest
-    container: ghcr.io/dxatscale/sfpowerscripts-rc:alpha
+    container: ghcr.io/flxbl-io/sfops:latest
     environment: ${{ inputs.environment }}
     steps:
       - uses: actions/checkout@v3
