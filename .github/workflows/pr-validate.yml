@@ -270,18 +270,27 @@ jobs:
 
       # Validate source and trigger test
       - name: 'Validate Against ci sandbox'
-        if: steps.getTypeOfPool.outputs.type == 'sandbox'
+        if: steps.getTypeOfPool.outputs.type == 'sandbox
         id: validateWithSandbox
         run: |
-          sfp orchestrator:validateAgainstOrg -u ci -v devhub --diffcheck --disableartifactupdate  --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+          if [ '${{ vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE }}' = 'true' ]; then
+             sfp orchestrator:validateAgainstOrg -u ci -v devhub --diffcheck --disableartifactupdate  --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+          else
+              sfp orchestrator:validateAgainstOrg -u ci -v devhub --diffcheck --disableartifactupdate --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+          fi
+          
 
 
       # Validate source and trigger test
       - name: 'Validate Against ci scratch org'
-        if: steps.getTypeOfPool.outputs.type == 'scratchorg'
+        if: steps.getTypeOfPool.outputs.type == 'scratchorg' && vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE == 'true'
         id: validateWithScratchOrg
         run: |
-          sfp orchestrator:validate -p ${{steps.getTypeOfPool.outputs.pool }} -v devhub   --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+         if [ '${{ vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE }}' = 'true' ]; then
+           sfp orchestrator:validate -p ${{steps.getTypeOfPool.outputs.pool }} -v devhub   --disablesourcepkgoverride  --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+         else
+            sfp orchestrator:validate -p ${{steps.getTypeOfPool.outputs.pool }} -v devhub   --installdeps   --mode=thorough-release-config --releaseconfig=${{matrix.filePath}} --orginfo
+         fi
 
 
       #App Token has an expriy of an hour, do a refresh again
