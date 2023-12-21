@@ -9,9 +9,15 @@ async function checkInUseSandbox(githubRepo, devhubUserName, token) {
     throw new Error("Unable to create GitHub client");
   }
 
-  const output = execSync(
-    `gh api /repos/${githubRepo}/actions/variables --paginate | gh merge-json | jq ".variables[] | select(.name | test(\\"_SBX$\\")).name"`
-  ).toString();
+  try {
+    const output = execSync(
+      `gh api /repos/${githubRepo}/actions/variables --paginate | gh merge-json | jq ".variables[] | select(.name | test(\\"_SBX$\\")).name"`
+    ).toString();
+  } catch (error) {
+    console.log(`Unable to read variables from ${githubRepo}...Exiting`);
+    process.exit(1);
+  }
+
   const sandboxes = output.trim().split("\n");
 
   if (sandboxes.length === 0 || sandboxes[0] === "") {
