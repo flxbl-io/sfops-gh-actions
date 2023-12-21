@@ -4182,8 +4182,9 @@ async function checkInUseSandbox(githubRepo, devhubUserName, token) {
     throw new Error("Unable to create GitHub client");
   }
 
+  let output="";
   try {
-    const output = execSync(
+    output = execSync(
       `gh api /repos/${githubRepo}/actions/variables --paginate | gh merge-json | jq ".variables[] | select(.name | test(\\"_SBX$\\")).name"`
     ).toString();
   } catch (error) {
