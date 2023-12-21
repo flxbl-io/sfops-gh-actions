@@ -23,12 +23,12 @@ runs:
       id: authDevhub
 
     - run: |
+        export GH_TOKEN=${{inputs.gh_token}}
         gh extension install heaths/gh-merge-json
       shell: bash
 
 
     - run: |
-        export GH_TOKEN=${{inputs.gh_token}}
         node $GITHUB_ACTION_PATH/dist/index.js ${{github.repository}} ${{ steps.authDevhub.outputs.devhub_username }} ${{ inputs.gh_token }}
       shell: bash
       id: refreshFrontDoorUrl
