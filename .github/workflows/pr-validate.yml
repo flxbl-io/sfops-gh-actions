@@ -270,7 +270,7 @@ jobs:
 
       # Validate source and trigger test
       - name: 'Validate Against ci sandbox'
-        if: steps.getTypeOfPool.outputs.type == 'sandbox
+        if: steps.getTypeOfPool.outputs.type == 'sandbox'
         id: validateWithSandbox
         run: |
           if [ '${{ vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE }}' = 'true' ]; then
