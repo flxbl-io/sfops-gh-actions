@@ -16,7 +16,7 @@ runs:
     - run: |
         echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
         sfdx auth:sfdxurl:store -f authfile -a devhub
-        devhubInfo=$(sf org display -o prod --json)
+        devhubInfo=$(sf org display -o devhub --json)
         DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
         echo "devhub_username=$DEVHUB_USERNAME" >> "$GITHUB_OUTPUT"
       shell: bash
