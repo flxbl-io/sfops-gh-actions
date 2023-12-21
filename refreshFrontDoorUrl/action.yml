@@ -1,0 +1,29 @@
+name: "Refreshes the frontdoor url"
+description: "Refreshes the frontdoor url"
+inputs:
+  devhub_sfdx_auth_url:
+    description: "Devhub SFDX Auth URL"
+    required: true
+  gh_token: 
+    description: "github token to use for commiting to repo"
+    required: true
+
+
+runs:
+  using: "composite"
+  steps:
+
+    - run: |
+        echo "${{ inputs.devhub_sfdx_auth_url }}" > ./authfile
+        sfdx auth:sfdxurl:store -f authfile -a devhub
+        devhubInfo=$(sf org display -o prod --json)
+        DEVHUB_USERNAME=$(echo $devhubInfo | jq -r '.result.username')
+        echo "devhub_username=$DEVHUB_USERNAME" >> "$GITHUB_OUTPUT"
+      shell: bash
+      id: authDevhub
+
+    - run: |
+        export GH_TOKEN=${{inputs.gh_token}}
+        node $GITHUB_ACTION_PATH/dist/index.js ${{github.repository}} ${{ steps.authDevhub.outputs.devhub_username }} ${{ inputs.gh_token }}
+      shell: bash
+      id: refreshFrontDoorUrl
