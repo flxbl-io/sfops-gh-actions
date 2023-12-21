@@ -88,7 +88,7 @@ async function findAvailableSandbox(
         );
         const { status, isActive, name, issue } = sandbox;
         console.error(`Processing Sandbox   name:${name} status:${status} isActive:${isActive} issue:${issue?issue:'N/A'}.`);
-        if (status === "Available" && isActive) {
+        if (!issue && status === "Available" && isActive) {
           console.error(
             `Found an available sandbox at ${sandbox.name} `
           );
