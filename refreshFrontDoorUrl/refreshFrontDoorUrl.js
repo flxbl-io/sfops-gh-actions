@@ -84,12 +84,18 @@ async function checkInUseSandbox(githubRepo, devhubUserName, token) {
         );
 
         if (commentDetails) {
-          console.log(`Updating comment for Sandbox ${sandboxName}`);
-          await updateComment(
+          console.log(`Refresh comment for Sandbox ${sandboxName}`);
+          await deleteComment(
             client,
             githubRepo.split("/")[0],
             githubRepo.split("/")[1],
-            commentDetails.id,
+            commentDetails.id
+          );
+           await createComment(
+            client,
+            githubRepo.split("/")[0],
+            githubRepo.split("/")[1],
+            issue,
             message
           );
         } else {
