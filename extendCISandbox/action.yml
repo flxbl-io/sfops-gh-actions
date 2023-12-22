@@ -21,6 +21,10 @@ runs:
         echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
       shell: bash
 
+    - run: |
+        gh extension install heaths/gh-merge-json
+      shell: bash
+
     - name: Lock to get exclusive access to pool var
       uses: flxbl-io/sfops-gh-actions/lockResource@main
       id: lockResource
