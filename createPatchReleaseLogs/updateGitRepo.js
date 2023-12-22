@@ -25,7 +25,7 @@ async function cloneAndPrepareRepository(githubRepoUrl, dirToCopy, targetDir) {
     execSync(`gh repo clone ${githubRepoUrl} ${tempDir}`);
 
     // Checkout tempDir to a releaedefns branch
-    execSync(`git checkout -b releasedefns`, {
+    execSync(`git checkout releasedefns`, {
       stdio: "inherit",
       cwd: tempDir,
     });
