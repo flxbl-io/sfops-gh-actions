@@ -290,15 +290,12 @@ const processDevSandbox = async (variableName, sandbox) => {
 
   for (const variableValue of githubSandboxVariableValues) {
     try {
-       const variableName = JSON.parse(variableValue.value).name;
+       const variableName = variableValue.name;
        const poolConfig = findPoolConfig(variableName, configJson);
        console.log(`Pool Config`,poolConfig);
         if (poolConfig) {
           const sandboxJson = JSON.parse(
-            execSync(
-              `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`,
-              { encoding: 'utf8', timeout: 10000 }
-            )
+           variableValue.value
           );
           console.log(`Sandbox JSON`,sandboxJson);
           if (sandboxJson.status === "InProgress") {
