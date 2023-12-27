@@ -292,6 +292,7 @@ const processDevSandbox = async (variableName, sandbox) => {
     try {
        const variableName = JSON.parse(variableValue.value).name;
        const poolConfig = findPoolConfig(variableName, configJson);
+       console.log(`Pool Config`,poolConfig);
         if (poolConfig) {
           const sandboxJson = JSON.parse(
             execSync(
@@ -299,6 +300,7 @@ const processDevSandbox = async (variableName, sandbox) => {
               { encoding: 'utf8', timeout: 10000 }
             )
           );
+          console.log(`Sandbox JSON`,sandboxJson);
           if (sandboxJson.status === "InProgress") {
             console.log(`Processing variable ${variableName}`);
             await processSandbox(variableName, sandboxJson.name, poolConfig);
