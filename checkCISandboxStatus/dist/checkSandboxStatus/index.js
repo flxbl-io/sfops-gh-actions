@@ -30462,6 +30462,8 @@ const processDevSandbox = async (variableName, sandbox) => {
     `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json | jq '[.variables[] | select(.name | test("_SBX"))]'`,
     { encoding: 'utf8', timeout: 10000 }
   );
+
+  console.log(`Fetched CI Sandboxes`,sandboxesList);
   if (!sandboxesList) return;
 
   const githubSandboxVariableValues = JSON.parse(sandboxesList);
