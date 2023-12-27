@@ -252,26 +252,27 @@ const processDevSandbox = async (variableName, sandbox) => {
   //Handle Dev Sandboxes
   console.log(`Checking status of  Developer Sandboxes.. `);
   const devSandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq '.variables[] | select(.name | test("_DEVSBX"))'`,
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json | jq '.variables[] | select(.name | test("_DEVSBX"))'`,
     { encoding: 'utf8', timeout: 10000 }
   );
-  if (!devSandboxesList) return;
+  if (devSandboxesList) 
+  {
+    const githubDevSandboxVariableValues = devSandboxesList
+      .toString()
+      .split("\n")
+      .filter(Boolean);
 
-  const githubDevSandboxVariableValues = devSandboxesList
-    .toString()
-    .split("\n")
-    .filter(Boolean);
-
-  for (const variableValue of githubDevSandboxVariableValues) {
-    const variableName = JSON.parse(variableValue).name;
-    const sandboxJson = JSON.parse(
-      execSync(
-        `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
-      )
-    );
-    if (sandboxJson.status === "InProgress") {
-      console.log(`Processing variable ${variableName}`);
-      await processDevSandbox(variableName, sandboxJson);
+    for (const variableValue of githubDevSandboxVariableValues) {
+      const variableName = JSON.parse(variableValue).name;
+      const sandboxJson = JSON.parse(
+        execSync(
+          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
+        )
+      );
+      if (sandboxJson.status === "InProgress") {
+        console.log(`Processing variable ${variableName}`);
+        await processDevSandbox(variableName, sandboxJson);
+      }
     }
   }
 
@@ -279,7 +280,7 @@ const processDevSandbox = async (variableName, sandbox) => {
   console.log(`Processing CI Sandboxes.. `);
   const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
   const sandboxesList = execSync(
-    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate --jq '.variables[] | select(.name | test("_SBX"))'`,
+    `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json | jq '.variables[] | select(.name | test("_SBX"))'`,
     { encoding: 'utf8', timeout: 10000 }
   );
   if (!sandboxesList) return;
