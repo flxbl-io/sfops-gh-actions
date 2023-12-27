@@ -251,7 +251,7 @@ const processDevSandbox = async (variableName, sandbox) => {
 (async () => {
   //Handle Dev Sandboxes
   console.log(`Checking status of  Developer Sandboxes.. `);
-  const devSandboxesList = execSync(
+  const devSandboxesList = runCommand(
     `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json | jq '[.variables[] | select(.name | test("_DEVSBX"))]'`,
     { encoding: 'utf8', timeout: 10000 }
   );
@@ -277,9 +277,8 @@ const processDevSandbox = async (variableName, sandbox) => {
   //Handle CI Sandboxes
   console.log(`Processing CI Sandboxes.. `);
   const configJson = JSON.parse(fs.readFileSync(PATH_TO_POOL_CONFIG, "utf8"));
-  const sandboxesList = execSync(
+  const sandboxesList = runCommand(
     `gh api "/repos/${GITHUB_REPO}/actions/variables" --paginate | gh merge-json | jq '[.variables[] | select(.name | test("_SBX"))]'`,
-    { encoding: 'utf8', timeout: 10000 }
   );
 
   console.log(`Fetched CI Sandboxes`,sandboxesList);
