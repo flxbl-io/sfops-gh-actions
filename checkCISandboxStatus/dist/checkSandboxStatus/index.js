@@ -30467,6 +30467,8 @@ const processDevSandbox = async (variableName, sandbox) => {
 
   const githubSandboxVariableValues = JSON.parse(sandboxesList);
 
+  console.log(`Fetched CI Sandboxes`,githubSandboxVariableValues.length);
+
   for (const variableValue of githubSandboxVariableValues) {
     try {
        const variableName = JSON.parse(variableValue.value).name;
