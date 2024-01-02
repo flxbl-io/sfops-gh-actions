@@ -30439,18 +30439,16 @@ const processDevSandbox = async (variableName, sandbox) => {
 
   if (devSandboxesList) 
   {
-    const githubDevSandboxVariableValues = JSON.parse(devSandboxesList);
+    const devSandboxVariables = JSON.parse(devSandboxesList);
 
-    for (const variableValue of githubDevSandboxVariableValues) {
-      const variableName = JSON.parse(variableValue).name;
-      const sandboxJson = JSON.parse(
-        execSync(
-          `gh api "/repos/${GITHUB_REPO}/actions/variables/${variableName}" --jq ".value | fromjson"`
-        )
-      );
-      if (sandboxJson.status === "InProgress") {
+    for (const devSandboxVariable of devSandboxVariables) {
+      const variableName = devSandboxVariable.name;
+      const sandboxDetails = JSON.parse(
+        devSandboxVariable.value
+       );
+      if (sandboxDetails.status === "InProgress") {
         console.log(`Processing variable ${variableName}`);
-        await processDevSandbox(variableName, sandboxJson);
+        await processDevSandbox(variableName, sandboxDetails);
       }
     }
   }
@@ -30465,27 +30463,26 @@ const processDevSandbox = async (variableName, sandbox) => {
   console.log(`Fetched CI Sandboxes`,sandboxesList);
   if (!sandboxesList) return;
 
-  const githubSandboxVariableValues = JSON.parse(sandboxesList);
+  const ciSandboxVariables = JSON.parse(sandboxesList);
 
-  console.log(`Fetched CI Sandboxes`,githubSandboxVariableValues.length);
+  console.log(`Fetched CI Sandboxes`,ciSandboxVariables.length);
 
-  for (const variableValue of githubSandboxVariableValues) {
+  for (const ciSandboxVariable of ciSandboxVariables) {
     try {
-       const variableName = variableValue.name;
+       const variableName = ciSandboxVariable.name;
        const poolConfig = findPoolConfig(variableName, configJson);
-       console.log(`Pool Config`,poolConfig);
         if (poolConfig) {
-          const sandboxJson = JSON.parse(
-           variableValue.value
+          const sandboxDetails = JSON.parse(
+           ciSandboxVariable.value
           );
-          console.log(`Sandbox JSON`,sandboxJson);
-          if (sandboxJson.status === "InProgress") {
+          console.log(`Sandbox Details`,sandboxDetails);
+          if (sandboxDetails.status === "InProgress") {
             console.log(`Processing variable ${variableName}`);
-            await processSandbox(variableName, sandboxJson.name, poolConfig);
+            await processSandbox(variableName, sandboxDetails.name, poolConfig);
           }
         }
     }catch(error){
-      console.log(`Error processing variable ${variableValue}`,error);
+      console.log(`Error processing variable ${ciSandboxVariable}`,error);
     }
   }
 })();
