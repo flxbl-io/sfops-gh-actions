@@ -21,7 +21,7 @@
     "@types/node": "^20.2.5",
     "@typescript-eslint/parser": "^6.17.0",
     "@vercel/ncc": "^0.38.1",
-    "ava": "^4.3.3",
+    "ava": "^6.0.1",
     "eslint": "^8.25.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
