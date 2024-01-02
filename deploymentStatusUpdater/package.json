@@ -19,7 +19,7 @@
     "@octokit/request-error": "^3.0.1",
     "@octokit/types": "^7.5.1",
     "@types/node": "^20.2.5",
-    "@typescript-eslint/parser": "^5.40.0",
+    "@typescript-eslint/parser": "^6.17.0",
     "@vercel/ncc": "^0.38.1",
     "ava": "^4.3.3",
     "eslint": "^8.25.0",
