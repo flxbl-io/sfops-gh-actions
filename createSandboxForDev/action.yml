@@ -68,7 +68,7 @@ runs:
         # add a var for tracking metrics
         start=$(date +%s)
         # Get 4 digits from email        
-        email=${inputs.email}
+        email=${{ inputs.email }}
 
         # Extract everything before the '@'
         email_before_at=${email%@*}
@@ -87,7 +87,7 @@ runs:
             # Append the random number to email_before_at
             email_before_at="${email_before_at}${random_number}"
         fi
-        
+
         # Concatenate the modified part with the '@' and the rest of the email
         email="${email_before_at}@${email#*@}"
 
