@@ -67,11 +67,29 @@ runs:
 
         # add a var for tracking metrics
         start=$(date +%s)
-        # Get 4 digits from email
-        email=${{ inputs.email }}
+        # Get 4 digits from email        
+        email=${inputs.email}
+
+        # Extract everything before the '@'
+        email_before_at=${email%@*}
+
+        # Remove all dots from the extracted part
+        email_before_at=${email_before_at//./}
+
+        # Check if the length of email_before_at is less than 4
+        if [ ${#email_before_at} -lt 4 ]; then
+            # Calculate how many digits to add to make it 4 characters long
+            num_digits_to_add=$((4 - ${#email_before_at}))
+
+            # Generate a random number with the required number of digits
+            random_number=$(printf "%0${num_digits_to_add}d" $((RANDOM % (10**num_digits_to_add))))
+
+            # Append the random number to email_before_at
+            email_before_at="${email_before_at}${random_number}"
+        fi
         
-        # Remove the . between firstname and lastname to support short names like 'ben.mcdermott@coinbase.com'
-        email="${email/.\@/@}"
+        # Concatenate the modified part with the '@' and the rest of the email
+        email="${email_before_at}@${email#*@}"
 
         case "$email" in
           ?*@?*.*) 
