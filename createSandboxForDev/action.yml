@@ -69,14 +69,19 @@ runs:
         start=$(date +%s)
         # Get 4 digits from email
         email=${{ inputs.email }}
+        
+        # Remove the . between firstname and lastname to support short names like 'ben.mcdermott@coinbase.com'
+        email="${email/.\@/@}"
+
         case "$email" in
-        ?*@?*.*) user_part="${email%%@*}"
-                trimmed_user="${user_part%"${user_part#????}"}"
-                echo "The trimmed user part of the email is: $trimmed_user"
-                ;;
-        *) echo "This is not a valid email address."
-        ;;
+          ?*@?*.*) 
+            user_part="${email%%@*}"
+            trimmed_user="${user_part%"${user_part#????}"}"
+            echo "The trimmed user part of the email is: $trimmed_user";;
+          *) 
+            echo "This is not a valid email address.";;
         esac
+
         sandbox_appender_name=$(dd bs=512 if=/dev/urandom count=1 2>/dev/null | LC_ALL=C tr -dc '0-9' | head -c 6)
         sandbox_name="$trimmed_user$sandbox_appender_name"
 
