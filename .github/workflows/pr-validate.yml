@@ -283,7 +283,7 @@ jobs:
 
       # Validate source and trigger test
       - name: 'Validate Against ci scratch org'
-        if: steps.getTypeOfPool.outputs.type == 'scratchorg' && vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE == 'true'
+        if: steps.getTypeOfPool.outputs.type == 'scratchorg'
         id: validateWithScratchOrg
         run: |
          if [ '${{ vars.SFOPS_DISABLE_SOURCEPKG_OVERRIDE }}' = 'true' ]; then
