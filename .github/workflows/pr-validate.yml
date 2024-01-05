@@ -416,7 +416,7 @@ jobs:
          owner: ${{ github.repository_owner }}
 
      - uses: mshick/add-pr-comment@v2
-       if: ${{ needs.analyze.outputs.matrix != '[]' || needs.analyze.outputs.matrix != '' }}
+       if: ${{ needs.analyze.outputs.matrix == '[]' || needs.analyze.outputs.matrix == '' }}
        with:
           allow-repeats: false
           message-id: no-domain-found
