@@ -19,7 +19,7 @@ const GITHUB_REPO = `${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}`;
 // Function to run shell commands synchronously
 const runCommand = (command, ignoreError) => {
   try {
-    return execSync(command,{ encoding: 'utf8'}).toString();
+    return execSync(command,{ encoding: 'utf8',timeout:300000}).toString();
   } catch (err) {
     if (!ignoreError) throw Error(err.stderr.toString());
   }
