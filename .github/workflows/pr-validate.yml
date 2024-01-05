@@ -88,6 +88,7 @@ jobs:
 
  statuscheck:
     name: "Deployments to Test Environments"
+    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
 
