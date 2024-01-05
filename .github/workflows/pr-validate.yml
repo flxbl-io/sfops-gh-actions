@@ -397,7 +397,7 @@ jobs:
           branch: ${{ github.base_ref }}
 
  results:
-    if: ${{ always() }}
+    if: ${{ always()  &&  github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     name:  Status Check - Validate Domain
     needs: [validate]
