@@ -396,41 +396,12 @@ jobs:
           gh_token: ${{ steps.app-token-refreshed.outputs.token }}
           branch: ${{ github.base_ref }}
 
- validate-no-domain-found:
-    name: 'Comment when no domain is found'
-    runs-on: ubuntu-latest
-    container: ghcr.io/flxbl-io/sfops-lite:latest
-    if: ${{ needs.analyze.outputs.matrix == '[]' && needs.analyze.outputs.matrix == '' }}
-    needs: analyze
-    steps:
-
-      - uses: actions/create-github-app-token@v1
-        id: app-token
-        with:
-         app-id: ${{ inputs.sfopsbot-app-id }}
-         private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
-         owner: ${{ github.repository_owner }}
-
-      - uses: mshick/add-pr-comment@v2
-        if: ${{ vars.SFOPS_BRANCH_DEPLOY == 'true' }} && contains(github.base_ref,'release-') == false
-        with:
-          allow-repeats: false
-          message-id: intro
-          refresh-message-position: false
-          repo-token: ${{ steps.app-token.outputs.token }}
-          message: |
-              Hello @${{ github.event.pull_request.user.login }}, :wave:
-
-              I was not able to find a release config that matches your change and hence your change is not deployed to a review environment
-              You might want to relocate the metadata to a different location or if its a new package update the release
-
-
 
  results:
     if: ${{ always()  &&  github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     name:  Status Check - Validate Domain
-    needs: [validate, validate-no-domain-found]
+    needs: [analyze, validate]
     steps:
     
 
@@ -444,6 +415,22 @@ jobs:
          private-key: ${{ secrets.SFOPSBOT_APP_PRIVATE_KEY }}
          owner: ${{ github.repository_owner }}
 
+     - uses: mshick/add-pr-comment@v2
+       if: ${{ needs.analyze.outputs.matrix != '[]' || needs.analyze.outputs.matrix != '' }}
+       with:
+          allow-repeats: false
+          message-id: no-domain-found
+          refresh-message-position: false
+          repo-token: ${{ steps.app-token.outputs.token }}
+          message: |
+              Hello @${{ github.event.pull_request.user.login }}, :wave:
+
+              I was not able to find a release config that matches your change and hence your change is not deployed to a review environment
+              If your changes contain metadata, You might want to relocate the metadata to a different location or if its a new package update the release ./impacted-release-configs.json
+
+              If your changes do not contain metadata, please feel free to merge the changes
+
+
      - uses: flxbl-io/sfops-gh-actions/branchDeploymentReporter@main
        name: Report Branch Status
        id: report
@@ -455,8 +442,6 @@ jobs:
         gh_token: ${{steps.app-token.outputs.token}}
         issue-number: ${{ github.event.pull_request.number }}
 
-     - run: exit 1
-       if: ${{  contains(needs.validate-no-domain-found.result, 'success') }}
 
      - run: exit 1
        if: ${{  contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
