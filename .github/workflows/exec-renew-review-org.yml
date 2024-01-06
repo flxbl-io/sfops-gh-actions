@@ -114,6 +114,6 @@ jobs:
       - name: Reopen PR
         id: reopen_pr
         run: |
-          gh pr close ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }} --token ${{ steps.app-token.outputs.token }} -c "Closing for renewal"
-          gh pr reopen ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }} --token ${{ steps.app-token.outputs.token }} -c "Reopen for new run"
+          gh pr close ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }}  -c "sfops: Closing for renewal"
+          gh pr reopen ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }} -c "sfops: Reopen for new run"
           
