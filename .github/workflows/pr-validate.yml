@@ -314,6 +314,11 @@ jobs:
 
           printf "Hello  @${{ github.event.pull_request.user.login }}, " > message.md
           printf "\nPlease find some information if available regarding your [validation run](https://github.com/${{github.repository}}/actions/runs/${{github.run_id}})\n" >> message.md
+
+          printf "\nA validation was undertaken for your pull request against the following release config\n" >> message.md
+          printf "Release: ${{matrix.releaseName}}\n" >> message.md
+          printf "FilePath: ${{matrix.filePath}}\n" >> message.md
+          printf "Pool: ${{matrix.pool}}\n" >> message.md
           
           printf "\n##  :crystal_ball:  Validation Summary" >> message.md
 
@@ -352,9 +357,9 @@ jobs:
           printf "\n### :checkered_flag: Errors">> message.md
 
           if $has_errors; then
-            printf "\n## :x: Validation Failed, Check for Errors" >> message.md
+            printf "\n### :x: Validation Failed, Check for Errors" >> message.md
           else
-            printf "\n## :white_check_mark: Validation Successful, No Errors Found" >> message.md
+            printf "\n### :white_check_mark: Validation Successful, No Errors Found" >> message.md
           fi
 
           
