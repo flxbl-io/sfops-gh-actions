@@ -62,6 +62,7 @@ console.log('\nInitiating Sandbox deletion process for expired Orgs...');
 
 // Filter variables marked for expiry
 const variablesForDeletion = getGithubVariables().filter(variable => {
+  console.log(`Checking Sandbox`,variable.name);
   const value = JSON.parse(variable.value);
   return value.status === 'Expired';
 
