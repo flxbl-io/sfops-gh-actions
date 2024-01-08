@@ -55,7 +55,6 @@ jobs:
         run: |
           npm i -g @flxblio/sfp@30.1.2
 
-
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
         run: |
