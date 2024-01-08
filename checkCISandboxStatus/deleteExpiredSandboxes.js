@@ -49,9 +49,9 @@ const devHubUserName = process.argv[3]; // DevHub Username
 
 function getGithubVariables(githubRepo) {
     try {
-        const command = `gh api /repos/${GITHUB_REPO}/actions/variables --paginate | gh merge-json | jq '.variables[] | select(.name |  test("_SBX")) | {name: .name, value: .value}'`
+        const command = `gh api /repos/${GITHUB_REPO}/actions/variables --paginate | gh merge-json | jq '[.variables[] | select(.name |  test("_SBX")) | {name: .name, value: .value}]'`
         const output = execSync(command).toString();
-        return JSON.parse(`[${output.trim().split("\n").join(",")}]`);
+        return JSON.parse(output);
     } catch (error) {
         console.error('Error getting GitHub variables:', error);
         return [];
@@ -62,7 +62,7 @@ console.log('\nInitiating Sandbox deletion process for expired Orgs...');
 
 // Filter variables marked for expiry
 const variablesForDeletion = getGithubVariables().filter(variable => {
-  console.log(`Checking Sandbox`,variable.name);
+  console.log(`Checking Sandbox`,variable.name,`with value`, variable.value);
   const value = JSON.parse(variable.value);
   return value.status === 'Expired';
 
