@@ -51,6 +51,10 @@ jobs:
          ref: ${{ inputs.git-ref }}
          fetch-depth: 0
 
+      - name: 'Override sfp'
+        run: |
+          npm i -g @flxblio/sfp-rc@30.1.1
+
 
       - name: Export Datadog Environment Variables
         if: ${{ inputs.metrics-provider == 'datadog'}}
