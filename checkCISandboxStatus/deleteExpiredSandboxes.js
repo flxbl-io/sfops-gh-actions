@@ -49,7 +49,7 @@ const devHubUserName = process.argv[3]; // DevHub Username
 
 function getGithubVariables(githubRepo) {
     try {
-        const command = `gh api /repos/${GITHUB_REPO}/actions/variables --paginate --jq ".variables[] | select(.name |  test(\\\"_SBX\\\")) | {name: .name, value: .value}"`
+        const command = `gh api /repos/${GITHUB_REPO}/actions/variables --paginate |  gh merge-json |  gh merge-json | jq '.variables[] | select(.name |  test("_SBX")) | {name: .name, value: .value}'`
         const output = execSync(command).toString();
         return JSON.parse(`[${output.trim().split("\n").join(",")}]`);
     } catch (error) {
