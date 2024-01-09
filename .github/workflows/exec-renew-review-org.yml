@@ -103,7 +103,10 @@ jobs:
              message.md        
 
       # Set up GH_TOKEN on the environment as secret doesnt seem to pass onto other action
-      - run: |
+      - id: set_gh_token
+        name: Setup GH TOKEN
+        if: success() || failure()
+        run: |
           git config --global --add safe.directory $GITHUB_WORKSPACE
           export GH_TOKEN=${{ steps.app-token.outputs.token }}
           echo "GH_TOKEN=$GH_TOKEN" >> $GITHUB_ENV
@@ -111,6 +114,7 @@ jobs:
 
       - name: Reopen PR
         id: reopen_pr
+        if: success() || failure()
         run: |
           gh pr close ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }}  
           gh pr reopen ${{ github.event.issue.number }} --repo ${{ github.event.repository.full_name }} -c "Attempting a reopen of the PR to re trigger a check and assign a new review sandbox"

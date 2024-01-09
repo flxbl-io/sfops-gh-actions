@@ -148,7 +148,7 @@ jobs:
       uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnPerChangeDetector@main
       with:
        pathToReleaseDefns: 'config'
-       base-branch: ${{ github.event.pull_request.base.sha }}
+       base-branch: ${{ github.event.pull_request.base.sha }} # Need Sha in Github PR context
        feature-branch: ${{ github.event.pull_request.head.sha }}   
 
   
