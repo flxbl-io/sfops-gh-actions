@@ -140,6 +140,9 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: 'Override sfp'
+      run: |
+        npm i -f  -g @flxblio/sfp@30.2.0
 
     - name: 'Figure Impacted Release Defns'
       uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnDetector@main
