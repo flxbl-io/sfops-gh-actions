@@ -4,10 +4,11 @@ const date = process.argv[2];  // get the date from the command line
 
 function  computeElapsedTime(date) {
     console.log(`Computing Elapsed Time`);
-    const command = `gh pr list -s merged -S closed:${date} --json createdAt,mergedAt,changedFiles`;
+    const command = `gh pr list -L 100 -s merged -S closed:${date} --json createdAt,mergedAt,changedFiles`;
+    console.log(`Executing command: ${command}`)
     try {
         const stdout = execSync(command).toString();
-
+        console.log(`Ouput of executing gh command`,stdout);
         const prs = JSON.parse(stdout);
         if(prs.length==0)
         {
@@ -41,10 +42,11 @@ function  computeElapsedTime(date) {
 }
 
 function  computeOpenPRs(date) {
-    const command = `gh pr list -s all -S created:${date}   --json createdAt`;
+    const command = `gh pr list -L 100 -s all -S created:${date}   --json createdAt`;
+    console.log(`Executing command: ${command}`)
     try {
         const stdout = execSync(command).toString();
-
+        console.log(`Ouput of executing gh command`,stdout);
         const prs = JSON.parse(stdout);
         console.log(`PRs  created on ${date}: ${prs.length}`)
         let exeCommand = `sfp metrics:report -m 'pr.open' -t 'gauge' -v '${prs.length}'`;
