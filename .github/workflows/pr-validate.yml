@@ -140,6 +140,7 @@ jobs:
       with:
         fetch-depth: 0
 
+   # Override sfp
     - name: 'Override sfp'
       run: |
         npm i -f  -g @flxblio/sfp@30.2.4
