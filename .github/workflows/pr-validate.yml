@@ -142,14 +142,14 @@ jobs:
 
     - name: 'Override sfp'
       run: |
-        npm i -f  -g @flxblio/sfp@30.2.0
+        npm i -f  -g @flxblio/sfp@30.2.1
 
     - name: 'Figure Impacted Release Defns'
-      uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnDetector@main
+      uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnPerChangeDetector@main
       with:
        pathToReleaseDefns: 'config'
-       from-commit: ${{ github.event.pull_request.base.sha }}
-       to-commit: ${{ github.event.pull_request.head.sha }}   
+       base-branch: ${{ github.event.pull_request.base.ref }}
+       feature-branch: ${{ github.event.pull_request.head.ref }}   
 
   
     - uses: actions/create-github-app-token@v1
