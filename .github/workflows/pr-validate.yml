@@ -142,7 +142,7 @@ jobs:
 
     - name: 'Override sfp'
       run: |
-        npm i -f  -g @flxblio/sfp@30.2.1
+        npm i -f  -g @flxblio/sfp@30.2.4
 
     - name: 'Figure Impacted Release Defns'
       uses: flxbl-io/sfops-gh-actions/impactedReleaseDefnPerChangeDetector@main
@@ -433,7 +433,7 @@ jobs:
               Hello @${{ github.event.pull_request.user.login }}, :wave:
 
               I was not able to find a release config that matches your change and hence your change is not deployed to a review environment
-              If your changes contain metadata, You might want to relocate the metadata to a different location or if its a new package update the release ./impacted-release-configs.json
+              If your changes contain metadata, You might want to relocate the metadata to a different location or if its a new package update the release configs
 
               If your changes do not contain metadata, please feel free to merge the changes
 

@@ -15,6 +15,6 @@ runs:
   using: "composite"
   steps:
     - run: |
-        sfp impact:releaseconfig --basebranch=${{ inputs.base-branch }} --branch=${{ inputs.feature-branch }} --filterByChangesInBranch  --releaseconfig=${{ inputs.pathToReleaseDefns }} 
+        sfp impact:releaseconfig --basebranch=${{ inputs.base-branch }} --branch=${{ inputs.feature-branch }} --filterByChangesInBranch --explicitDependencyCheck --releaseconfig=${{ inputs.pathToReleaseDefns }} 
       shell: bash
       id: computeImpactedReleaseDefns
